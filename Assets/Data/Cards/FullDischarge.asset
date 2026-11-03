@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 454e1556bf8c38944af1e43e1bc601ae, type: 3}
+  m_Name: FullDischarge
+  m_EditorClassIdentifier: Assembly-CSharp::CardData
+  cardName: Full Discharge
+  type: 0
+  manaCost: 3
+  value: 22
+  description: Deal 22 damage.
+  effects:
+  - type: 0
+    target: 1
+    amount: 22
+    hits: 1
+    ignoresShield: 0
+    status: 0
+    duration: 1
+    summon: {fileID: 0}
+  exhaust: 0
+  unplayable: 0
+  returnToHandNextTurn: 0
+  isGun: 0

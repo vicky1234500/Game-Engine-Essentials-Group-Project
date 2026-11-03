@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f8797b4a893f67f49b3ddf3ab6b371b1, type: 3}
+  m_Name: GrenadeBelt
+  m_EditorClassIdentifier: Assembly-CSharp::ItemData
+  itemName: Grenade Belt
+  icon: {fileID: 0}
+  size: {x: 2, y: 1}
+  tint: {r: 0.83, g: 0.14, b: 0.23, a: 1}
+  cards:
+  - card: {fileID: 11400000, guid: c3d9517c43983ea439d4ed6e9152fe61, type: 2}
+    count: 1
+  - card: {fileID: 11400000, guid: 0520b1e0d32530a4ab8b38640579886a, type: 2}
+    count: 1
+  - card: {fileID: 11400000, guid: 27aa283c72890cf4f91758826bceeec7, type: 2}
+    count: 2
+  - card: {fileID: 11400000, guid: 2af2e36dc9bd4d943b068e967b52c3f8, type: 2}
+    count: 1
+  passives: []

@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 454e1556bf8c38944af1e43e1bc601ae, type: 3}
+  m_Name: Zap
+  m_EditorClassIdentifier: Assembly-CSharp::CardData
+  cardName: Zap
+  type: 0
+  manaCost: 1
+  value: 6
+  description: Deal 6 damage. Apply OVERLOADED for 2 turns (+25% damage taken).
+  effects:
+  - type: 0
+    target: 1
+    amount: 6
+    hits: 1
+    ignoresShield: 0
+    status: 0
+    duration: 1
+    summon: {fileID: 0}
+  - type: 3
+    target: 1
+    amount: 1
+    hits: 1
+    ignoresShield: 0
+    status: 5
+    duration: 2
+    summon: {fileID: 0}
+  exhaust: 0
+  unplayable: 0
+  returnToHandNextTurn: 0
+  isGun: 0

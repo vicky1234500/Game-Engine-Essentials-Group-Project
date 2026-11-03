@@ -12,14 +12,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f8797b4a893f67f49b3ddf3ab6b371b1, type: 3}
   m_Name: Knife
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  itemName: Knife
+  itemName: Nanite Knife
   icon: {fileID: -778707665, guid: 3fb386464cb7ca54782bceb700c6d56f, type: 3}
   size: {x: 2, y: 1}
-  tint: {r: 0.83396226, g: 0.13689566, b: 0.22634439, a: 1}
+  tint: {r: 0.83, g: 0.14, b: 0.23, a: 1}
   cards:
-  - card: {fileID: 11400000, guid: 49e7235926ec9d24985628e2cd3893b9, type: 2}
+  - card: {fileID: 11400000, guid: f934d28930e22d049acdfeac828e2d6d, type: 2}
     count: 3
   - card: {fileID: 11400000, guid: bdeaaa048c339014685e4780e3405978, type: 2}
     count: 1
-  - card: {fileID: 11400000, guid: 144ecebec2ac1b242b48ecc653ef4570, type: 2}
+  - card: {fileID: 11400000, guid: 47e66d45da5f4c441a9c95a74284be3d, type: 2}
     count: 1
+  passives: []

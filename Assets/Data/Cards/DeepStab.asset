@@ -16,4 +16,24 @@ MonoBehaviour:
   type: 0
   manaCost: 2
   value: 12
-  description: Deal 12 damage. Apply Bleed
+  description: Deal 12 damage. Apply 2 BLEED for 3 turns.
+  effects:
+  - type: 0
+    target: 1
+    amount: 12
+    hits: 1
+    ignoresShield: 0
+    status: 0
+    duration: 1
+    summon: {fileID: 0}
+  - type: 3
+    target: 1
+    amount: 2
+    hits: 1
+    ignoresShield: 0
+    status: 2
+    duration: 3
+    summon: {fileID: 0}
+  exhaust: 0
+  unplayable: 0
+  isGun: 0

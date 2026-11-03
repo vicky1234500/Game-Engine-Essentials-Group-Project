@@ -14,6 +14,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CardData
   cardName: Throw Knife
   type: 0
-  manaCost: 2
-  value: 7
-  description: Deal 7 damage.
+  manaCost: 1
+  value: 6
+  description: Deal 6 damage. Returns to your hand next turn.
+  effects:
+  - type: 0
+    target: 1
+    amount: 6
+    hits: 1
+    ignoresShield: 0
+    status: 0
+    duration: 1
+    summon: {fileID: 0}
+  exhaust: 0
+  unplayable: 0
+  returnToHandNextTurn: 1
+  isGun: 0

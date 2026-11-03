@@ -16,6 +16,8 @@ public class ItemData : ScriptableObject
     public Vector2Int size = new Vector2Int(2, 1);        // width x height in slots
     public Color tint = new Color(0.22f, 0.54f, 0.87f);   // attack blue, heal green, defense purple...
     public List<CardEntry> cards = new List<CardEntry>();
+    [Tooltip("Bonuses just for having this item in the backpack (Kinetic Vest +10 DF, Ammo Belt +2 gun damage...)")]
+    public List<ItemPassive> passives = new List<ItemPassive>();
 
     public int TotalCards
     {

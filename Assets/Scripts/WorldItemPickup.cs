@@ -29,6 +29,10 @@ public class WorldItemPickup : MonoBehaviour
     [SerializeField] float bobHeight = 0.15f;
     [SerializeField] float bobSpeed = 2f;
 
+    // Used by battle rewards to drop an item on the floor when the backpack is full.
+    // Call right after Instantiate (before Start runs).
+    public void SetItem(ItemData data) => item = data;
+
     Vector3 startPos;
     bool pickedUp;
     float nextRetry;
