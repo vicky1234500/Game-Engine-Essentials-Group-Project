@@ -14,15 +14,11 @@ public class WoundedNetrunnerEvent : MonoBehaviour
     [SerializeField] Button robButton;
     [SerializeField] Button leaveButton;
 
-    [Header("Prototype starting values")]
-    [Min(0)]
-    [SerializeField] int startingCredits = 30;
-
     [Header("Robbery reward")]
     [Min(0)]
     [SerializeField] int robberyCredits = 50;
 
-    [Header("Connect to the map later")]
+    [Header("Exploration callback")]
     [SerializeField] UnityEvent onReturnToMap = new UnityEvent();
 
     enum Phase
@@ -34,12 +30,11 @@ public class WoundedNetrunnerEvent : MonoBehaviour
 
     Phase phase;
     bool ready;
-    int credits;
 
     // Prototype record only; not connected to the combat deck.
     int trackerCount;
 
-    public int Credits => credits;
+    public int Credits => RunState.credits;
     public int TrackerCount => trackerCount;
 
     void Start()
@@ -65,7 +60,7 @@ public class WoundedNetrunnerEvent : MonoBehaviour
             return;
         }
 
-        credits = Mathf.Max(0, startingCredits);
+        // Keep the existing shared run balance.
         robberyCredits = Mathf.Max(0, robberyCredits);
         trackerCount = 0;
         phase = Phase.Choice;
@@ -105,15 +100,21 @@ public class WoundedNetrunnerEvent : MonoBehaviour
         RefreshStatus();
     }
 
+    void Update()
+    {
+        if (ready && eventPanel.activeInHierarchy)
+            RefreshStatus();
+    }
+
     public void RobNetrunner()
     {
         if (!ready || phase != Phase.Choice)
             return;
 
-        // Lock the choice before applying rewards.
+        // Lock the choice before granting the reward.
         phase = Phase.Result;
 
-        credits += robberyCredits;
+        RunState.credits += robberyCredits;
         trackerCount++;
 
         descriptionText.text =
@@ -135,7 +136,7 @@ public class WoundedNetrunnerEvent : MonoBehaviour
 
     void RefreshStatus()
     {
-        statusText.text = $"Credits: {credits}";
+        statusText.text = $"Credits: {RunState.credits}";
 
         if (trackerCount > 0)
             statusText.text += $"\nCurse: Tracker x{trackerCount}";
@@ -148,15 +149,12 @@ public class WoundedNetrunnerEvent : MonoBehaviour
 
         phase = Phase.Closed;
         eventPanel.SetActive(false);
-
-        // Without a map callback, this reveals the test scene.
         onReturnToMap.Invoke();
     }
 
     static void SetLabel(Button button, string label)
     {
-        TMP_Text text =
-            button.GetComponentInChildren<TMP_Text>(true);
+        TMP_Text text = button.GetComponentInChildren<TMP_Text>(true);
 
         if (text)
             text.text = label;

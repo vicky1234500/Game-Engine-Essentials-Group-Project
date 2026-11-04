@@ -14,12 +14,8 @@ public class AIOracleEvent : MonoBehaviour
     [SerializeField] Button askButton;
     [SerializeField] Button leaveButton;
 
-    [Header("Prototype starting values")]
-    [Min(1)]
-    [SerializeField] int startingMaxHP = 135;
-
-    [Min(1)]
-    [SerializeField] int startingHP = 135;
+    [Header("Actual dungeon player")]
+    [SerializeField] PlayerCombatant player;
 
     [Header("Event rules")]
     [Min(1)]
@@ -28,59 +24,84 @@ public class AIOracleEvent : MonoBehaviour
     [Min(1)]
     [SerializeField] int overclockedTurns = 2;
 
-    [Header("Connect to the map later")]
+    [Header("Exploration and death callbacks")]
     [SerializeField] UnityEvent onReturnToMap = new UnityEvent();
+    [SerializeField] UnityEvent onGameOver = new UnityEvent();
 
     enum Phase
     {
         Choice,
         Result,
-        Complete
+        Complete,
+        Dead
     }
 
     Phase phase;
     bool ready;
 
-    int hp;
-    int maxHP;
-
     // Prototype records only.
-    // These must be connected to the run and combat systems later.
+    // Combat effects and boss intel still need integration.
     bool floorOverclockEnabled;
     bool bossIntelUnlocked;
 
-    public int CurrentHP => hp;
-    public int MaxHP => maxHP;
+    public int CurrentHP => player ? player.HP : 0;
+    public int MaxHP => player ? player.MaxHP : 0;
     public bool FloorOverclockEnabled => floorOverclockEnabled;
     public int OverclockedTurns => overclockedTurns;
     public bool BossIntelUnlocked => bossIntelUnlocked;
 
     void Start()
     {
+        if (!player)
+        {
+            BattleManager battle =
+                Object.FindFirstObjectByType<BattleManager>();
+
+            if (battle)
+                player = battle.Player;
+        }
+
+        if (!player)
+            player = Object.FindFirstObjectByType<PlayerCombatant>();
+
         ready = eventPanel
             && titleText
             && descriptionText
             && statusText
             && acceptButton
             && askButton
-            && leaveButton;
+            && leaveButton
+            && player;
 
         if (!ready)
         {
             Debug.LogError(
-                "AIOracleEvent: assign all Event UI fields.",
+                "AIOracleEvent: missing UI or PlayerCombatant. "
+                + "Test this event in the Dungeon.",
                 this
             );
 
             if (acceptButton) acceptButton.interactable = false;
             if (askButton) askButton.interactable = false;
-            if (leaveButton) leaveButton.interactable = false;
+
+            if (leaveButton)
+            {
+                leaveButton.gameObject.SetActive(true);
+                leaveButton.interactable = true;
+                SetLabel(leaveButton, "Leave");
+                leaveButton.onClick.AddListener(LeaveUnavailableEvent);
+            }
+
+            if (descriptionText)
+            {
+                descriptionText.text =
+                    "Event unavailable: a required reference is missing.";
+            }
+
             return;
         }
 
-        maxHP = Mathf.Max(1, startingMaxHP);
-        hp = Mathf.Clamp(startingHP, 1, maxHP);
-
+        // Never initialize or reset the player's HP here.
         maxHPCost = Mathf.Max(1, maxHPCost);
         overclockedTurns = Mathf.Max(1, overclockedTurns);
 
@@ -96,6 +117,7 @@ public class AIOracleEvent : MonoBehaviour
         acceptButton.gameObject.SetActive(true);
         askButton.gameObject.SetActive(true);
         leaveButton.gameObject.SetActive(true);
+        leaveButton.interactable = true;
 
         titleText.text = "Rogue AI Oracle";
 
@@ -104,24 +126,55 @@ public class AIOracleEvent : MonoBehaviour
             + "\"Your survival rate is inefficient. "
             + "Allow me to optimize you... or ask what awaits ahead.\"";
 
-        acceptButton.interactable = maxHP > maxHPCost;
-        askButton.interactable = true;
-        leaveButton.interactable = true;
-
-        SetLabel(
-            acceptButton,
-            maxHP > maxHPCost
-                ? $"Accept - Max HP -{maxHPCost}; "
-                    + "start battles OVERCLOCKED this floor"
-                : $"Cannot accept - Max HP must exceed {maxHPCost}"
-        );
-
         SetLabel(
             askButton,
             "Ask about the boss - Reveal its moves before battle"
         );
 
         SetLabel(leaveButton, "Leave");
+
+        if (player.IsDead)
+        {
+            ShowDeath();
+            return;
+        }
+
+        RefreshChoices();
+    }
+
+    void Update()
+    {
+        if (!ready || !eventPanel.activeInHierarchy)
+            return;
+
+        if (player.IsDead && phase != Phase.Dead)
+        {
+            ShowDeath();
+            return;
+        }
+
+        if (phase == Phase.Choice)
+            RefreshChoices();
+        else
+            RefreshStatus();
+    }
+
+    void RefreshChoices()
+    {
+        bool canAccept =
+            !player.IsDead && player.MaxHP > maxHPCost;
+
+        acceptButton.interactable = canAccept;
+        askButton.interactable = !player.IsDead;
+
+        SetLabel(
+            acceptButton,
+            canAccept
+                ? $"Accept - Max HP -{maxHPCost}; "
+                    + "start battles OVERCLOCKED this floor"
+                : $"Cannot accept - Max HP must exceed {maxHPCost}"
+        );
+
         RefreshStatus();
     }
 
@@ -129,16 +182,22 @@ public class AIOracleEvent : MonoBehaviour
     {
         if (!ready
             || phase != Phase.Choice
-            || maxHP <= maxHPCost)
+            || player.IsDead
+            || player.MaxHP <= maxHPCost)
         {
             return;
         }
 
-        // Lock the choice before applying its effects.
+        // Lock before applying effects to prevent duplicate activation.
         phase = Phase.Result;
 
-        maxHP -= maxHPCost;
-        hp = Mathf.Min(hp, maxHP);
+        if (!player.TryReduceMaxHP(maxHPCost))
+        {
+            phase = Phase.Choice;
+            RefreshChoices();
+            return;
+        }
+
         floorOverclockEnabled = true;
 
         ShowResult(
@@ -151,8 +210,12 @@ public class AIOracleEvent : MonoBehaviour
 
     public void AskAboutBoss()
     {
-        if (!ready || phase != Phase.Choice)
+        if (!ready
+            || phase != Phase.Choice
+            || player.IsDead)
+        {
             return;
+        }
 
         phase = Phase.Result;
         bossIntelUnlocked = true;
@@ -179,23 +242,44 @@ public class AIOracleEvent : MonoBehaviour
         SetLabel(leaveButton, "Continue");
     }
 
+    void ShowDeath()
+    {
+        if (phase == Phase.Dead) return;
+
+        phase = Phase.Dead;
+        titleText.text = "Game Over";
+        descriptionText.text = "You have no HP remaining.";
+
+        RefreshStatus();
+
+        acceptButton.gameObject.SetActive(false);
+        askButton.gameObject.SetActive(false);
+        leaveButton.gameObject.SetActive(false);
+
+        onGameOver.Invoke();
+    }
+
     void RefreshStatus()
     {
-        string overclockState =
-            floorOverclockEnabled ? "Recorded" : "None";
+        statusText.text = $"HP: {player.HP} / {player.MaxHP}";
 
-        string intelState =
-            bossIntelUnlocked ? "Recorded" : "None";
+        if (floorOverclockEnabled)
+        {
+            statusText.text +=
+                "\nOptimization: Recorded";
+        }
 
-        statusText.text =
-            $"HP: {hp} / {maxHP}"
-            + $"     Optimization: {overclockState}"
-            + $"     Boss intel: {intelState}";
+        if (bossIntelUnlocked)
+        {
+            statusText.text +=
+                "\nBoss intel: Recorded";
+        }
     }
 
     public void ContinueOrLeave()
     {
         if (!ready
+            || player.IsDead
             || (phase != Phase.Choice && phase != Phase.Result))
         {
             return;
@@ -204,7 +288,15 @@ public class AIOracleEvent : MonoBehaviour
         phase = Phase.Complete;
         eventPanel.SetActive(false);
 
-        // Without a map callback, this reveals the test scene.
+        onReturnToMap.Invoke();
+    }
+
+    void LeaveUnavailableEvent()
+    {
+        if (phase == Phase.Complete) return;
+
+        phase = Phase.Complete;
+        if (eventPanel) eventPanel.SetActive(false);
         onReturnToMap.Invoke();
     }
 

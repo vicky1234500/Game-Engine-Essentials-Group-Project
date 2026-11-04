@@ -3519,6 +3519,68 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 950713252}
   m_CullTransparentMesh: 1
+--- !u!1 &966667436
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 966667438}
+  - component: {fileID: 966667437}
+  m_Layer: 0
+  m_Name: EventBridge
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &966667437
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 966667436}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a027808bbdd2c014fab962edcca5c5af, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EventExplorationBridge
+  eventPrefabs:
+  - {fileID: 4076935893662581638, guid: c485f06cbbb4d444b8b536d0e54eee7b, type: 3}
+  - {fileID: 4285648401196544492, guid: 1fe3c6f0bb3114c428db954d0252c7fd, type: 3}
+  - {fileID: 8358315660742477628, guid: bbfa85e603821114192776ffff9debe7, type: 3}
+  - {fileID: 6044206412125085978, guid: f8933587e7d98ec4ab3808b8fb1e001d, type: 3}
+  - {fileID: 1896596162772286097, guid: be7fa707e3c7f1b4d9f7d6a05ed1308f, type: 3}
+  - {fileID: 4339445231465764369, guid: e3bdd51df18af824da6a0b5f120b8733, type: 3}
+  - {fileID: 5820586119173672440, guid: ab3a879a6570e0446966e4c87c23a1e5, type: 3}
+  - {fileID: 2599808007411371774, guid: 1dd0c0fbe4c8ced44932fc14bcbc1a0e, type: 3}
+  - {fileID: 459910511754259601, guid: 880a925a06e51bf43955e8280c1ebdb1, type: 3}
+  - {fileID: 6786479536258674684, guid: 12d76d3eefc7d284e97909e1a6dcb624, type: 3}
+  - {fileID: 8848057149854626408, guid: 824296a319dd95f4c82812ad7e50a05f, type: 3}
+  - {fileID: 980840982861901767, guid: b3bddc8729e64884ebe081284d93ed7e, type: 3}
+  inventory: {fileID: 1204450393}
+  inventoryToggle: {fileID: 1204450394}
+  battleManager: {fileID: 480742672}
+  enableF8Test: 1
+  repeatAfterAllEvents: 1
+--- !u!4 &966667438
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 966667436}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 6.07172, y: 0, z: -2.2974}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1000729599
 GameObject:
   m_ObjectHideFlags: 0
@@ -9401,3 +9463,4 @@ SceneRoots:
   - {fileID: 1322367492}
   - {fileID: 1508394747}
   - {fileID: 1204450392}
+  - {fileID: 966667438}

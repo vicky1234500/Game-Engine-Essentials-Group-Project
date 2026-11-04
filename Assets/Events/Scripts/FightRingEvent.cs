@@ -14,10 +14,6 @@ public class FightRingEvent : MonoBehaviour
     [SerializeField] Button betButton;
     [SerializeField] Button leaveButton;
 
-    [Header("Prototype starting values")]
-    [Min(0)]
-    [SerializeField] int startingCredits = 75;
-
     [Header("Bet rules")]
     [Min(1)]
     [SerializeField] int betCost = 30;
@@ -48,7 +44,7 @@ public class FightRingEvent : MonoBehaviour
 
     [SerializeField] UnityEvent onStartEliteFight = new UnityEvent();
 
-    [Header("Map and death flow - connect later")]
+    [Header("Exploration and death callbacks")]
     [SerializeField] UnityEvent onReturnToMap = new UnityEvent();
     [SerializeField] UnityEvent onGameOver = new UnityEvent();
 
@@ -63,9 +59,8 @@ public class FightRingEvent : MonoBehaviour
 
     Phase phase;
     bool ready;
-    int credits;
 
-    public int Credits => credits;
+    public int Credits => RunState.credits;
 
     void Start()
     {
@@ -90,7 +85,7 @@ public class FightRingEvent : MonoBehaviour
             return;
         }
 
-        credits = Mathf.Max(0, startingCredits);
+        // Keep the existing shared run balance.
         betCost = Mathf.Max(1, betCost);
         winningPayout = Mathf.Max(0, winningPayout);
         eliteVictoryCredits = Mathf.Max(0, eliteVictoryCredits);
@@ -114,7 +109,6 @@ public class FightRingEvent : MonoBehaviour
             + "A bookmaker offers you a bet on the house fighter.";
 
         fightButton.interactable = eliteFightConnected;
-        betButton.interactable = credits >= betCost;
         leaveButton.interactable = true;
 
         SetLabel(
@@ -124,14 +118,32 @@ public class FightRingEvent : MonoBehaviour
                 : "Fight an elite - Combat connection pending"
         );
 
+        SetLabel(leaveButton, "Leave");
+        RefreshChoices();
+    }
+
+    void Update()
+    {
+        if (!ready || !eventPanel.activeInHierarchy)
+            return;
+
+        if (phase == Phase.Choice)
+            RefreshChoices();
+        else
+            RefreshStatus();
+    }
+
+    void RefreshChoices()
+    {
+        betButton.interactable = RunState.credits >= betCost;
+
         SetLabel(
             betButton,
-            credits >= betCost
+            RunState.credits >= betCost
                 ? $"Bet {betCost} credits - {winChance:P0} chance to receive {winningPayout}"
                 : $"Need {betCost} credits - Not enough credits"
         );
 
-        SetLabel(leaveButton, "Leave");
         RefreshStatus();
     }
 
@@ -139,14 +151,14 @@ public class FightRingEvent : MonoBehaviour
     {
         if (!ready
             || phase != Phase.Choice
-            || credits < betCost)
+            || RunState.credits < betCost)
         {
             return;
         }
 
-        // Prevent repeated clicks from placing additional bets.
+        // Lock the choice before deducting the stake.
         phase = Phase.Result;
-        credits -= betCost;
+        RunState.credits -= betCost;
 
         bool won = Random.value < winChance;
 
@@ -158,7 +170,7 @@ public class FightRingEvent : MonoBehaviour
 
         if (won)
         {
-            credits += winningPayout;
+            RunState.credits += winningPayout;
 
             ShowResult(
                 "The house fighter wins. The bookmaker pays up.\n"
@@ -186,19 +198,18 @@ public class FightRingEvent : MonoBehaviour
         phase = Phase.Fighting;
         eventPanel.SetActive(false);
 
-        // The combat system must start an elite battle,
-        // disable its normal rewards, then report the outcome.
+        // The future integration must resume combat, start an elite
+        // battle, suppress its normal rewards, and report the outcome.
         onStartEliteFight.Invoke();
     }
 
-    // Called by the combat system after winning the event battle.
     public void ResolveEliteVictory()
     {
         if (!ready || phase != Phase.Fighting)
             return;
 
         phase = Phase.Result;
-        credits += eliteVictoryCredits;
+        RunState.credits += eliteVictoryCredits;
 
         ShowResult(
             "The crowd erupts as your opponent falls.\n"
@@ -206,7 +217,6 @@ public class FightRingEvent : MonoBehaviour
         );
     }
 
-    // Called by the combat system when the player dies.
     public void ResolveEliteDefeat()
     {
         if (!ready || phase != Phase.Fighting)
@@ -245,7 +255,7 @@ public class FightRingEvent : MonoBehaviour
 
     void RefreshStatus()
     {
-        statusText.text = $"Credits: {credits}";
+        statusText.text = $"Credits: {RunState.credits}";
     }
 
     public void ContinueOrLeave()
@@ -258,15 +268,44 @@ public class FightRingEvent : MonoBehaviour
 
         phase = Phase.Complete;
         eventPanel.SetActive(false);
-
-        // Without a map callback, this reveals the test scene.
         onReturnToMap.Invoke();
+    }
+
+    [ContextMenu("TEST - Set Run Credits To 75")]
+    void TestSetCreditsTo75()
+    {
+#if UNITY_EDITOR
+        if (!Application.isPlaying
+            || !ready
+            || phase != Phase.Choice)
+        {
+            return;
+        }
+
+        RunState.credits = 75;
+        RefreshChoices();
+#endif
+    }
+
+    [ContextMenu("TEST - Set Run Credits To 29")]
+    void TestSetCreditsTo29()
+    {
+#if UNITY_EDITOR
+        if (!Application.isPlaying
+            || !ready
+            || phase != Phase.Choice)
+        {
+            return;
+        }
+
+        RunState.credits = 29;
+        RefreshChoices();
+#endif
     }
 
     static void SetLabel(Button button, string label)
     {
-        TMP_Text text =
-            button.GetComponentInChildren<TMP_Text>(true);
+        TMP_Text text = button.GetComponentInChildren<TMP_Text>(true);
 
         if (text)
             text.text = label;

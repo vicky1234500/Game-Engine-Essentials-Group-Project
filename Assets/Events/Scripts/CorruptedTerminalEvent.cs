@@ -14,10 +14,6 @@ public class CorruptedTerminalEvent : MonoBehaviour
     [SerializeField] Button purgeButton;
     [SerializeField] Button leaveButton;
 
-    [Header("Prototype starting values")]
-    [Min(0)]
-    [SerializeField] int startingCredits = 30;
-
     [Header("Hack rules")]
     [Min(0)]
     [SerializeField] int creditReward = 75;
@@ -28,7 +24,7 @@ public class CorruptedTerminalEvent : MonoBehaviour
     [Min(1)]
     [SerializeField] int affectedFights = 3;
 
-    [Header("Connect to the map later")]
+    [Header("Exploration callback")]
     [SerializeField] UnityEvent onReturnToMap = new UnityEvent();
 
     enum Phase
@@ -40,14 +36,12 @@ public class CorruptedTerminalEvent : MonoBehaviour
 
     Phase phase;
     bool ready;
-    int credits;
 
-    // Prototype records only.
-    // Connect these to the run and combat systems later.
+    // Prototype records; connect to the combat system later.
     int staticCopies;
     int remainingAffectedFights;
 
-    public int Credits => credits;
+    public int Credits => RunState.credits;
     public int StaticCopiesPerFight => staticCopies;
 
     public int RemainingAffectedFights =>
@@ -76,7 +70,7 @@ public class CorruptedTerminalEvent : MonoBehaviour
             return;
         }
 
-        credits = Mathf.Max(0, startingCredits);
+        // Keep the existing shared run balance.
         creditReward = Mathf.Max(0, creditReward);
         staticCopiesPerFight = Mathf.Max(1, staticCopiesPerFight);
         affectedFights = Mathf.Max(1, affectedFights);
@@ -96,7 +90,7 @@ public class CorruptedTerminalEvent : MonoBehaviour
 
         hackButton.interactable = true;
 
-        // Disabled until item selection and curse removal are connected.
+        // Item selection and curse removal are not connected yet.
         purgeButton.interactable = false;
 
         leaveButton.interactable = true;
@@ -124,6 +118,12 @@ public class CorruptedTerminalEvent : MonoBehaviour
         RefreshStatus();
     }
 
+    void Update()
+    {
+        if (ready && eventPanel.activeInHierarchy)
+            RefreshStatus();
+    }
+
     public void HackTerminal()
     {
         if (!ready || phase != Phase.Choice)
@@ -132,7 +132,7 @@ public class CorruptedTerminalEvent : MonoBehaviour
         // Lock the choice before granting credits.
         phase = Phase.Result;
 
-        credits += creditReward;
+        RunState.credits += creditReward;
         staticCopies = staticCopiesPerFight;
         remainingAffectedFights = affectedFights;
 
@@ -157,9 +157,8 @@ public class CorruptedTerminalEvent : MonoBehaviour
 
     void RefreshStatus()
     {
-        statusText.text = $"Credits: {credits}";
+        statusText.text = $"Credits: {RunState.credits}";
 
-        // Only show a status line when a debuff is actually recorded.
         if (remainingAffectedFights > 0)
         {
             statusText.text +=
@@ -178,15 +177,12 @@ public class CorruptedTerminalEvent : MonoBehaviour
 
         phase = Phase.Complete;
         eventPanel.SetActive(false);
-
-        // Without a map callback, this reveals the test scene.
         onReturnToMap.Invoke();
     }
 
     static void SetLabel(Button button, string label)
     {
-        TMP_Text text =
-            button.GetComponentInChildren<TMP_Text>(true);
+        TMP_Text text = button.GetComponentInChildren<TMP_Text>(true);
 
         if (text)
             text.text = label;

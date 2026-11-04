@@ -19,13 +19,13 @@ public class SupplyCrateEvent : MonoBehaviour
     [SerializeField] InventoryGrid inventory;
     [SerializeField] InventoryToggle inventoryToggle;
 
+    [Header("Actual dungeon player")]
+    [SerializeField] PlayerCombatant player;
+
     [Header("Defense and healing rewards only")]
     [SerializeField] ItemData[] rewardItems;
 
-    [Header("Prototype starting values")]
-    [Min(1)]
-    [SerializeField] int startingHP = 135;
-
+    [Header("Prototype Lock Pick uses - connect later")]
     [Min(0)]
     [SerializeField] int startingLockPickUses = 3;
 
@@ -48,7 +48,7 @@ public class SupplyCrateEvent : MonoBehaviour
     SmashTestOutcome smashTestOutcome =
         SmashTestOutcome.Random;
 
-    [Header("Connect to the map and death flow later")]
+    [Header("Exploration and death callbacks")]
     [SerializeField] UnityEvent onReturnToMap = new UnityEvent();
     [SerializeField] UnityEvent onGameOver = new UnityEvent();
 
@@ -62,18 +62,30 @@ public class SupplyCrateEvent : MonoBehaviour
 
     Phase phase;
     bool ready;
-    int hp;
     int lockPickUses;
 
     readonly List<ItemData> rewards = new List<ItemData>();
 
-    public int CurrentHP => hp;
+    public int CurrentHP => player ? player.HP : 0;
 
     // Prototype counter, not connected to the real Lock Pick item.
     public int LockPickUses => lockPickUses;
 
     void Start()
     {
+        // Use the same player as the battle system.
+        if (!player)
+        {
+            BattleManager battle =
+                Object.FindFirstObjectByType<BattleManager>();
+
+            if (battle)
+                player = battle.Player;
+        }
+
+        if (!player)
+            player = Object.FindFirstObjectByType<PlayerCombatant>();
+
         ready = eventPanel
             && titleText
             && descriptionText
@@ -82,23 +94,37 @@ public class SupplyCrateEvent : MonoBehaviour
             && smashButton
             && leaveButton
             && inventory
-            && inventoryToggle;
+            && inventoryToggle
+            && player;
 
         if (!ready)
         {
             Debug.LogError(
-                "SupplyCrateEvent: assign all UI and backpack fields.",
+                "SupplyCrateEvent: missing UI, backpack, or "
+                + "PlayerCombatant. Test this event in the Dungeon.",
                 this
             );
 
             if (lockPickButton) lockPickButton.interactable = false;
             if (smashButton) smashButton.interactable = false;
-            if (leaveButton) leaveButton.interactable = false;
+
+            if (leaveButton)
+            {
+                leaveButton.interactable = true;
+                SetLabel(leaveButton, "Leave");
+                leaveButton.onClick.AddListener(LeaveUnavailableEvent);
+            }
+
+            if (descriptionText)
+            {
+                descriptionText.text =
+                    "Event unavailable: a required reference is missing.";
+            }
+
             return;
         }
 
-        startingHP = Mathf.Max(1, startingHP);
-        hp = startingHP;
+        // Never initialize or reset the player's HP here.
         lockPickUses = Mathf.Max(0, startingLockPickUses);
         smashDamage = Mathf.Max(1, smashDamage);
 
@@ -126,6 +152,7 @@ public class SupplyCrateEvent : MonoBehaviour
         lockPickButton.gameObject.SetActive(true);
         smashButton.gameObject.SetActive(true);
         leaveButton.gameObject.SetActive(true);
+        leaveButton.interactable = true;
 
         titleText.text = "Locked Supply Crate";
 
@@ -134,13 +161,50 @@ public class SupplyCrateEvent : MonoBehaviour
             + "Its magnetic lock is still active.\n"
             + "Medical supplies or protective equipment may be inside.";
 
+        if (player.IsDead)
+        {
+            ShowDeath("You have no HP remaining.");
+            return;
+        }
+
+        RefreshChoices();
+
+        if (rewards.Count == 0)
+        {
+            Debug.LogWarning(
+                "SupplyCrateEvent: assign approved Defense "
+                + "or Healing items to Reward Items.",
+                this
+            );
+        }
+    }
+
+    void Update()
+    {
+        if (!ready || !eventPanel.activeInHierarchy)
+            return;
+
+        if (player.IsDead && phase != Phase.Dead)
+        {
+            ShowDeath("You have no HP remaining.");
+            return;
+        }
+
+        if (phase == Phase.Choice)
+            RefreshChoices();
+        else
+            RefreshStatus();
+    }
+
+    void RefreshChoices()
+    {
         bool hasRewards = rewards.Count > 0;
 
         lockPickButton.interactable =
-            lockPickUses > 0 && hasRewards;
+            !player.IsDead && lockPickUses > 0 && hasRewards;
 
-        smashButton.interactable = hasRewards;
-        leaveButton.interactable = true;
+        smashButton.interactable =
+            !player.IsDead && hasRewards;
 
         SetLabel(
             lockPickButton,
@@ -149,7 +213,7 @@ public class SupplyCrateEvent : MonoBehaviour
                 : "Use Lock Pick - No uses remaining"
         );
 
-        string warning = hp <= smashDamage
+        string warning = player.HP <= smashDamage
             ? "\nWARNING: this will kill you."
             : "";
 
@@ -162,28 +226,19 @@ public class SupplyCrateEvent : MonoBehaviour
 
         SetLabel(leaveButton, "Leave");
         RefreshStatus();
-
-        if (!hasRewards)
-        {
-            Debug.LogWarning(
-                "SupplyCrateEvent: assign approved Defense "
-                + "or Healing items to Reward Items.",
-                this
-            );
-        }
     }
 
     public void UseLockPick()
     {
         if (!ready
             || phase != Phase.Choice
+            || player.IsDead
             || lockPickUses <= 0
             || rewards.Count == 0)
         {
             return;
         }
 
-        // Lock the choice before spending a use.
         phase = Phase.Result;
         lockPickUses--;
 
@@ -197,43 +252,36 @@ public class SupplyCrateEvent : MonoBehaviour
     {
         if (!ready
             || phase != Phase.Choice
+            || player.IsDead
             || rewards.Count == 0)
         {
             return;
         }
 
         phase = Phase.Result;
-        hp = Mathf.Max(0, hp - smashDamage);
 
-        // Death is resolved before any reward is granted.
-        if (hp == 0)
+        // Deduct actual HP, bypassing combat shields.
+        player.LoseHP(smashDamage);
+
+        // Resolve death before granting any reward.
+        if (player.IsDead)
         {
-            phase = Phase.Dead;
-
-            titleText.text = "Game Over";
-
-            descriptionText.text =
+            ShowDeath(
                 "The crate's jagged casing tears into you.\n"
-                + $"You lose {smashDamage} HP.";
-
-            RefreshStatus();
-
-            lockPickButton.gameObject.SetActive(false);
-            smashButton.gameObject.SetActive(false);
-            leaveButton.gameObject.SetActive(false);
-
-            onGameOver.Invoke();
+                + $"You lose {smashDamage} HP."
+            );
             return;
         }
 
         bool intact = Random.value < intactChance;
 
-        if (Application.isEditor
-            && smashTestOutcome != SmashTestOutcome.Random)
+#if UNITY_EDITOR
+        if (smashTestOutcome != SmashTestOutcome.Random)
         {
             intact =
                 smashTestOutcome == SmashTestOutcome.AlwaysIntact;
         }
+#endif
 
         if (intact)
         {
@@ -251,6 +299,23 @@ public class SupplyCrateEvent : MonoBehaviour
         }
     }
 
+    void ShowDeath(string message)
+    {
+        if (phase == Phase.Dead) return;
+
+        phase = Phase.Dead;
+        titleText.text = "Game Over";
+        descriptionText.text = message;
+
+        RefreshStatus();
+
+        lockPickButton.gameObject.SetActive(false);
+        smashButton.gameObject.SetActive(false);
+        leaveButton.gameObject.SetActive(false);
+
+        onGameOver.Invoke();
+    }
+
     void GiveReward(string message)
     {
         ItemData reward = rewards[Random.Range(0, rewards.Count)];
@@ -262,7 +327,7 @@ public class SupplyCrateEvent : MonoBehaviour
             return;
         }
 
-        // Temporary: overflow pickup will be connected later.
+        // Outside-backpack reward staging is not connected yet.
         ShowResult(
             message
             + $"\nBackpack full. {reward.itemName} was not added."
@@ -288,22 +353,32 @@ public class SupplyCrateEvent : MonoBehaviour
     void RefreshStatus()
     {
         statusText.text =
-            $"HP: {hp} / {startingHP}"
+            $"HP: {player.HP} / {player.MaxHP}"
             + $"     Lock Pick uses: {lockPickUses}";
     }
 
     public void ContinueOrLeave()
     {
         if (!ready
+            || player.IsDead
             || (phase != Phase.Choice && phase != Phase.Result))
         {
             return;
         }
 
         phase = Phase.Complete;
+        inventoryToggle.CloseInventory();
         eventPanel.SetActive(false);
 
-        // Without a map callback, this reveals the test scene.
+        onReturnToMap.Invoke();
+    }
+
+    void LeaveUnavailableEvent()
+    {
+        if (phase == Phase.Complete) return;
+
+        phase = Phase.Complete;
+        if (eventPanel) eventPanel.SetActive(false);
         onReturnToMap.Invoke();
     }
 
