@@ -1,0 +1,62 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 79b26bded7ebdbb408f712b990754284, type: 3}
+  m_Name: StreetEnforcer
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyData
+  enemyName: Street Enforcer
+  rank: 0
+  maxHP: 45
+  modelPrefab: {fileID: 0}
+  moves:
+  - moveName: Punch
+    intent: 0
+    effects:
+    - type: 0
+      target: 1
+      amount: 7
+      hits: 1
+      ignoresShield: 0
+      status: 0
+      duration: 1
+      summon: {fileID: 0}
+  - moveName: Wind Up
+    intent: 1
+    effects:
+    - type: 1
+      target: 0
+      amount: 10
+      hits: 1
+      ignoresShield: 0
+      status: 0
+      duration: 1
+      summon: {fileID: 0}
+  - moveName: Smash
+    intent: 0
+    effects:
+    - type: 0
+      target: 1
+      amount: 14
+      hits: 1
+      ignoresShield: 0
+      status: 0
+      duration: 1
+      summon: {fileID: 0}
+    - type: 3
+      target: 1
+      amount: 1
+      hits: 1
+      ignoresShield: 0
+      status: 4
+      duration: 2
+      summon: {fileID: 0}
+  minCredits: 20
+  maxCredits: 30

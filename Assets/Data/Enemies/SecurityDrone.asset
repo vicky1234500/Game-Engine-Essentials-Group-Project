@@ -1,0 +1,54 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 79b26bded7ebdbb408f712b990754284, type: 3}
+  m_Name: SecurityDrone
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyData
+  enemyName: Security Drone
+  rank: 0
+  maxHP: 22
+  modelPrefab: {fileID: 0}
+  moves:
+  - moveName: Laser
+    intent: 0
+    effects:
+    - type: 0
+      target: 1
+      amount: 5
+      hits: 1
+      ignoresShield: 0
+      status: 0
+      duration: 1
+      summon: {fileID: 0}
+  - moveName: Self-Repair
+    intent: 4
+    effects:
+    - type: 2
+      target: 0
+      amount: 5
+      hits: 1
+      ignoresShield: 0
+      status: 0
+      duration: 1
+      summon: {fileID: 0}
+  - moveName: Laser
+    intent: 0
+    effects:
+    - type: 0
+      target: 1
+      amount: 5
+      hits: 1
+      ignoresShield: 0
+      status: 0
+      duration: 1
+      summon: {fileID: 0}
+  minCredits: 8
+  maxCredits: 15

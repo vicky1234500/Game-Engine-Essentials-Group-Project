@@ -1,0 +1,48 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 454e1556bf8c38944af1e43e1bc601ae, type: 3}
+  m_Name: ShieldBash
+  m_EditorClassIdentifier: Assembly-CSharp::CardData
+  cardName: Shield Bash
+  type: 1
+  manaCost: 2
+  value: 12
+  description: Gain 12 SHIELD. Deal 8 damage. Apply GLITCHED for 2 turns.
+  effects:
+  - type: 1
+    target: 0
+    amount: 12
+    hits: 1
+    ignoresShield: 0
+    status: 0
+    duration: 1
+    summon: {fileID: 0}
+  - type: 0
+    target: 1
+    amount: 8
+    hits: 1
+    ignoresShield: 0
+    status: 0
+    duration: 1
+    summon: {fileID: 0}
+  - type: 3
+    target: 1
+    amount: 1
+    hits: 1
+    ignoresShield: 0
+    status: 4
+    duration: 2
+    summon: {fileID: 0}
+  exhaust: 0
+  unplayable: 0
+  returnToHandNextTurn: 0
+  isGun: 0
