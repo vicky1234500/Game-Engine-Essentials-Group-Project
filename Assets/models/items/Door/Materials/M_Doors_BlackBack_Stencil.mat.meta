@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 83980fcbbb1b60d4cb39b43ecf50d391
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 341716
+  packageName: Sci-Fi One-Sided Sliding Door (Invisible Outside Frame)
+  packageVersion: 1.0
+  assetPath: Assets/JRD/SingleSlidingSciFiDoor_OnlyFront/Materials/M_Doors_BlackBack_Stencil.mat
+  uploadId: 811014
