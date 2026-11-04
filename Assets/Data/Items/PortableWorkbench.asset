@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f8797b4a893f67f49b3ddf3ab6b371b1, type: 3}
+  m_Name: PortableWorkbench
+  m_EditorClassIdentifier: Assembly-CSharp::ItemData
+  itemName: Portable Workbench
+  icon: {fileID: 0}
+  size: {x: 2, y: 2}
+  tint: {r: 0.6, g: 0.55, b: 0.35, a: 1}
+  price: 110
+  description: 'At rest rooms, upgrade one item: its cards get +3 DAMAGE or +3 SHIELD.
+    (Rest rooms not made yet.)'
+  cards: []
+  passives: []

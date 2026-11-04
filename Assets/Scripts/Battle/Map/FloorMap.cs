@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-// What's behind a door. Only Enemy / Elite / Boss rooms are built for now;
+// What's behind a door.
 // Shop / Event / Rest are here so the map can use them later.
 public enum NodeType { Start, Enemy, Elite, Boss, Shop, Event, Rest }
 

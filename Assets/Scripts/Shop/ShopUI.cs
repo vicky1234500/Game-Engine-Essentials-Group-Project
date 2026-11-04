@@ -36,6 +36,10 @@ public class ShopUI : MonoBehaviour
     [SerializeField] Button confirmSellButton;
     [SerializeField] Button cancelSellButton;
 
+    [Tooltip("\"Press E to open the shop\" text. Shop counters inside room prefabs use this one.")]
+    [SerializeField] Text promptText;
+    public Text PromptText => promptText;
+
     [Header("Turned off while the shop is open")]
     [SerializeField] Behaviour[] disableWhileOpen;         
     [SerializeField] bool lockCursorOnClose = true;

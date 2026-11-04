@@ -14,13 +14,13 @@ public class BlackMarketEvent : MonoBehaviour
     [SerializeField] Button buyButton;
     [SerializeField] Button leaveButton;
 
-    [Header("Connect to the map later")]
+    [Header("Connect to exploration")]
     [SerializeField] UnityEvent onReturnToMap = new UnityEvent();
 
     bool ready;
     bool closed;
 
-    void Start()
+    void OnEnable()
     {
         ready = eventPanel
             && titleText
@@ -44,7 +44,6 @@ public class BlackMarketEvent : MonoBehaviour
         }
 
         closed = false;
-
         eventPanel.SetActive(true);
 
         titleText.text = "Black Market Dealer";
@@ -54,18 +53,20 @@ public class BlackMarketEvent : MonoBehaviour
             + "displays unregistered equipment.\n"
             + "\"Upgrades, no questions asked.\"";
 
-        // No placeholder money or status values.
         statusText.text = "";
 
         tradeButton.gameObject.SetActive(true);
         buyButton.gameObject.SetActive(true);
         leaveButton.gameObject.SetActive(true);
 
-        // Shell only: trading and buying are not connected yet.
+        // Trading and buying are not connected yet.
         tradeButton.interactable = false;
         buyButton.interactable = false;
 
         leaveButton.interactable = true;
+
+        // Prevent duplicate listeners when reopening the event.
+        leaveButton.onClick.RemoveListener(Leave);
         leaveButton.onClick.AddListener(Leave);
 
         SetLabel(
@@ -89,8 +90,13 @@ public class BlackMarketEvent : MonoBehaviour
         closed = true;
         eventPanel.SetActive(false);
 
-        // Without a map callback, this reveals the test scene.
         onReturnToMap.Invoke();
+    }
+
+    void OnDisable()
+    {
+        if (leaveButton)
+            leaveButton.onClick.RemoveListener(Leave);
     }
 
     static void SetLabel(Button button, string label)

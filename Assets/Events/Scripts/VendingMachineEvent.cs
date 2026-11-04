@@ -19,16 +19,12 @@ public class VendingMachineEvent : MonoBehaviour
     [SerializeField] InventoryGrid inventory;
     [SerializeField] InventoryToggle inventoryToggle;
 
+    [Header("Actual dungeon player")]
+    [SerializeField] PlayerCombatant player;
+
     [Header("Approved reward assets")]
     [SerializeField] ItemData[] oneTileRewards;
     [SerializeField] ItemData[] allRewards;
-
-    [Header("Prototype starting values")]
-    [Min(1)]
-    [SerializeField] int startingHP = 135;
-
-    [Min(0)]
-    [SerializeField] int startingCredits = 30;
 
     [Header("Event rules")]
     [Min(0)]
@@ -52,7 +48,7 @@ public class VendingMachineEvent : MonoBehaviour
     KickTestOutcome kickTestOutcome =
         KickTestOutcome.Random;
 
-    [Header("Connect to the game's map and death flow later")]
+    [Header("Exploration and death callbacks")]
     [SerializeField] UnityEvent onReturnToMap = new UnityEvent();
     [SerializeField] UnityEvent onGameOver = new UnityEvent();
 
@@ -66,8 +62,6 @@ public class VendingMachineEvent : MonoBehaviour
     }
 
     Phase phase;
-    int hp;
-    int credits;
     bool ready;
 
     ItemData pendingReward;
@@ -76,12 +70,25 @@ public class VendingMachineEvent : MonoBehaviour
     readonly List<ItemData> smallPool = new List<ItemData>();
     readonly List<ItemData> fullPool = new List<ItemData>();
 
-    public int CurrentHP => hp;
-    public int Credits => credits;
+    public int CurrentHP => player ? player.HP : 0;
+    public int Credits => RunState.credits;
     public bool IsComplete => phase == Phase.Complete;
 
     void Start()
     {
+        // Prefer the exact player used by the battle system.
+        if (!player)
+        {
+            BattleManager battle =
+                Object.FindFirstObjectByType<BattleManager>();
+
+            if (battle)
+                player = battle.Player;
+        }
+
+        if (!player)
+            player = Object.FindFirstObjectByType<PlayerCombatant>();
+
         ready = eventPanel
             && titleText
             && descriptionText
@@ -90,28 +97,41 @@ public class VendingMachineEvent : MonoBehaviour
             && kickButton
             && leaveButton
             && inventory
-            && inventoryToggle;
+            && inventoryToggle
+            && player;
 
         if (!ready)
         {
             Debug.LogError(
-                "VendingMachineEvent: assign all Event UI "
-                + "and Existing backpack fields.",
+                "VendingMachineEvent: missing UI, backpack, or "
+                + "PlayerCombatant. Test this event in the Dungeon.",
                 this
             );
 
             if (payButton) payButton.interactable = false;
             if (kickButton) kickButton.interactable = false;
-            if (leaveButton) leaveButton.interactable = false;
+
+            // Allow leaving if the player reference cannot be found.
+            if (leaveButton)
+            {
+                leaveButton.interactable = true;
+                SetLabel(leaveButton, "Leave");
+                leaveButton.onClick.AddListener(LeaveUnavailableEvent);
+            }
+
+            if (descriptionText)
+            {
+                descriptionText.text =
+                    "Event unavailable: a required reference is missing.";
+            }
 
             return;
         }
 
-        hp = Mathf.Max(1, startingHP);
-        credits = Mathf.Max(0, startingCredits);
         purchaseCost = Mathf.Max(0, purchaseCost);
         kickDamage = Mathf.Max(1, kickDamage);
 
+        // Never reset the player's HP or run credits here.
         CachePool(oneTileRewards, smallPool, true);
         CachePool(allRewards, fullPool, false);
 
@@ -122,8 +142,12 @@ public class VendingMachineEvent : MonoBehaviour
         inventoryToggle.CloseInventory();
         eventPanel.SetActive(true);
 
-        phase = Phase.Choice;
+        payButton.gameObject.SetActive(true);
+        kickButton.gameObject.SetActive(true);
+        leaveButton.gameObject.SetActive(true);
+        leaveButton.interactable = true;
 
+        phase = Phase.Choice;
         titleText.text = "Busted Vending Machine";
 
         descriptionText.text =
@@ -131,16 +155,39 @@ public class VendingMachineEvent : MonoBehaviour
             + "Sealed supplies are stuck behind its cracked display.\n"
             + "Paid costs are not refunded if you decline a reward.";
 
+        if (player.IsDead)
+        {
+            ShowDeath("You have no HP remaining.");
+            return;
+        }
+
         RefreshChoices();
 
         if (smallPool.Count == 0 || fullPool.Count == 0)
         {
             Debug.LogWarning(
-                "VendingMachineEvent: configure both approved reward pools. "
+                "VendingMachineEvent: configure both reward pools. "
                 + "A one-tile reward must have size 1 x 1.",
                 this
             );
         }
+    }
+
+    void Update()
+    {
+        if (!ready || !eventPanel.activeInHierarchy)
+            return;
+
+        if (player.IsDead && phase != Phase.Dead)
+        {
+            ShowDeath("You have no HP remaining.");
+            return;
+        }
+
+        if (phase == Phase.Choice)
+            RefreshChoices();
+        else
+            RefreshStatus();
     }
 
     static void CachePool(
@@ -156,33 +203,40 @@ public class VendingMachineEvent : MonoBehaviour
         {
             if (!item) continue;
             if (item.size.x < 1 || item.size.y < 1) continue;
-
-            if (oneTileOnly && item.size != Vector2Int.one)
-                continue;
+            if (oneTileOnly && item.size != Vector2Int.one) continue;
 
             if (!target.Contains(item))
                 target.Add(item);
         }
     }
 
-    void RefreshChoices()
+    void RefreshStatus()
     {
         statusText.text =
-            $"HP: {hp} / {startingHP}       Credits: {credits}";
+            $"HP: {player.HP} / {player.MaxHP}"
+            + $"       Credits: {RunState.credits}";
+    }
+
+    void RefreshChoices()
+    {
+        RefreshStatus();
 
         payButton.interactable =
-            credits >= purchaseCost && smallPool.Count > 0;
+            !player.IsDead
+            && RunState.credits >= purchaseCost
+            && smallPool.Count > 0;
 
-        kickButton.interactable = fullPool.Count > 0;
+        kickButton.interactable =
+            !player.IsDead && fullPool.Count > 0;
 
         SetLabel(
             payButton,
-            credits < purchaseCost
+            RunState.credits < purchaseCost
                 ? $"Need {purchaseCost} credits - Not enough credits"
                 : $"Pay {purchaseCost} credits - Random 1-tile item"
         );
 
-        string risk = hp <= kickDamage
+        string risk = player.HP <= kickDamage
             ? "\nWARNING: failure will kill you."
             : "";
 
@@ -200,18 +254,17 @@ public class VendingMachineEvent : MonoBehaviour
     {
         if (!ready
             || phase != Phase.Choice
-            || credits < purchaseCost
+            || player.IsDead
+            || RunState.credits < purchaseCost
             || smallPool.Count == 0)
         {
             return;
         }
 
-        // Change phase first to prevent repeated charges.
         phase = Phase.PendingReward;
-        credits -= purchaseCost;
+        RunState.credits -= purchaseCost;
 
-        pendingReward =
-            smallPool[Random.Range(0, smallPool.Count)];
+        pendingReward = smallPool[Random.Range(0, smallPool.Count)];
 
         resultMessage =
             "The machine releases a sealed supply.\n"
@@ -224,26 +277,23 @@ public class VendingMachineEvent : MonoBehaviour
     {
         if (!ready
             || phase != Phase.Choice
+            || player.IsDead
             || fullPool.Count == 0)
         {
             return;
         }
 
         phase = Phase.Result;
-
         bool won = Random.value < kickRewardChance;
 
-        if (Application.isEditor
-            && kickTestOutcome != KickTestOutcome.Random)
-        {
+#if UNITY_EDITOR
+        if (kickTestOutcome != KickTestOutcome.Random)
             won = kickTestOutcome == KickTestOutcome.AlwaysReward;
-        }
+#endif
 
         if (won)
         {
-            pendingReward =
-                fullPool[Random.Range(0, fullPool.Count)];
-
+            pendingReward = fullPool[Random.Range(0, fullPool.Count)];
             phase = Phase.PendingReward;
             resultMessage = "A loud thud shakes a supply loose.";
 
@@ -251,33 +301,37 @@ public class VendingMachineEvent : MonoBehaviour
             return;
         }
 
-        hp = Mathf.Max(0, hp - kickDamage);
+        // Event HP costs bypass combat shields.
+        player.LoseHP(kickDamage);
 
-        if (hp == 0)
+        string message =
+            "A broken panel strikes you.\n"
+            + $"You lose {kickDamage} HP.";
+
+        if (player.IsDead)
         {
-            phase = Phase.Dead;
-
-            titleText.text = "Game Over";
-
-            descriptionText.text =
-                "A broken panel strikes you.\n"
-                + $"You lose {kickDamage} HP.";
-
-            statusText.text =
-                $"HP: 0 / {startingHP}       Credits: {credits}";
-
-            payButton.gameObject.SetActive(false);
-            kickButton.gameObject.SetActive(false);
-            leaveButton.gameObject.SetActive(false);
-
-            onGameOver.Invoke();
+            ShowDeath(message);
             return;
         }
 
-        ShowResult(
-            "A broken panel strikes you.\n"
-            + $"You lose {kickDamage} HP."
-        );
+        ShowResult(message);
+    }
+
+    void ShowDeath(string message)
+    {
+        if (phase == Phase.Dead) return;
+
+        phase = Phase.Dead;
+        titleText.text = "Game Over";
+        descriptionText.text = message;
+
+        RefreshStatus();
+
+        payButton.gameObject.SetActive(false);
+        kickButton.gameObject.SetActive(false);
+        leaveButton.gameObject.SetActive(false);
+
+        onGameOver.Invoke();
     }
 
     void ResolveReward()
@@ -290,15 +344,11 @@ public class VendingMachineEvent : MonoBehaviour
             string itemName = pendingReward.itemName;
             pendingReward = null;
 
-            ShowResult(
-                resultMessage + $"\nReceived: {itemName}."
-            );
-
+            ShowResult(resultMessage + $"\nReceived: {itemName}.");
             return;
         }
 
-        // Temporary: overflow pickup is not connected yet.
-        // No extra UI is created, and the item is not added.
+        // Outside-backpack reward staging is not connected yet.
         ShowResult(
             resultMessage
             + $"\nBackpack full. {pendingReward.itemName} was not added."
@@ -314,9 +364,7 @@ public class VendingMachineEvent : MonoBehaviour
         eventPanel.SetActive(true);
 
         descriptionText.text = message;
-
-        statusText.text =
-            $"HP: {hp} / {startingHP}       Credits: {credits}";
+        RefreshStatus();
 
         payButton.gameObject.SetActive(false);
         kickButton.gameObject.SetActive(false);
@@ -330,6 +378,7 @@ public class VendingMachineEvent : MonoBehaviour
     public void ContinueOrLeave()
     {
         if (!ready
+            || player.IsDead
             || (phase != Phase.Choice && phase != Phase.Result))
         {
             return;
@@ -340,14 +389,53 @@ public class VendingMachineEvent : MonoBehaviour
         inventoryToggle.CloseInventory();
         eventPanel.SetActive(false);
 
-        // Without a map callback, this reveals the test scene.
         onReturnToMap.Invoke();
+    }
+
+    void LeaveUnavailableEvent()
+    {
+        if (phase == Phase.Complete) return;
+
+        phase = Phase.Complete;
+        if (eventPanel) eventPanel.SetActive(false);
+        onReturnToMap.Invoke();
+    }
+
+    [ContextMenu("TEST - Set Run Credits To 30")]
+    void TestSetCreditsTo30()
+    {
+#if UNITY_EDITOR
+        if (!Application.isPlaying
+            || !ready
+            || phase != Phase.Choice)
+        {
+            return;
+        }
+
+        RunState.credits = 30;
+        RefreshChoices();
+#endif
+    }
+
+    [ContextMenu("TEST - Set Run Credits To 0")]
+    void TestSetCreditsTo0()
+    {
+#if UNITY_EDITOR
+        if (!Application.isPlaying
+            || !ready
+            || phase != Phase.Choice)
+        {
+            return;
+        }
+
+        RunState.credits = 0;
+        RefreshChoices();
+#endif
     }
 
     static void SetLabel(Button button, string label)
     {
-        TMP_Text text =
-            button.GetComponentInChildren<TMP_Text>(true);
+        TMP_Text text = button.GetComponentInChildren<TMP_Text>(true);
 
         if (text)
             text.text = label;

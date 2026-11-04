@@ -19,6 +19,7 @@ MonoBehaviour:
   maxHP: 135
   baseDefense: 25
   maxMana: 3
+  startingCredits: 50
   startingItems:
   - {fileID: 11400000, guid: d87286f2d7692f5418b34da6700185f1, type: 2}
   - {fileID: 11400000, guid: da529e0838e320f41b39357cc8b81bea, type: 2}

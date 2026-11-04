@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f8797b4a893f67f49b3ddf3ab6b371b1, type: 3}
+  m_Name: OverclockedSMG
+  m_EditorClassIdentifier: Assembly-CSharp::ItemData
+  itemName: Overclocked SMG
+  icon: {fileID: 0}
+  size: {x: 3, y: 1}
+  tint: {r: 0.83, g: 0.14, b: 0.23, a: 1}
+  price: 90
+  description: 
+  cards:
+  - card: {fileID: 11400000, guid: e947761c84869b24b86a6eb1c6d9d987, type: 2}
+    count: 4
+  - card: {fileID: 11400000, guid: b941b4572555cd84c86e6a54432fb580, type: 2}
+    count: 1
+  - card: {fileID: 11400000, guid: 1f370ae87456e7248b9814ce1490dd6e, type: 2}
+    count: 2
+  passives: []

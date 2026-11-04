@@ -3,6 +3,15 @@ using UnityEngine;
 
 public enum CardType { Attack, Defense, Skill, Heal, Curse }
 
+// Curse cards that do something by themselves (doc CURSE CARDS).
+public enum CurseTrigger
+{
+    None,
+    OnDrawLoseMana,          // System Error: when drawn, lose X MANA this turn
+    OnDrawEnemiesGainShield, // Tracker: when drawn, all enemies gain X SHIELD
+    EndOfTurnInHandLoseHP    // Rejection: still in hand at end of turn -> lose X HP
+}
+
 [CreateAssetMenu(fileName = "NewCard", menuName = "Roguelike/Card")]
 public class CardData : ScriptableObject
 {
@@ -20,6 +29,10 @@ public class CardData : ScriptableObject
     public bool returnToHandNextTurn;
     [Tooltip("Pistol, SMG, Shotgun, Railgun cards. Ammo Belt gives these bonus damage.")]
     public bool isGun;
+
+    [Header("Curse cards")]
+    public CurseTrigger curseTrigger = CurseTrigger.None;
+    public int curseAmount;
 
     // Does this card need the player to click an enemy?
     public bool NeedsTarget

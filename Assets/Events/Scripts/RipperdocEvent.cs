@@ -14,10 +14,7 @@ public class RipperdocEvent : MonoBehaviour
     [SerializeField] Button freeButton;
     [SerializeField] Button leaveButton;
 
-    [Header("Prototype starting values")]
-    [Min(0)]
-    [SerializeField] int startingCredits = 75;
-
+    [Header("Prototype defense - connect later")]
     [Min(0)]
     [SerializeField] int startingDF = 25;
 
@@ -28,7 +25,7 @@ public class RipperdocEvent : MonoBehaviour
     [Min(0)]
     [SerializeField] int defenseBonus = 10;
 
-    [Header("Connect to the map later")]
+    [Header("Exploration callback")]
     [SerializeField] UnityEvent onReturnToMap = new UnityEvent();
 
     enum Phase
@@ -40,11 +37,10 @@ public class RipperdocEvent : MonoBehaviour
 
     Phase phase;
     bool ready;
-    int credits;
     int defense;
     int rejectionCount;
 
-    public int Credits => credits;
+    public int Credits => RunState.credits;
     public int Defense => defense;
 
     // Prototype record only. Not connected to the combat deck yet.
@@ -73,7 +69,7 @@ public class RipperdocEvent : MonoBehaviour
             return;
         }
 
-        credits = Mathf.Max(0, startingCredits);
+        // Never reset the shared run balance when entering an event.
         defense = Mathf.Max(0, startingDF);
         implantCost = Mathf.Max(0, implantCost);
         defenseBonus = Mathf.Max(0, defenseBonus);
@@ -89,6 +85,9 @@ public class RipperdocEvent : MonoBehaviour
         freeButton.gameObject.SetActive(true);
         leaveButton.gameObject.SetActive(true);
 
+        freeButton.interactable = true;
+        leaveButton.interactable = true;
+
         titleText.text = "Back-Alley Ripperdoc";
 
         descriptionText.text =
@@ -97,23 +96,37 @@ public class RipperdocEvent : MonoBehaviour
             + "\"Pay for clean hardware, or try my experimental stock "
             + "for free. Your choice.\"";
 
-        payButton.interactable = credits >= implantCost;
-        freeButton.interactable = true;
-        leaveButton.interactable = true;
-
-        SetLabel(
-            payButton,
-            credits >= implantCost
-                ? $"Pay {implantCost} credits - Gain {defenseBonus} DF"
-                : $"Need {implantCost} credits - Not enough credits"
-        );
-
         SetLabel(
             freeButton,
             $"Free implant - Gain {defenseBonus} DF + 1 Rejection curse"
         );
 
         SetLabel(leaveButton, "Leave");
+        RefreshChoices();
+    }
+
+    void Update()
+    {
+        if (!ready || !eventPanel.activeInHierarchy)
+            return;
+
+        if (phase == Phase.Choice)
+            RefreshChoices();
+        else
+            RefreshStatus();
+    }
+
+    void RefreshChoices()
+    {
+        payButton.interactable = RunState.credits >= implantCost;
+
+        SetLabel(
+            payButton,
+            RunState.credits >= implantCost
+                ? $"Pay {implantCost} credits - Gain {defenseBonus} DF"
+                : $"Need {implantCost} credits - Not enough credits"
+        );
+
         RefreshStatus();
     }
 
@@ -121,15 +134,15 @@ public class RipperdocEvent : MonoBehaviour
     {
         if (!ready
             || phase != Phase.Choice
-            || credits < implantCost)
+            || RunState.credits < implantCost)
         {
             return;
         }
 
-        // Lock the choice before applying its effects.
+        // Lock the choice before charging.
         phase = Phase.Result;
 
-        credits -= implantCost;
+        RunState.credits -= implantCost;
         defense += defenseBonus;
 
         ShowResult(
@@ -175,8 +188,10 @@ public class RipperdocEvent : MonoBehaviour
     void RefreshStatus()
     {
         statusText.text =
-            $"DF: {defense}     Credits: {credits}"
-            + $"     Rejection: {rejectionCount}";
+            $"DF: {defense}     Credits: {RunState.credits}";
+
+        if (rejectionCount > 0)
+            statusText.text += $"\nCurse: Rejection x{rejectionCount}";
     }
 
     public void ContinueOrLeave()
@@ -189,15 +204,44 @@ public class RipperdocEvent : MonoBehaviour
 
         phase = Phase.Complete;
         eventPanel.SetActive(false);
-
-        // Without a map callback, this reveals the test scene.
         onReturnToMap.Invoke();
+    }
+
+    [ContextMenu("TEST - Set Run Credits To 75")]
+    void TestSetCreditsTo75()
+    {
+#if UNITY_EDITOR
+        if (!Application.isPlaying
+            || !ready
+            || phase != Phase.Choice)
+        {
+            return;
+        }
+
+        RunState.credits = 75;
+        RefreshChoices();
+#endif
+    }
+
+    [ContextMenu("TEST - Set Run Credits To 59")]
+    void TestSetCreditsTo59()
+    {
+#if UNITY_EDITOR
+        if (!Application.isPlaying
+            || !ready
+            || phase != Phase.Choice)
+        {
+            return;
+        }
+
+        RunState.credits = 59;
+        RefreshChoices();
+#endif
     }
 
     static void SetLabel(Button button, string label)
     {
-        TMP_Text text =
-            button.GetComponentInChildren<TMP_Text>(true);
+        TMP_Text text = button.GetComponentInChildren<TMP_Text>(true);
 
         if (text)
             text.text = label;

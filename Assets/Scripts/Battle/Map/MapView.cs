@@ -5,6 +5,7 @@ using UnityEngine.UI;
 // The floor map screen (press M). Built from the FloorMap at runtime:
 // start at the bottom, boss at the top, lines between connected rooms.
 // Yellow ring = where you are, green ring = rooms you can go to next, faded = already visited.
+// Without a Map Uplink (RevealMap passive) you only see visited rooms, the next doors and the boss.
 public class MapView : MonoBehaviour
 {
     [SerializeField] GameObject panel;              // the whole map window (starts hidden)
@@ -25,6 +26,8 @@ public class MapView : MonoBehaviour
     class NodeView { public Image body; public Image ring; public Color baseColor; }
 
     readonly Dictionary<int, NodeView> views = new Dictionary<int, NodeView>();
+    readonly List<(Image line, int from, int to)> lines = new List<(Image, int, int)>();
+    [SerializeField] bool alwaysShowWholeMap = false;      // tick to test without a Map Uplink
     FloorMap map;
     Font font;
 
@@ -54,11 +57,12 @@ public class MapView : MonoBehaviour
         if (!font) font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
         foreach (Transform child in content) Destroy(child.gameObject);
         views.Clear();
+        lines.Clear();
 
         // Lines first so they are drawn behind the nodes
         foreach (var n in map.nodes)
             foreach (var id in n.next)
-                Line(Position(n), Position(map.nodes[id]));
+                lines.Add((Line(Position(n), Position(map.nodes[id])), n.id, id));
 
         foreach (var n in map.nodes)
             views[n.id] = Node(n);
@@ -101,9 +105,21 @@ public class MapView : MonoBehaviour
     public void Refresh(MapNode current)
     {
         if (map == null || current == null) return;
+        bool all = alwaysShowWholeMap || HasMapUplink();
+
+        bool Visible(MapNode n) => all || n.visited || n == current || current.next.Contains(n.id)
+                                   || n.type == NodeType.Boss || n.type == NodeType.Start;
+
+        foreach (var l in lines)
+            l.line.enabled = Visible(map.nodes[l.from]) && Visible(map.nodes[l.to])
+                             && (all || map.nodes[l.from].visited);
+
         foreach (var n in map.nodes)
         {
             if (!views.TryGetValue(n.id, out var v)) continue;
+            bool show = Visible(n);
+            v.body.enabled = v.ring.enabled = show;
+            foreach (var t in v.body.GetComponentsInChildren<Text>()) t.enabled = show;
             Color c = v.baseColor;
             if (n.visited && n != current) c.a = 0.35f;
             v.body.color = c;
@@ -114,7 +130,18 @@ public class MapView : MonoBehaviour
         }
     }
 
-    void Line(Vector2 a, Vector2 b)
+    static bool HasMapUplink()
+    {
+        var inv = FindFirstObjectByType<InventoryGrid>(FindObjectsInactive.Include);
+        if (!inv) return false;
+        foreach (var item in inv.Items)
+            if (item.data.passives != null)
+                foreach (var p in item.data.passives)
+                    if (p.type == PassiveType.RevealMap) return true;
+        return false;
+    }
+
+    Image Line(Vector2 a, Vector2 b)
     {
         Vector2 d = b - a;
         var img = MakeImage("Line", a, new Vector2(d.magnitude, 4), lineColor);
@@ -122,6 +149,7 @@ public class MapView : MonoBehaviour
         rt.pivot = new Vector2(0, 0.5f);
         rt.anchoredPosition = a;
         rt.localRotation = Quaternion.Euler(0, 0, Mathf.Atan2(d.y, d.x) * Mathf.Rad2Deg);
+        return img;
     }
 
     Image MakeImage(string name, Vector2 pos, Vector2 size, Color color)

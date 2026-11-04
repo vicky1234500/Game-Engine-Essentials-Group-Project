@@ -17,6 +17,7 @@ MonoBehaviour:
   size: {x: 2, y: 1}
   tint: {r: 0.45, g: 0.3, b: 0.8, a: 1}
   price: 40
+  description: 
   cards:
   - card: {fileID: 11400000, guid: 66d4b7cc14ac75443b1bba0b610a4a95, type: 2}
     count: 2

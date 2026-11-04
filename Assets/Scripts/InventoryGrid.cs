@@ -14,7 +14,7 @@ public class InventoryGrid : MonoBehaviour, IPointerClickHandler
     [SerializeField] ItemTooltip tooltip;         // ItemTooltip
 
     [Header("Grid size")]
-    [SerializeField] int columns = 6;
+    [SerializeField] int columns = 3;
     [SerializeField] int rows = 3;
 
     [Header("Rotation")]
@@ -28,7 +28,7 @@ public class InventoryGrid : MonoBehaviour, IPointerClickHandler
     [SerializeField] Button rotateButton;
 
     [Header("Backpack upgrade (shop)")]
-    [SerializeField] int maxRows = 6;
+    [SerializeField] int maxRows = 8;
     [Tooltip("These grow by one row each upgrade: InventorySlots, ItemLayer and InventoryBackground.")]
     [SerializeField] RectTransform[] growWithRows;
 

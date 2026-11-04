@@ -11,6 +11,8 @@ public class StartingItems : MonoBehaviour
     [SerializeField] List<ItemData> items = new List<ItemData>();
     [Tooltip("Lobby only: picking another character swaps the backpack to that character's starting items.")]
     [SerializeField] bool refreshWhenCharacterChanges = false;
+    [Tooltip("Credits when no character was picked (pressing Play straight in the Dungeon / BattleTest).")]
+    [SerializeField] int creditsWithoutCharacter = 50;
 
     CharacterData lastCharacter;
 
@@ -42,9 +44,11 @@ public class StartingItems : MonoBehaviour
         }
     }
 
+    // Start of a run (or a new character picked in the Lobby): starting items + starting credits.
     void AddStartingItems()
     {
         lastCharacter = RunState.selectedCharacter;
+        RunState.SetStartingCredits(creditsWithoutCharacter);
 
         // Character picked in the Lobby decides the starting items (otherwise use this list).
         var list = RunState.selectedCharacter ? RunState.selectedCharacter.startingItems : items;

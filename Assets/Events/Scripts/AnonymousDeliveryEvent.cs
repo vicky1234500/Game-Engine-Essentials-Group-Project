@@ -23,10 +23,6 @@ public class AnonymousDeliveryEvent : MonoBehaviour
     [SerializeField] ItemData sealedPackage;
     [SerializeField] ItemData[] supportRewards;
 
-    [Header("Prototype starting values")]
-    [Min(0)]
-    [SerializeField] int startingCredits = 30;
-
     [Header("Delivery rules")]
     [Min(1)]
     [SerializeField] int requiredVictories = 3;
@@ -34,7 +30,7 @@ public class AnonymousDeliveryEvent : MonoBehaviour
     [Min(0)]
     [SerializeField] int deliveryReward = 80;
 
-    [Header("Connect to the map later")]
+    [Header("Return to exploration")]
     [SerializeField] UnityEvent onReturnToMap = new UnityEvent();
 
     enum EventPhase
@@ -57,7 +53,6 @@ public class AnonymousDeliveryEvent : MonoBehaviour
     PackageState packageState;
 
     bool ready;
-    int credits;
     int victories;
     int targetVictories;
     int promisedReward;
@@ -66,13 +61,13 @@ public class AnonymousDeliveryEvent : MonoBehaviour
     // Prototype record. Connect to the run's curse system later.
     int trackerCount;
 
-    // Track this exact package instance, not every item of its type.
+    // Track this exact package instance.
     ItemInstance carriedPackage;
 
     readonly List<ItemData> rewards = new List<ItemData>();
     readonly HashSet<string> countedBattles = new HashSet<string>();
 
-    public int Credits => credits;
+    public int Credits => RunState.credits;
     public int TrackerCount => trackerCount;
     public int Victories => victories;
 
@@ -104,7 +99,7 @@ public class AnonymousDeliveryEvent : MonoBehaviour
             return;
         }
 
-        credits = Mathf.Max(0, startingCredits);
+        // Read the shared balance without resetting it.
         targetVictories = Mathf.Max(1, requiredVictories);
         promisedReward = Mathf.Max(0, deliveryReward);
 
@@ -191,10 +186,11 @@ public class AnonymousDeliveryEvent : MonoBehaviour
         if (phase == EventPhase.Choice)
             RefreshChoices();
 
-        // Dragging temporarily removes an item from Inventory.Items.
-        // A destroyed view, rather than temporary list absence,
-        // identifies disposal in the current backpack implementation.
+        // Keep tracking the package after closing the event.
         CheckForDiscard();
+
+        if (phase != EventPhase.Closed && eventPanel.activeInHierarchy)
+            RefreshStatus();
     }
 
     void RefreshChoices()
@@ -268,7 +264,7 @@ public class AnonymousDeliveryEvent : MonoBehaviour
 
     public void OpenPackage()
     {
-        // This option exists only before accepting the delivery.
+        // Opening is only available before accepting the delivery.
         if (!ready
             || phase != EventPhase.Choice
             || rewards.Count == 0)
@@ -279,7 +275,6 @@ public class AnonymousDeliveryEvent : MonoBehaviour
         phase = EventPhase.Result;
         packageState = PackageState.Opened;
 
-        // Record the curse even if the reward cannot currently fit.
         trackerCount++;
 
         ItemData reward = rewards[Random.Range(0, rewards.Count)];
@@ -304,7 +299,7 @@ public class AnonymousDeliveryEvent : MonoBehaviour
         ShowResult(message);
     }
 
-    // Called by the future battle integration.
+    // Called by EventExplorationBridge after a battle victory.
     // Each victorious battle must have a unique ID.
     public void ReportBattleVictory(string battleId)
     {
@@ -318,7 +313,8 @@ public class AnonymousDeliveryEvent : MonoBehaviour
         if (string.IsNullOrWhiteSpace(battleId))
             return;
 
-        // Do not count while the package is being dragged.
+        // Dragging temporarily removes the item from Inventory.Items.
+        // Do not count a victory while the package is outside the grid.
         bool inBackpack = false;
 
         foreach (ItemInstance item in inventory.Items)
@@ -337,22 +333,23 @@ public class AnonymousDeliveryEvent : MonoBehaviour
 
         if (victories >= targetVictories)
         {
-            // Change state first so removing the delivered package
-            // cannot be mistaken for discarding it.
+            // Mark completion before removing the package or paying.
+            // Further victory reports cannot pay this delivery again.
             packageState = PackageState.Delivered;
 
             inventory.Discard(carriedPackage);
             carriedPackage = null;
 
-            credits += promisedReward;
+            // Add to the current shared balance.
+            RunState.credits += promisedReward;
 
             descriptionText.text =
                 "Delivery complete. The package has been collected.\n"
                 + $"Received {promisedReward} credits.";
 
             Debug.Log(
-                $"Delivery complete. Credits: {credits}. "
-                + "Package removed.",
+                $"Delivery complete. Received {promisedReward} credits. "
+                + $"Shared credits: {RunState.credits}. Package removed.",
                 this
             );
         }
@@ -376,6 +373,8 @@ public class AnonymousDeliveryEvent : MonoBehaviour
         if (packageState != PackageState.Carrying)
             return;
 
+        // Temporary removal during dragging is not disposal.
+        // The existing trash system destroys the item's view.
         if (carriedPackage != null && carriedPackage.view)
             return;
 
@@ -389,7 +388,7 @@ public class AnonymousDeliveryEvent : MonoBehaviour
         RefreshStatus();
 
         Debug.Log(
-            $"Delivery cancelled. Credits remain {credits}.",
+            $"Delivery cancelled. Shared credits remain {RunState.credits}.",
             this
         );
     }
@@ -410,7 +409,7 @@ public class AnonymousDeliveryEvent : MonoBehaviour
 
     void RefreshStatus()
     {
-        statusText.text = $"Credits: {credits}";
+        statusText.text = $"Credits: {RunState.credits}";
 
         if (packageState == PackageState.Carrying)
         {

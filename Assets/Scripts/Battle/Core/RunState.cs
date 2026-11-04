@@ -14,6 +14,7 @@ public static class RunState
     public static CharacterData selectedCharacter;   // chosen in the Lobby (null = use the scene's defaults)
     public static int credits;
     public static int lastCreditsEarned;   // shown on the victory panel
+    public static int testExtraCredits;    // RunStarter: extra credits on top of the character's (for testing)
     public static readonly List<SavedBackpackItem> savedBackpack = new List<SavedBackpackItem>();
     public static bool hasSavedBackpack;
     public static int backpackRows;        
@@ -26,6 +27,13 @@ public static class RunState
         lastCreditsEarned = 0;
         ClearBackpack();
         shopStocks.Clear();
+    }
+
+    // Start-of-run money: the character's starting credits (+ test extra).
+    // fallback = used when no character was picked (e.g. pressing Play straight in the Dungeon).
+    public static void SetStartingCredits(int fallback = 0)
+    {
+        credits = (selectedCharacter ? selectedCharacter.startingCredits : fallback) + testExtraCredits;
     }
 
     public static void SaveBackpack(int rows, IEnumerable<ItemInstance> items)

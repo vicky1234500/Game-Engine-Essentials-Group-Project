@@ -30,3 +30,5 @@ MonoBehaviour:
   unplayable: 0
   returnToHandNextTurn: 0
   isGun: 1
+  curseTrigger: 0
+  curseAmount: 0

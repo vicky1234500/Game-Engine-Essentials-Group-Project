@@ -17,6 +17,7 @@ MonoBehaviour:
   size: {x: 2, y: 1}
   tint: {r: 0.22, g: 0.54, b: 0.87, a: 1}
   price: 50
+  description: 
   cards: []
   passives:
   - type: 6

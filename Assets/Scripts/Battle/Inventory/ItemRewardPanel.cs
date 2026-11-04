@@ -13,6 +13,8 @@ public class ItemRewardPanel : MonoBehaviour
 {
     [SerializeField] InventoryGrid inventory;                 // found automatically if empty
     [SerializeField] List<ItemData> rewardPool = new List<ItemData>();
+    [Tooltip("ON: rewards come from Resources/ItemDatabase (all finished items), not the list above.")]
+    [SerializeField] bool useItemDatabase = true;
     [SerializeField] int choices = 3;
 
     [Header("UI")]
@@ -43,6 +45,13 @@ public class ItemRewardPanel : MonoBehaviour
     {
         rolled.Clear();
         var pool = new List<ItemData>(rewardPool);
+        if (useItemDatabase)
+        {
+            var exclude = new HashSet<ItemData>();
+            if (RunState.selectedCharacter) foreach (var s in RunState.selectedCharacter.startingItems) exclude.Add(s);
+            var fromDb = ItemDatabase.Pool(exclude);
+            if (fromDb.Count > 0) pool = fromDb;
+        }
         pool.RemoveAll(i => i == null);
         for (int i = 0; i < choices && pool.Count > 0; i++)
         {

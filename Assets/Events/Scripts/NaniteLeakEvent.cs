@@ -19,18 +19,17 @@ public class NaniteLeakEvent : MonoBehaviour
     [SerializeField] InventoryGrid inventory;
     [SerializeField] InventoryToggle inventoryToggle;
 
+    [Header("Actual dungeon player")]
+    [SerializeField] PlayerCombatant player;
+
     [Header("Approved reward assets")]
     [SerializeField] ItemData[] rewardItems;
-
-    [Header("Prototype starting values")]
-    [Min(1)]
-    [SerializeField] int startingHP = 135;
 
     [Header("Event rules")]
     [Min(1)]
     [SerializeField] int crossingDamage = 15;
 
-    [Header("Connect to the map and death flow later")]
+    [Header("Exploration and death callbacks")]
     [SerializeField] UnityEvent onReturnToMap = new UnityEvent();
     [SerializeField] UnityEvent onGameOver = new UnityEvent();
 
@@ -44,7 +43,6 @@ public class NaniteLeakEvent : MonoBehaviour
 
     Phase phase;
     bool ready;
-    int hp;
 
     // Prototype record only.
     // The map system must apply this to the next node's
@@ -53,13 +51,26 @@ public class NaniteLeakEvent : MonoBehaviour
 
     readonly List<ItemData> rewards = new List<ItemData>();
 
-    public int CurrentHP => hp;
+    public int CurrentHP => player ? player.HP : 0;
 
     public bool SuppressNextNodeRewards =>
         suppressNextNodeRewards;
 
     void Start()
     {
+        // Use the same player as the battle system.
+        if (!player)
+        {
+            BattleManager battle =
+                Object.FindFirstObjectByType<BattleManager>();
+
+            if (battle)
+                player = battle.Player;
+        }
+
+        if (!player)
+            player = Object.FindFirstObjectByType<PlayerCombatant>();
+
         ready = eventPanel
             && titleText
             && descriptionText
@@ -68,25 +79,39 @@ public class NaniteLeakEvent : MonoBehaviour
             && detourButton
             && continueButton
             && inventory
-            && inventoryToggle;
+            && inventoryToggle
+            && player;
 
         if (!ready)
         {
             Debug.LogError(
-                "NaniteLeakEvent: assign all UI and backpack fields.",
+                "NaniteLeakEvent: missing UI, backpack, or "
+                + "PlayerCombatant. Test this event in the Dungeon.",
                 this
             );
 
             if (walkButton) walkButton.interactable = false;
             if (detourButton) detourButton.interactable = false;
-            if (continueButton) continueButton.interactable = false;
+
+            if (continueButton)
+            {
+                continueButton.gameObject.SetActive(true);
+                continueButton.interactable = true;
+                SetLabel(continueButton, "Leave");
+                continueButton.onClick.AddListener(LeaveUnavailableEvent);
+            }
+
+            if (descriptionText)
+            {
+                descriptionText.text =
+                    "Event unavailable: a required reference is missing.";
+            }
+
             return;
         }
 
-        startingHP = Mathf.Max(1, startingHP);
-        hp = startingHP;
+        // Never initialize or reset the player's HP here.
         crossingDamage = Mathf.Max(1, crossingDamage);
-
         suppressNextNodeRewards = false;
         phase = Phase.Choice;
 
@@ -112,6 +137,7 @@ public class NaniteLeakEvent : MonoBehaviour
         walkButton.gameObject.SetActive(true);
         detourButton.gameObject.SetActive(true);
         continueButton.gameObject.SetActive(false);
+        continueButton.interactable = true;
 
         titleText.text = "Nanite Leak";
 
@@ -120,27 +146,20 @@ public class NaniteLeakEvent : MonoBehaviour
             + "A sealed supply lies beyond the leak. "
             + "A longer route avoids the mist, but costs you time.";
 
-        walkButton.interactable = rewards.Count > 0;
-        detourButton.interactable = true;
-        continueButton.interactable = true;
-
-        string warning = hp <= crossingDamage
-            ? "\nWARNING: this will kill you."
-            : "";
-
-        SetLabel(
-            walkButton,
-            $"Walk through - Lose {crossingDamage} HP and find an item"
-            + warning
-        );
-
         SetLabel(
             detourButton,
             "Go around - No credit or item rewards at the next node"
         );
 
         SetLabel(continueButton, "Continue");
-        RefreshStatus();
+
+        if (player.IsDead)
+        {
+            ShowDeath("You have no HP remaining.");
+            return;
+        }
+
+        RefreshChoices();
 
         if (rewards.Count == 0)
         {
@@ -151,36 +170,64 @@ public class NaniteLeakEvent : MonoBehaviour
         }
     }
 
+    void Update()
+    {
+        if (!ready || !eventPanel.activeInHierarchy)
+            return;
+
+        if (player.IsDead && phase != Phase.Dead)
+        {
+            ShowDeath("You have no HP remaining.");
+            return;
+        }
+
+        if (phase == Phase.Choice)
+            RefreshChoices();
+        else
+            RefreshStatus();
+    }
+
+    void RefreshChoices()
+    {
+        walkButton.interactable =
+            !player.IsDead && rewards.Count > 0;
+
+        detourButton.interactable = !player.IsDead;
+
+        string warning = player.HP <= crossingDamage
+            ? "\nWARNING: this will kill you."
+            : "";
+
+        SetLabel(
+            walkButton,
+            $"Walk through - Lose {crossingDamage} HP and find an item"
+            + warning
+        );
+
+        RefreshStatus();
+    }
+
     public void WalkThrough()
     {
         if (!ready
             || phase != Phase.Choice
+            || player.IsDead
             || rewards.Count == 0)
         {
             return;
         }
 
-        // Lock the choice before applying damage.
+        // Lock the choice before deducting actual HP.
         phase = Phase.Result;
-        hp = Mathf.Max(0, hp - crossingDamage);
+        player.LoseHP(crossingDamage);
 
-        if (hp == 0)
+        // Resolve death before granting any item.
+        if (player.IsDead)
         {
-            phase = Phase.Dead;
-
-            titleText.text = "Game Over";
-
-            descriptionText.text =
+            ShowDeath(
                 "The corrosive mist overwhelms you.\n"
-                + $"You lose {crossingDamage} HP.";
-
-            RefreshStatus();
-
-            walkButton.gameObject.SetActive(false);
-            detourButton.gameObject.SetActive(false);
-            continueButton.gameObject.SetActive(false);
-
-            onGameOver.Invoke();
+                + $"You lose {crossingDamage} HP."
+            );
             return;
         }
 
@@ -193,13 +240,11 @@ public class NaniteLeakEvent : MonoBehaviour
         if (inventory.HasSpaceFor(reward)
             && inventory.TryAddItem(reward))
         {
-            ShowResult(
-                message + $"\nReceived: {reward.itemName}."
-            );
+            ShowResult(message + $"\nReceived: {reward.itemName}.");
             return;
         }
 
-        // Temporary: overflow pickup is not connected yet.
+        // Outside-backpack reward staging is not connected yet.
         ShowResult(
             message
             + $"\nBackpack full. {reward.itemName} was not added."
@@ -209,8 +254,12 @@ public class NaniteLeakEvent : MonoBehaviour
 
     public void TakeDetour()
     {
-        if (!ready || phase != Phase.Choice)
+        if (!ready
+            || phase != Phase.Choice
+            || player.IsDead)
+        {
             return;
+        }
 
         phase = Phase.Result;
         suppressNextNodeRewards = true;
@@ -221,6 +270,23 @@ public class NaniteLeakEvent : MonoBehaviour
             + "or item rewards.\n"
             + "Purchases, healing, and other effects remain available."
         );
+    }
+
+    void ShowDeath(string message)
+    {
+        if (phase == Phase.Dead) return;
+
+        phase = Phase.Dead;
+        titleText.text = "Game Over";
+        descriptionText.text = message;
+
+        RefreshStatus();
+
+        walkButton.gameObject.SetActive(false);
+        detourButton.gameObject.SetActive(false);
+        continueButton.gameObject.SetActive(false);
+
+        onGameOver.Invoke();
     }
 
     void ShowResult(string message)
@@ -238,7 +304,7 @@ public class NaniteLeakEvent : MonoBehaviour
 
     void RefreshStatus()
     {
-        statusText.text = $"HP: {hp} / {startingHP}";
+        statusText.text = $"HP: {player.HP} / {player.MaxHP}";
 
         if (suppressNextNodeRewards)
         {
@@ -249,13 +315,26 @@ public class NaniteLeakEvent : MonoBehaviour
 
     public void ContinueToMap()
     {
-        if (!ready || phase != Phase.Result)
+        if (!ready
+            || phase != Phase.Result
+            || player.IsDead)
+        {
             return;
+        }
 
         phase = Phase.Complete;
+        inventoryToggle.CloseInventory();
         eventPanel.SetActive(false);
 
-        // Without a map callback, this reveals the test scene.
+        onReturnToMap.Invoke();
+    }
+
+    void LeaveUnavailableEvent()
+    {
+        if (phase == Phase.Complete) return;
+
+        phase = Phase.Complete;
+        if (eventPanel) eventPanel.SetActive(false);
         onReturnToMap.Invoke();
     }
 

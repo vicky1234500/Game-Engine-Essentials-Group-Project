@@ -71,6 +71,15 @@ public static class EffectResolver
                 }
                 break;
 
+            case EffectType.RemoveShield:
+                foreach (var t in targets) t.ClearShield();
+                break;
+
+            case EffectType.DamagePerAttackPlayed:
+                foreach (var t in targets)
+                    DealDamage(source, t, e.amount * battle.AttackCardsPlayed + bonusDamage, e.ignoresShield, battle);
+                break;
+
             case EffectType.Summon:
                 for (int i = 0; i < Mathf.Max(1, e.amount); i++) battle.SpawnEnemy(e.summon);
                 break;
@@ -79,6 +88,12 @@ public static class EffectResolver
 
     public static void DealDamage(Combatant source, Combatant target, int baseDamage, bool ignoresShield, BattleManager battle)
     {
+        if (target.Statuses.Has(StatusType.Decoy))                  // Holo Decoy: always misses, once
+        {
+            target.RemoveStatus(StatusType.Decoy);
+            battle.Log($"{source.DisplayName} hits the decoy instead of {target.DisplayName}!");
+            return;
+        }
         if (target.Statuses.Has(StatusType.Cloaked) && Random.value < CloakedMissChance)
         {
             battle.Log($"{source.DisplayName}'s attack missed {target.DisplayName}!");

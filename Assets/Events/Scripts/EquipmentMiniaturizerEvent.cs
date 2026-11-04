@@ -21,15 +21,11 @@ public class EquipmentMiniaturizerEvent : MonoBehaviour
     [Header("Approved attack item assets")]
     [SerializeField] ItemData[] attackItems;
 
-    [Header("Prototype starting values")]
-    [Min(0)]
-    [SerializeField] int startingCredits = 75;
-
     [Header("Modification cost")]
     [Min(0)]
     [SerializeField] int modificationCost = 30;
 
-    [Header("Connect to the map later")]
+    [Header("Exploration callback")]
     [SerializeField] UnityEvent onReturnToMap = new UnityEvent();
 
     enum Phase
@@ -44,10 +40,9 @@ public class EquipmentMiniaturizerEvent : MonoBehaviour
     Phase phase;
     bool ready;
     bool enlarge;
-    int credits;
     ItemInstance target;
 
-    public int Credits => credits;
+    public int Credits => RunState.credits;
 
     void Start()
     {
@@ -75,7 +70,7 @@ public class EquipmentMiniaturizerEvent : MonoBehaviour
             return;
         }
 
-        credits = Mathf.Max(0, startingCredits);
+        // Never reset the shared run balance here.
         modificationCost = Mathf.Max(0, modificationCost);
 
         shrinkButton.onClick.AddListener(FirstButton);
@@ -83,7 +78,6 @@ public class EquipmentMiniaturizerEvent : MonoBehaviour
         leaveButton.onClick.AddListener(BackOrLeave);
 
         inventoryToggle.CloseInventory();
-
         titleText.text = "Equipment Miniaturizer";
         ShowChoices();
 
@@ -103,10 +97,10 @@ public class EquipmentMiniaturizerEvent : MonoBehaviour
         if (phase == Phase.Choice)
         {
             RefreshChoiceButtons();
+            RefreshStatus();
         }
         else if (phase == Phase.Selecting)
         {
-            // Closing the backpack without selecting cancels selection.
             if (!inventoryToggle.IsOpen)
             {
                 ShowChoices("Selection cancelled. No credits spent.");
@@ -114,9 +108,7 @@ public class EquipmentMiniaturizerEvent : MonoBehaviour
             }
 
             ItemInstance selected = inventory.Selected;
-
-            if (selected == null)
-                return;
+            if (selected == null) return;
 
             if (!IsApprovedAttackItem(selected)
                 || !ItemModification.TryGetNewSize(
@@ -130,19 +122,21 @@ public class EquipmentMiniaturizerEvent : MonoBehaviour
                     "That item cannot use this modification.\n"
                     + "Choose an eligible attack item."
                 );
-
                 return;
             }
 
             target = selected;
-
-            // Keep our target reference before CloseInventory deselects it.
             inventoryToggle.CloseInventory();
             ShowPreview();
         }
         else if (phase == Phase.Preview)
         {
             shrinkButton.interactable = CanConfirm(out string ignored);
+            RefreshStatus();
+        }
+        else if (phase == Phase.Result && eventPanel.activeInHierarchy)
+        {
+            RefreshStatus();
         }
     }
 
@@ -169,13 +163,10 @@ public class EquipmentMiniaturizerEvent : MonoBehaviour
     {
         foreach (ItemInstance item in inventory.Items)
         {
-            if (!IsApprovedAttackItem(item))
-                continue;
+            if (!IsApprovedAttackItem(item)) continue;
 
             if (!ItemModification.TryGetNewSize(
-                item.data.size,
-                makeLarger,
-                out Vector2Int newSize))
+                item.data.size, makeLarger, out Vector2Int newSize))
             {
                 continue;
             }
@@ -196,7 +187,7 @@ public class EquipmentMiniaturizerEvent : MonoBehaviour
 
     void RefreshChoiceButtons()
     {
-        bool canPay = credits >= modificationCost;
+        bool canPay = RunState.credits >= modificationCost;
         bool canShrink = HasCandidate(false);
         bool canAmplify = HasCandidate(true);
 
@@ -226,7 +217,6 @@ public class EquipmentMiniaturizerEvent : MonoBehaviour
     {
         phase = Phase.Choice;
         target = null;
-
         eventPanel.SetActive(true);
 
         shrinkButton.gameObject.SetActive(true);
@@ -239,8 +229,8 @@ public class EquipmentMiniaturizerEvent : MonoBehaviour
         descriptionText.text = message ??
             "Choose a modification, then click an attack item "
             + "in your backpack.\n"
-            + "Shrink: reduce size and damage per hit by 1.\n"
-            + "Amplify: increase size and damage per hit by 2.\n"
+            + "Shrink: smaller dimensions; damage per hit -1.\n"
+            + "Amplify: larger dimensions; damage per hit +2.\n"
             + "Preview the change before paying.";
 
         RefreshStatus();
@@ -272,7 +262,7 @@ public class EquipmentMiniaturizerEvent : MonoBehaviour
         if (phase != Phase.Choice && phase != Phase.Preview)
             return;
 
-        if (credits < modificationCost)
+        if (RunState.credits < modificationCost)
             return;
 
         enlarge = makeLarger;
@@ -289,7 +279,7 @@ public class EquipmentMiniaturizerEvent : MonoBehaviour
     {
         reason = "";
 
-        if (credits < modificationCost)
+        if (RunState.credits < modificationCost)
         {
             reason = "Not enough credits.";
             return false;
@@ -302,9 +292,7 @@ public class EquipmentMiniaturizerEvent : MonoBehaviour
         }
 
         if (!ItemModification.TryGetNewSize(
-            target.data.size,
-            enlarge,
-            out Vector2Int newSize))
+            target.data.size, enlarge, out Vector2Int newSize))
         {
             reason = "This item has reached the size limit.";
             return false;
@@ -336,9 +324,7 @@ public class EquipmentMiniaturizerEvent : MonoBehaviour
         }
 
         if (!ItemModification.TryGetNewSize(
-            target.data.size,
-            enlarge,
-            out Vector2Int newSize))
+            target.data.size, enlarge, out Vector2Int newSize))
         {
             ShowChoices("This item has reached the size limit.");
             return;
@@ -352,7 +338,6 @@ public class EquipmentMiniaturizerEvent : MonoBehaviour
             : 0;
 
         int newOffset = oldOffset + (enlarge ? 2 : -1);
-
         bool canConfirm = CanConfirm(out string reason);
         Vector2Int oldSize = target.data.size;
 
@@ -397,18 +382,15 @@ public class EquipmentMiniaturizerEvent : MonoBehaviour
         }
 
         if (!ItemModification.TryApply(
-            inventory,
-            target,
-            enlarge,
-            out string error))
+            inventory, target, enlarge, out string error))
         {
             ShowPreview(error);
             return;
         }
 
-        // Charge only after the item was successfully modified.
-        credits -= modificationCost;
+        // Charge the shared wallet only after successful modification.
         phase = Phase.Result;
+        RunState.credits -= modificationCost;
 
         ItemModification modification =
             target.view.GetComponent<ItemModification>();
@@ -454,7 +436,7 @@ public class EquipmentMiniaturizerEvent : MonoBehaviour
 
     void RefreshStatus()
     {
-        statusText.text = $"Credits: {credits}";
+        statusText.text = $"Credits: {RunState.credits}";
     }
 
     static string Signed(int value)
@@ -464,11 +446,8 @@ public class EquipmentMiniaturizerEvent : MonoBehaviour
 
     static void SetLabel(Button button, string label)
     {
-        TMP_Text text =
-            button.GetComponentInChildren<TMP_Text>(true);
-
-        if (text)
-            text.text = label;
+        TMP_Text text = button.GetComponentInChildren<TMP_Text>(true);
+        if (text) text.text = label;
     }
 
     [ContextMenu("TEST - Add Two Copies Of First Attack Item")]
@@ -489,16 +468,38 @@ public class EquipmentMiniaturizerEvent : MonoBehaviour
 
         for (int i = 0; i < 2; i++)
         {
-            if (!inventory.HasSpaceFor(attackItems[0]))
-                break;
-
-            if (!inventory.TryAddItem(attackItems[0]))
-                break;
-
+            if (!inventory.HasSpaceFor(attackItems[0])) break;
+            if (!inventory.TryAddItem(attackItems[0])) break;
             added++;
         }
 
         Debug.Log($"Added {added} attack items for testing.", this);
+#endif
+    }
+
+    [ContextMenu("TEST - Set Run Credits To 75")]
+    void TestSetCreditsTo75()
+    {
+#if UNITY_EDITOR
+        if (!Application.isPlaying || !ready || phase != Phase.Choice)
+            return;
+
+        RunState.credits = 75;
+        RefreshStatus();
+        RefreshChoiceButtons();
+#endif
+    }
+
+    [ContextMenu("TEST - Set Run Credits To 29")]
+    void TestSetCreditsTo29()
+    {
+#if UNITY_EDITOR
+        if (!Application.isPlaying || !ready || phase != Phase.Choice)
+            return;
+
+        RunState.credits = 29;
+        RefreshStatus();
+        RefreshChoiceButtons();
 #endif
     }
 }

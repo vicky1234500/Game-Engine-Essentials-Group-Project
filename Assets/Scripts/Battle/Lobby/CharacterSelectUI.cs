@@ -34,7 +34,7 @@ public class CharacterSelectUI : MonoBehaviour
         // Nothing picked yet -> default to the first unlocked character, so the portal always works.
         if (!RunState.selectedCharacter)
             foreach (var c in characters)
-                if (c && c.unlocked) { RunState.selectedCharacter = c; break; }
+                if (c && c.unlocked) { RunState.selectedCharacter = c; RunState.SetStartingCredits(); break; }
 
         RefreshSlots();
         SetOpen(false);
@@ -58,6 +58,7 @@ public class CharacterSelectUI : MonoBehaviour
         var c = index < characters.Length ? characters[index] : null;
         if (!c || !c.unlocked) return;
         RunState.selectedCharacter = c;
+        RunState.SetStartingCredits();                 // each character starts with its own money
         RefreshSlots();
         Close();
     }
@@ -86,7 +87,8 @@ public class CharacterSelectUI : MonoBehaviour
     {
         var sb = new StringBuilder();
         sb.Append($"<b>{c.characterName}</b>{(selected ? "  (selected)" : "")}\n\n");
-        sb.Append($"HP {c.maxHP}    DF {c.baseDefense}    Mana {c.maxMana}\n\n");
+        sb.Append($"HP {c.maxHP}    DF {c.baseDefense}    Mana {c.maxMana}\n");
+        sb.Append($"Credits {c.startingCredits}\n\n");
         sb.Append("Starts with:\n");
         foreach (var item in c.startingItems)
             if (item) sb.Append($"- {item.itemName}\n");

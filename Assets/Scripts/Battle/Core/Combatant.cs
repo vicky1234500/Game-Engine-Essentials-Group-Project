@@ -1,26 +1,32 @@
 using System;
 using UnityEngine;
 
-// Shared by the player and enemies: HP, SHIELD, DF and statuses.
 public abstract class Combatant : MonoBehaviour
 {
     [SerializeField] protected int maxHP = 100;
+
     [Tooltip("DF: % damage reduction with diminishing returns. See DefenseFormula (20 = 10%, 40 = 20%, 100 = 40%).")]
     [SerializeField] protected int baseDefense;
 
     public int MaxHP => maxHP;
     public int HP { get; protected set; }
     public int Shield { get; protected set; }
-    public int BonusDefense { get; set; }              // from item passives (Kinetic Vest...)
+
+    public int BonusDefense { get; set; }
+
     public int Defense => baseDefense + BonusDefense;
-    public float DamageReductionPercent => DefenseFormula.ReductionPercent(Defense);
+
+    public float DamageReductionPercent =>
+        DefenseFormula.ReductionPercent(Defense);
+
     public bool IsDead => HP <= 0;
+
     public StatusContainer Statuses { get; } = new StatusContainer();
 
     public abstract string DisplayName { get; }
     public virtual bool IsBoss => false;
 
-    public event Action OnChanged;          // UI listens to this to refresh HP bar / shield / statuses
+    public event Action OnChanged;
     public event Action<Combatant> OnDied;
 
     protected void NotifyChanged() => OnChanged?.Invoke();
@@ -34,7 +40,20 @@ public abstract class Combatant : MonoBehaviour
         NotifyChanged();
     }
 
-    // Final damage after SHIELD. Returns HP actually lost.
+    // Reduces maximum HP without healing or clearing combat state.
+    // Refuses changes that would leave maximum HP below 1.
+    public bool TryReduceMaxHP(int amount)
+    {
+        if (amount <= 0 || IsDead || maxHP <= amount)
+            return false;
+
+        maxHP -= amount;
+        HP = Mathf.Min(HP, maxHP);
+
+        NotifyChanged();
+        return true;
+    }
+
     public int TakeDamage(int amount, bool ignoresShield)
     {
         if (amount <= 0 || IsDead) return 0;
@@ -45,24 +64,32 @@ public abstract class Combatant : MonoBehaviour
             Shield -= absorbed;
             amount -= absorbed;
         }
+
         return LoseHP(amount);
     }
 
-    // Straight HP loss (curses, Overclocked, Kick the vending machine...). Skips SHIELD.
     public int LoseHP(int amount)
     {
         if (amount <= 0 || IsDead) return 0;
+
         int lost = Mathf.Min(HP, amount);
         HP -= lost;
+
         NotifyChanged();
-        if (HP <= 0) { OnDied?.Invoke(this); }
+
+        if (HP <= 0)
+            OnDied?.Invoke(this);
+
         return lost;
     }
 
     public void Heal(int amount)
     {
         if (IsDead || amount <= 0) return;
-        if (Statuses.Has(StatusType.HealingReduced)) amount /= 2;   // Parasite
+
+        if (Statuses.Has(StatusType.HealingReduced))
+            amount /= 2;
+
         HP = Mathf.Min(maxHP, HP + amount);
         NotifyChanged();
     }
@@ -73,7 +100,6 @@ public abstract class Combatant : MonoBehaviour
         NotifyChanged();
     }
 
-    // SHIELD "absorbs damage this turn, then disappears".
     public void ClearShield()
     {
         Shield = 0;
@@ -82,7 +108,8 @@ public abstract class Combatant : MonoBehaviour
 
     public void ApplyStatus(StatusType type, int amount, int turns)
     {
-        if (type == StatusType.ShortCircuit && IsBoss) return;      // bosses are immune
+        if (type == StatusType.ShortCircuit && IsBoss) return;
+
         Statuses.Add(type, amount, turns);
         NotifyChanged();
     }
@@ -93,7 +120,6 @@ public abstract class Combatant : MonoBehaviour
         NotifyChanged();
     }
 
-    // Called by BattleManager.
     public virtual void OnTurnStart()
     {
         ClearShield();
