@@ -14,6 +14,8 @@ public class CharacterData : ScriptableObject
     public int maxHP = 135;
     public int baseDefense = 25;
     public int maxMana = 3;
+    [Tooltip("Credits this character starts a run with.")]
+    public int startingCredits = 50;
 
     [Header("Starting items")]
     public List<ItemData> startingItems = new List<ItemData>();

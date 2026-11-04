@@ -1129,6 +1129,7 @@ public static class BattleTestBuilder
         char1.characterName = "Character 1";
         char1.description = "Placeholder character.";
         char1.maxHP = 135; char1.baseDefense = 25; char1.maxMana = 3;
+        char1.startingCredits = 50;
         char1.color = new Color(0.25f, 0.55f, 0.9f);
         char1.unlocked = true;
         char1.startingItems = new List<ItemData>();

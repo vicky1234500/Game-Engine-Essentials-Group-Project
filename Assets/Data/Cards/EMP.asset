@@ -16,7 +16,8 @@ MonoBehaviour:
   type: 2
   manaCost: 1
   value: 1
-  description: 'Apply SHORT-CIRCUIT: enemy skips its next action (not bosses).'
+  description: Apply SHORT-CIRCUIT (skips its next action, not bosses) and remove
+    all SHIELD.
   effects:
   - type: 3
     target: 1
@@ -26,7 +27,17 @@ MonoBehaviour:
     status: 6
     duration: 2
     summon: {fileID: 0}
+  - type: 11
+    target: 1
+    amount: 0
+    hits: 1
+    ignoresShield: 0
+    status: 0
+    duration: 1
+    summon: {fileID: 0}
   exhaust: 0
   unplayable: 0
   returnToHandNextTurn: 0
   isGun: 0
+  curseTrigger: 0
+  curseAmount: 0

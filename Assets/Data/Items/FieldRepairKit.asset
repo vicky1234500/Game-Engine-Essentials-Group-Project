@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f8797b4a893f67f49b3ddf3ab6b371b1, type: 3}
+  m_Name: FieldRepairKit
+  m_EditorClassIdentifier: Assembly-CSharp::ItemData
+  itemName: Field Repair Kit
+  icon: {fileID: 0}
+  size: {x: 2, y: 1}
+  tint: {r: 0.6, g: 0.55, b: 0.35, a: 1}
+  price: 70
+  description: Rest rooms heal 30% more. Once per floor, +20 HP anywhere. (Rest rooms
+    not made yet.)
+  cards: []
+  passives:
+  - type: 9
+    amount: 30
