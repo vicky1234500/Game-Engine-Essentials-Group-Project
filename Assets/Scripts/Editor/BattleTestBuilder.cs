@@ -32,6 +32,7 @@ public static class BattleTestBuilder
     [MenuItem("Tools/Roguelike/Build All (Lobby + Dungeon + Battle Test)")]
     public static void BuildAll()
     {
+        if (!ConfirmOverwrite("Lobby, Dungeon and BattleTest")) return;
         if (!EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo()) return;
         Prepare();
         BuildBattleTestScene(false);
@@ -44,6 +45,7 @@ public static class BattleTestBuilder
     [MenuItem("Tools/Roguelike/Build Battle Test Scene")]
     public static void Build()
     {
+        if (!ConfirmOverwrite("BattleTest")) return;
         if (!EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo()) return;
         Prepare();
         BuildBattleTestScene(false);
@@ -53,6 +55,7 @@ public static class BattleTestBuilder
     [MenuItem("Tools/Roguelike/Build Dungeon Scene")]
     public static void BuildDungeon()
     {
+        if (!ConfirmOverwrite("Dungeon")) return;
         if (!EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo()) return;
         Prepare();
         BuildBattleTestScene(true);
@@ -62,10 +65,31 @@ public static class BattleTestBuilder
     [MenuItem("Tools/Roguelike/Build Lobby Scene")]
     public static void BuildLobby()
     {
+        if (!ConfirmOverwrite("Lobby")) return;
         if (!EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo()) return;
         Prepare();
         BuildLobbyScene();
         AddScenesToBuild();
+    }
+
+    // The scenes are rebuilt from scratch, so anything added to them by hand (shop, events...) is lost.
+    static bool ConfirmOverwrite(string scenes)
+    {
+        return EditorUtility.DisplayDialog("Rebuild scenes?",
+            $"This REBUILDS the {scenes} scene(s) from scratch.\n\n" +
+            "Anything the team added to them by hand (Shop, events, moved objects...) will be LOST.\n\n" +
+            "Commit to git first. Continue?", "Rebuild", "Cancel");
+    }
+
+    // Safe: only makes the room folders + example room and refreshes the Room Library. No scene is touched.
+    [MenuItem("Tools/Roguelike/Create Example Room (safe)")]
+    public static void CreateExampleRoom()
+    {
+        Prepare();
+        BuildRoomTemplate();
+        var lib = RoomLibraryUpdater.Refresh(true);
+        Selection.activeObject = lib;
+        Debug.Log("Example room is in Assets/Prefab/Rooms/Enemy. Drag Assets/Data/RoomLibrary into DungeonManager > Room Library in the Dungeon scene.");
     }
 
     static void Prepare()
@@ -162,7 +186,9 @@ public static class BattleTestBuilder
     // Items: start with Knife + Bandage, rewards = 3 weapons, 3 heal, 3 shield (from the doc)
     // =====================================================================
 
-    struct Items { public ItemData knife, bandage; public List<ItemData> rewards; }
+    // rewards = items that work in battle (go into the ItemDatabase for rewards + shops)
+    // inactive = outside-combat items whose systems (chests, rest rooms...) don't exist yet
+    struct Items { public ItemData knife, bandage; public List<ItemData> rewards, inactive; }
 
     static readonly Color WeaponTint = new Color(0.83f, 0.14f, 0.23f);
     static readonly Color HealTint   = new Color(0.25f, 0.7f, 0.35f);
@@ -170,7 +196,7 @@ public static class BattleTestBuilder
 
     static Items BuildItems()
     {
-        var it = new Items { rewards = new List<ItemData>() };
+        var it = new Items { rewards = new List<ItemData>(), inactive = new List<ItemData>() };
         var patch = AssetDatabase.LoadAssetAtPath<CardData>(CardDir + "/PatchUp.asset");
         var raise = AssetDatabase.LoadAssetAtPath<CardData>(CardDir + "/RaiseShield.asset");
         var flash = AssetDatabase.LoadAssetAtPath<CardData>(CardDir + "/Flashbang.asset");
@@ -202,8 +228,8 @@ public static class BattleTestBuilder
         var frag = Card("Frag", "Frag", CardType.Attack, 2, "Deal 9 damage to ALL enemies.", DmgAll(9));
         var incendiary = Card("Incendiary", "Incendiary", CardType.Attack, 2, "Deal 5 damage to ALL enemies. Apply 3 BURN.",
                               DmgAll(5), Status(StatusType.Burn, 3, 3, TargetType.AllEnemies));
-        var emp = Card("EMP", "EMP", CardType.Skill, 1, "Apply SHORT-CIRCUIT: enemy skips its next action (not bosses).",
-                       Status(StatusType.ShortCircuit, 1, 2, TargetType.SingleEnemy));
+        var emp = Card("EMP", "EMP", CardType.Skill, 1, "Apply SHORT-CIRCUIT (skips its next action, not bosses) and remove all SHIELD.",
+                       Status(StatusType.ShortCircuit, 1, 2, TargetType.SingleEnemy), Fx(EffectType.RemoveShield, TargetType.SingleEnemy, 0));
         it.rewards.Add(Item("GrenadeBelt", "Grenade Belt", 2, 1, WeaponTint, null, E(frag, 1), E(incendiary, 1), E(flash, 2), E(emp, 1)));
 
         // ---- Healing
@@ -238,13 +264,182 @@ public static class BattleTestBuilder
         var bulwark = Card("Bulwark", "Bulwark", CardType.Defense, 3, "Gain 35 SHIELD.", Shield(35));
         it.rewards.Add(Item("RiotShield", "Riot Shield", 2, 2, ShieldTint, null, E(raise, 3), E(bash, 1), E(bulwark, 1)));
 
+        BuildMoreItems(it);
         if (!it.knife) Debug.LogWarning("BattleTestBuilder: Assets/Data/Items/Knife.asset not found.");
         return it;
     }
 
+    // =====================================================================
+    // The rest of the doc's items (ATTACK / DEFENSE / HEALING / SUPPORT / OUTSIDE COMBAT + "Deciding")
+    // =====================================================================
+
+    static void BuildMoreItems(Items it)
+    {
+        // ---- Curse cards (doc CURSE CARDS)
+        var jammed = Card("Jammed", "Jammed", CardType.Curse, 1, "CURSE. Does nothing. Pay 1 MANA to exhaust it.");
+        jammed.exhaust = true;
+        var systemError = Curse("SystemError", "System Error", "CURSE. Unplayable. When drawn, lose 1 MANA this turn.", CurseTrigger.OnDrawLoseMana, 1);
+        var rejection = Curse("Rejection", "Rejection", "CURSE. Unplayable. If still in hand at end of turn, lose 4 HP.", CurseTrigger.EndOfTurnInHandLoseHP, 4);
+        var staticCurse = Curse("Static", "Static", "CURSE. Unplayable. Takes up a hand slot.", CurseTrigger.None, 0);
+        var tracker = Curse("Tracker", "Tracker", "CURSE. Unplayable. When drawn, all enemies gain 5 SHIELD.", CurseTrigger.OnDrawEnemiesGainShield, 5);
+        var flash = AssetDatabase.LoadAssetAtPath<CardData>(CardDir + "/Flashbang.asset");
+
+        // ---- ATTACK ITEMS
+        var flick = Card("Flick", "Flick", CardType.Attack, 0, "Deal 2 damage. Apply 1 CORRODE.",
+                         Dmg(2), Status(StatusType.Corrode, 1, 1, TargetType.SingleEnemy));
+        it.rewards.Add(Item("MicroBlades", "Micro-Blades", 1, 1, WeaponTint, null, E(flick, 8)));
+
+        var eslash = Card("EnergySlash", "Slash", CardType.Attack, 1, "Deal 7 damage.", Dmg(7));
+        var cuts = Card("ThousandCuts", "Thousand Cuts", CardType.Attack, 3, "Deal 3 damage for every attack card played this fight.",
+                        Fx(EffectType.DamagePerAttackPlayed, TargetType.SingleEnemy, 3));
+        it.rewards.Add(Item("EnergySword", "Energy Sword", 3, 1, WeaponTint, null, E(eslash, 4), E(cuts, 1)));
+
+        var spray = Gun(Card("Spray", "Spray", CardType.Attack, 1, "Deal 4 damage three times.", Dmg(4, 3)));
+        var hackRounds = Gun(Card("HackRounds", "Hack Rounds", CardType.Attack, 1, "Deal 4 damage three times. Apply HACKED.",
+                                  Dmg(4, 3), Status(StatusType.Hacked, 1, 2, TargetType.SingleEnemy)));
+        it.rewards.Add(Item("OverclockedSMG", "Overclocked SMG", 3, 1, WeaponTint, null, E(spray, 4), E(hackRounds, 1), E(jammed, 2)));
+
+        var deploy = Card("Deploy", "Deploy", CardType.Attack, 1, "Drone deals 4 damage to a random enemy at the end of each turn for 3 turns.",
+                          Status(StatusType.DroneStrike, 4, 3, TargetType.Self));
+        var droneLaser = Card("DroneLaser", "Laser", CardType.Attack, 1, "Deal 5 damage. Apply 2 BURN.",
+                              Dmg(5), Status(StatusType.Burn, 2, 3, TargetType.SingleEnemy));
+        var selfDestruct = Card("SelfDestruct", "Self-Destruct", CardType.Attack, 2, "Deal 18 damage.", Dmg(18));
+        it.rewards.Add(Item("AttackDrone", "Attack Drone", 3, 1, WeaponTint, null, E(deploy, 2), E(droneLaser, 2), E(selfDestruct, 1)));
+
+        var blast = Gun(Card("Blast", "Blast", CardType.Attack, 2, "Deal 14 damage to ALL enemies.", DmgAll(14)));
+        var pointBlank = Gun(Card("PointBlank", "Point Blank", CardType.Attack, 2, "Deal 18 damage.", Dmg(18)));
+        var pump = Card("Pump", "Pump", CardType.Skill, 0, "Draw 2 cards.", Fx(EffectType.Draw, TargetType.Self, 2));
+        it.rewards.Add(Item("Shotgun", "Shotgun", 2, 2, WeaponTint, null, E(blast, 2), E(pointBlank, 2), E(pump, 1)));
+
+        var railShot = Gun(Card("RailShot", "Rail Shot", CardType.Attack, 3, "Deal 45 damage. Ignores SHIELD.",
+                                new CardEffect { type = EffectType.Damage, target = TargetType.SingleEnemy, amount = 45, hits = 1, ignoresShield = true }));
+        it.rewards.Add(Item("Railgun", "Railgun", 3, 2, WeaponTint, null, E(railShot, 1)));
+
+        // ---- DEFENSE ITEMS
+        var decoy = Card("PerfectDecoy", "Perfect Decoy", CardType.Defense, 2, "The enemy's next attack misses completely.",
+                         Status(StatusType.Decoy, 1, 2, TargetType.Self));
+        it.rewards.Add(Item("HoloDecoy", "Holo Decoy", 1, 1, ShieldTint, null, E(decoy, 1)));
+
+        var fortress = Card("Fortress", "Fortress", CardType.Defense, 2, "Gain 20 SHIELD.", Shield(20));
+        it.rewards.Add(Item("OverclockedExoSuit", "Overclocked Exo-Suit", 5, 1, ShieldTint,
+                            new[] { new ItemPassive { type = PassiveType.BonusDF, amount = 30 } }, E(fortress, 2), E(systemError, 2)));
+
+        // ---- HEALING ITEMS
+        it.rewards.Add(Item("BlackMarketImplant", "Black-Market Implant", 2, 1, HealTint,
+                            new[] { new ItemPassive { type = PassiveType.HealPerTurn, amount = 5 } }, E(rejection, 2)));
+
+        // Med Pod (made earlier): add "Outside combat: +15 HP after each battle"
+        var medPod = AssetDatabase.LoadAssetAtPath<ItemData>(ItemDir + "/MedPod.asset");
+        if (medPod && !medPod.passives.Exists(p => p.type == PassiveType.HealAfterBattle))
+        {
+            medPod.passives.Add(new ItemPassive { type = PassiveType.HealAfterBattle, amount = 15 });
+            EditorUtility.SetDirty(medPod);
+        }
+
+        // ---- SUPPORT / UTILITY ITEMS
+        var smoke = Card("SmokeBomb", "Smoke Bomb", CardType.Skill, 1, "Become CLOAKED for 2 turns (attacks have 50% to miss).",
+                         Status(StatusType.Cloaked, 1, 2, TargetType.Self));
+        it.rewards.Add(Item("SmokeGrenades", "Smoke Grenades", 1, 1, ShieldTint, null, E(smoke, 2)));
+
+        var overclock = Card("Overclock", "Overclock", CardType.Skill, 1, "Become OVERCLOCKED: +3 attack damage, lose 2 HP each turn. 2 turns.",
+                             Status(StatusType.Overclocked, 1, 2, TargetType.Self));
+        it.rewards.Add(Item("NeuralBooster", "Neural Booster", 1, 1, SupportTint,
+                            new[] { new ItemPassive { type = PassiveType.BonusManaPerTurn, amount = 1 } }, E(overclock, 1), E(staticCurse, 3)));
+
+        var quickReload = Card("QuickReload", "Quick Reload", CardType.Skill, 0, "Draw 1 card.", Fx(EffectType.Draw, TargetType.Self, 1));
+        it.rewards.Add(Item("AmmoBelt", "Ammo Belt", 2, 1, SupportTint,
+                            new[] { new ItemPassive { type = PassiveType.GunDamage, amount = 2 } }, E(quickReload, 3)));
+
+        var hack = Card("Hack", "Hack", CardType.Skill, 1, "Apply HACKED: its next action hits a random target.",
+                        Status(StatusType.Hacked, 1, 2, TargetType.SingleEnemy));
+        var glitchSpike = Card("GlitchSpike", "Glitch Spike", CardType.Skill, 1, "Apply GLITCHED for 2 turns.",
+                               Status(StatusType.Glitched, 1, 2, TargetType.SingleEnemy));
+        var bootUp = Card("BootUp", "Boot Up", CardType.Skill, 0, "Draw 2 cards.", Fx(EffectType.Draw, TargetType.Self, 2));
+        var crash = Card("SystemCrash", "System Crash", CardType.Skill, 2, "Apply SHORT-CIRCUIT (not bosses).",
+                         Status(StatusType.ShortCircuit, 1, 2, TargetType.SingleEnemy));
+        it.rewards.Add(Item("Cyberdeck", "Cyberdeck", 3, 1, SupportTint, null, E(hack, 2), E(glitchSpike, 1), E(bootUp, 1), E(crash, 1)));
+
+        var overrideCard = Card("Override", "Override", CardType.Skill, 3, "Take an extra turn. Exhaust.", Fx(EffectType.ExtraTurn, TargetType.Self, 0));
+        overrideCard.exhaust = true;
+        it.rewards.Add(Item("TacticalAICore", "Tactical AI Core", 2, 2, SupportTint,
+                            new[] { new ItemPassive { type = PassiveType.ExtraDrawFirstTurn, amount = 2 } }, E(overrideCard, 1)));
+
+        // ---- From "Deciding"
+        var uplink = Item("MapUplink", "Map Uplink", 1, 1, SupportTint,
+                          new[] { new ItemPassive { type = PassiveType.RevealMap, amount = 1 } });
+        uplink.description = "Shows each floor's full layout on the map (M).";
+        it.rewards.Add(uplink);
+
+        var chip = Item("StolenCreditChip", "Stolen Credit Chip", 1, 1, SupportTint,
+                        new[] { new ItemPassive { type = PassiveType.CreditBonusPercent, amount = 50 } }, E(tracker, 1));
+        chip.description = "+50% money from all sources.";
+        it.rewards.Add(chip);
+
+        var spoofer = AssetDatabase.LoadAssetAtPath<ItemData>(ItemDir + "/ShopSpoofer.asset");   // made by the team
+        if (spoofer) it.rewards.Add(spoofer);
+
+        // ---- Outside combat: made, but their systems don't exist yet -> not in rewards / shops
+        var lockPick = Item("LockPick", "Lock Pick", 1, 1, OutsideTint, null);
+        lockPick.description = "Opens locked chests and doors, 3 uses. (Chests not made yet.)";
+        it.inactive.Add(lockPick);
+        var hook = Item("GrapplingHook", "Grappling Hook", 2, 1, OutsideTint, null);
+        hook.description = "Skip one room per floor, or reach hidden rooms. (Not made yet.)";
+        it.inactive.Add(hook);
+        var bench = Item("PortableWorkbench", "Portable Workbench", 2, 2, OutsideTint, null);
+        bench.description = "At rest rooms, upgrade one item: its cards get +3 DAMAGE or +3 SHIELD. (Rest rooms not made yet.)";
+        it.inactive.Add(bench);
+        var repairKit = Item("FieldRepairKit", "Field Repair Kit", 2, 1, OutsideTint,
+                             new[] { new ItemPassive { type = PassiveType.RestHealBonusPercent, amount = 30 } });
+        repairKit.description = "Rest rooms heal 30% more. Once per floor, +20 HP anywhere. (Rest rooms not made yet.)";
+        it.inactive.Add(repairKit);
+
+        foreach (var i in it.rewards) if (i) EditorUtility.SetDirty(i);
+        foreach (var i in it.inactive) if (i) EditorUtility.SetDirty(i);
+    }
+
+    static readonly Color SupportTint = new Color(0.2f, 0.65f, 0.75f);
+    static readonly Color OutsideTint = new Color(0.6f, 0.55f, 0.35f);
+
+    static CardData Curse(string file, string name, string desc, CurseTrigger trigger, int amount)
+    {
+        var c = Card(file, name, CardType.Curse, 0, desc);
+        c.unplayable = true;
+        c.curseTrigger = trigger;
+        c.curseAmount = amount;
+        EditorUtility.SetDirty(c);
+        return c;
+    }
+
+    // Resources/ItemDatabase: every working item (rewards + shops read it at runtime).
+    static ItemDatabase BuildItemDatabase(Items it)
+    {
+        if (!AssetDatabase.IsValidFolder("Assets/Resources")) AssetDatabase.CreateFolder("Assets", "Resources");
+        var db = LoadOrCreate<ItemDatabase>("Assets/Resources/ItemDatabase.asset");
+        db.items = new List<ItemData>();
+        foreach (var i in it.rewards) if (i && !db.items.Contains(i)) db.items.Add(i);
+        EditorUtility.SetDirty(db);
+        return db;
+    }
+
+    // Safe: only creates / updates card + item assets and the ItemDatabase. No scene is touched.
+    [MenuItem("Tools/Roguelike/Create or Update All Items (safe)")]
+    public static void CreateAllItems()
+    {
+        Prepare();
+        BuildCards();
+        var items = BuildItems();
+        var db = BuildItemDatabase(items);
+        AssetDatabase.SaveAssets();
+        Selection.activeObject = db;
+        Debug.Log($"Items updated: {db.items.Count} in rewards/shops (Resources/ItemDatabase), {items.inactive.Count} outside-combat items made but not used yet.");
+    }
+
     static ItemData Item(string file, string name, int w, int h, Color tint, ItemPassive[] passives, params CardEntry[] cards)
     {
-        var item = LoadOrCreate<ItemData>(ItemDir + "/" + file + ".asset");
+        string path = ItemDir + "/" + file + ".asset";
+        bool isNew = !AssetDatabase.LoadAssetAtPath<ItemData>(path);
+        var item = LoadOrCreate<ItemData>(path);
+        if (isNew) item.price = 30 + 20 * w * h;          // new items only, so the team's prices are kept
         item.itemName = name;
         item.size = new Vector2Int(w, h);
         item.tint = tint;
@@ -841,6 +1036,11 @@ public static class BattleTestBuilder
         so.FindProperty("doorEnemyMat").objectReferenceValue = black ? black : gray;
         so.FindProperty("doorEliteMat").objectReferenceValue = orange;
         so.FindProperty("doorBossMat").objectReferenceValue = purple;
+        so.FindProperty("doorOtherMat").objectReferenceValue = MakeMat("Assets/Material/DoorOther.mat", new Color(0.3f, 0.6f, 0.9f), true);
+
+        // Room prefabs: make the folders + one template room, then fill the library from the folders
+        BuildRoomTemplate();
+        so.FindProperty("roomLibrary").objectReferenceValue = RoomLibraryUpdater.Refresh(true);
         so.FindProperty("fadeScreen").objectReferenceValue = fadeGroup;
         so.FindProperty("hudText").objectReferenceValue = hud;
         so.FindProperty("messageText").objectReferenceValue = message;
@@ -853,6 +1053,57 @@ public static class BattleTestBuilder
         so.ApplyModifiedPropertiesWithoutUndo();
 
         cleared.gameObject.SetActive(false);
+    }
+
+    // Example room prefab in Assets/Prefab/Rooms/Enemy, same shape as the old code-built hallway.
+    // Only made if it doesn't exist yet, so the team's edits to it are never overwritten.
+    // Copy it into the other folders (or make new ones) to make more rooms.
+    static void BuildRoomTemplate()
+    {
+        RoomLibraryUpdater.EnsureFolders();
+        const string path = RoomLibraryUpdater.RoomsFolder + "/Enemy/Hallway_Basic.prefab";
+        if (AssetDatabase.LoadAssetAtPath<GameObject>(path)) return;
+
+        const float hall = 14f, width = 4f, h = 4f, depth = 4f, chamberW = 9.4f;
+        float endZ = hall + depth, side = (chamberW - width) / 2f;
+
+        var root = new GameObject("Hallway_Basic");
+        var t = root.transform;
+        var geo = new GameObject("Geometry").transform;
+        geo.SetParent(t, false);
+        Box("Floor", geo, new Vector3(0, -0.1f, hall / 2), new Vector3(width, 0.2f, hall), brown);
+        Box("WallLeft", geo, new Vector3(-width / 2 - 0.1f, h / 2, hall / 2), new Vector3(0.2f, h, hall), gray);
+        Box("WallRight", geo, new Vector3(width / 2 + 0.1f, h / 2, hall / 2), new Vector3(0.2f, h, hall), gray);
+        Box("WallBack", geo, new Vector3(0, h / 2, -0.1f), new Vector3(width + 0.4f, h, 0.2f), gray);
+        Box("ChamberFloor", geo, new Vector3(0, -0.1f, hall + depth / 2), new Vector3(chamberW, 0.2f, depth), brown);
+        Box("ChamberFrontLeft", geo, new Vector3(-(width / 2 + side / 2), h / 2, hall - 0.1f), new Vector3(side, h, 0.2f), gray);
+        Box("ChamberFrontRight", geo, new Vector3(width / 2 + side / 2, h / 2, hall - 0.1f), new Vector3(side, h, 0.2f), gray);
+        Box("ChamberLeft", geo, new Vector3(-chamberW / 2 - 0.1f, h / 2, hall + depth / 2), new Vector3(0.2f, h, depth), gray);
+        Box("ChamberRight", geo, new Vector3(chamberW / 2 + 0.1f, h / 2, hall + depth / 2), new Vector3(0.2f, h, depth), gray);
+        Box("ChamberEnd", geo, new Vector3(0, h / 2, endZ + 0.1f), new Vector3(chamberW + 0.4f, h, 0.2f), gray);
+
+        var light = new GameObject("RoomLight").AddComponent<Light>();
+        light.transform.SetParent(t, false);
+        light.transform.localPosition = new Vector3(0, 3.5f, hall * 0.6f);
+        light.type = LightType.Point;
+        light.range = 22; light.intensity = 1.5f;
+
+        var markers = new GameObject("Markers").transform;
+        markers.SetParent(t, false);
+        var playerSpawn = Point("PlayerSpawn", markers, new Vector3(0, 1, 1.5f));
+        var enemySpawn = Point("EnemySpawn", markers, new Vector3(0, 0, hall * 0.55f));
+        enemySpawn.localRotation = Quaternion.Euler(0, 180, 0);              // faces the player
+        var slots = new Transform[3];
+        for (int i = 0; i < 3; i++)
+            slots[i] = Point("DoorSlot" + (i + 1), markers, new Vector3((i - 1) * 3f, 0, endZ));
+
+        var room = root.AddComponent<RoomPrefab>();
+        room.playerSpawn = playerSpawn;
+        room.enemySpawn = enemySpawn;
+        room.doorSlots = slots;
+
+        PrefabUtility.SaveAsPrefabAsset(root, path);
+        Object.DestroyImmediate(root);
     }
 
     static void SetGroups(SerializedProperty list, EnemyData[][] groups)

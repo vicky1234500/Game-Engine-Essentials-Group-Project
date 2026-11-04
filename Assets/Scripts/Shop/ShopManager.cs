@@ -12,6 +12,8 @@ public class ShopManager : MonoBehaviour
 
     [Header("Stock")]
     [SerializeField] List<ItemData> itemPool = new List<ItemData>();
+    [Tooltip("ON: stock comes from Resources/ItemDatabase (all finished items) instead of the list above.")]
+    [SerializeField] bool useItemDatabase = true;
     [Tooltip("Their starting items are never sold in the shop.")]
     [SerializeField] List<CharacterData> characters = new List<CharacterData>();
     [SerializeField] int slotCount = 3;
@@ -52,7 +54,8 @@ public class ShopManager : MonoBehaviour
             foreach (var item in RunState.selectedCharacter.startingItems) if (item) excluded.Add(item);
 
         var pool = new List<ItemData>();
-        foreach (var item in itemPool)
+        var source = useItemDatabase && ItemDatabase.Load() ? ItemDatabase.Pool() : itemPool;
+        foreach (var item in source)
             if (item && !excluded.Contains(item) && !pool.Contains(item)) pool.Add(item);
 
         int discount = DiscountPercent();

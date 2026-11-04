@@ -5,7 +5,7 @@ using UnityEngine;
 public class PlayerCombatant : Combatant
 {
     [SerializeField] string playerName = "Character 1";
-    [SerializeField] int maxMana = 3;          // TODO: confirm mana per turn with the team
+    [SerializeField] int maxMana = 3;
 
     public int Mana { get; private set; }
     public int MaxMana => maxMana;
@@ -16,6 +16,7 @@ public class PlayerCombatant : Combatant
     public int HealPerTurn { get; private set; }
     public int ExtraDrawFirstTurn { get; private set; }
     public int CreditBonusPercent { get; private set; }
+    public int HealAfterBattle { get; private set; }
 
     public override string DisplayName => playerName;
 
@@ -50,7 +51,7 @@ public class PlayerCombatant : Combatant
     void ApplyPassives(InventoryGrid inventory)
     {
         BonusDefense = 0; BonusManaPerTurn = 0; GunDamageBonus = 0;
-        HealPerTurn = 0; ExtraDrawFirstTurn = 0; CreditBonusPercent = 0;
+        HealPerTurn = 0; ExtraDrawFirstTurn = 0; CreditBonusPercent = 0; HealAfterBattle = 0;
         if (!inventory) return;
 
         foreach (var item in inventory.Items)
@@ -66,6 +67,7 @@ public class PlayerCombatant : Combatant
                     case PassiveType.HealPerTurn:        HealPerTurn += p.amount; break;
                     case PassiveType.ExtraDrawFirstTurn: ExtraDrawFirstTurn += p.amount; break;
                     case PassiveType.CreditBonusPercent: CreditBonusPercent += p.amount; break;
+                    case PassiveType.HealAfterBattle:    HealAfterBattle += p.amount; break;
                 }
             }
         }

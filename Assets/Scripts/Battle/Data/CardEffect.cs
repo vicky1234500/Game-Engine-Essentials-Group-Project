@@ -14,7 +14,9 @@ public enum EffectType
     Draw,            // draw `amount` cards
     ExtraTurn,       // Override
     Summon,          // Warden Mech summons drones (enemy only)
-    DamagePerStatus  // Dissolve: damage = amount x target's `status` stacks (3 x CORRODE)
+    DamagePerStatus, // Dissolve: damage = amount x target's `status` stacks (3 x CORRODE)
+    RemoveShield,    // EMP: target loses all SHIELD
+    DamagePerAttackPlayed  // Thousand Cuts: amount x attack cards played this fight
 }
 
 public enum TargetType

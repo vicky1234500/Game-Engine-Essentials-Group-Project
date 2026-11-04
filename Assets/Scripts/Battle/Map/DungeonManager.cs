@@ -13,8 +13,10 @@ public class EncounterGroup
 
 // Runs one floor of the dungeon, room by room, in ONE scene:
 //   - makes a random map (MapGenerator)
-//   - builds the current room: a tight hallway with the enemy in the middle,
-//     and a small chamber at the end with one door per next room
+//   - builds the current room from a random room prefab of that type (RoomLibrary,
+//     filled from Assets/Prefab/Rooms/<Type>/), then puts the enemy on its Enemy Spawn
+//     and one door per next room on its Door Slots.
+//     No prefab at all -> builds a plain hallway in code instead.
 //   - walking through a door fades to black and builds the next room (HP + backpack stay)
 //   - beating the boss shows "Floor cleared" -> back to the Lobby
 // Put on an empty "DungeonManager" object.
@@ -28,9 +30,20 @@ public class DungeonManager : MonoBehaviour
     [SerializeField] int lanes = 3;
     [Tooltip("Lines drawn from start to boss. More = more connections between paths.")]
     [SerializeField] int paths = 4;
-    [Range(0, 1)] [SerializeField] float eliteChance = 0.25f;
+    [Range(0, 1)] [SerializeField] float eliteChance = 0.2f;
     [Tooltip("Rows before this (0-based) are always normal enemies.")]
     [SerializeField] int eliteFromLayer = 2;
+    [Tooltip("Non-fight rooms (0 = never). Event / Rest are empty walk-through rooms until they're made.")]
+    [Range(0, 1)] [SerializeField] float shopChance = 0.15f;
+    [Range(0, 1)] [SerializeField] float eventChance = 0.25f;
+    [Range(0, 1)] [SerializeField] float restChance = 0f;
+    [Tooltip("Rows before this (0-based) never have shops / events.")]
+    [SerializeField] int shopFromLayer = 1;
+    [SerializeField] int eventFromLayer = 1;
+
+    [Header("Rooms")]
+    [Tooltip("Assets/Data/RoomLibrary - auto-filled from the folders in Assets/Prefab/Rooms.")]
+    [SerializeField] RoomLibrary roomLibrary;
 
     [Header("Encounters (one group is picked at random)")]
     [SerializeField] List<EncounterGroup> normalEncounters = new List<EncounterGroup>();
@@ -51,6 +64,7 @@ public class DungeonManager : MonoBehaviour
     [SerializeField] Material doorEnemyMat;
     [SerializeField] Material doorEliteMat;
     [SerializeField] Material doorBossMat;
+    [SerializeField] Material doorOtherMat;          // shop / event / rest
 
     [Header("UI")]
     [SerializeField] CanvasGroup fadeScreen;
@@ -85,7 +99,8 @@ public class DungeonManager : MonoBehaviour
 
     void Start()
     {
-        Map = MapGenerator.Generate(layers, lanes, paths, eliteChance, eliteFromLayer);
+        Map = MapGenerator.Generate(layers, lanes, paths, eliteChance, eliteFromLayer,
+                                   shopChance, eventChance, restChance, shopFromLayer, eventFromLayer);
         if (floorClearedPanel) floorClearedPanel.SetActive(false);
         if (mapView) mapView.Build(Map);
         EnterRoom(Map.start);
@@ -143,19 +158,77 @@ public class DungeonManager : MonoBehaviour
         RoomCleared = !node.IsCombat;
 
         if (roomRoot) Destroy(roomRoot.gameObject);
-        roomRoot = new GameObject($"Room_{node.type}_{node.layer + 1}").transform;
-        BuildRoom(node);
 
-        TeleportPlayer(new Vector3(0, 1, 1.5f));
+        var prefab = roomLibrary ? roomLibrary.Pick(node.type) : null;
+        Vector3 spawnPos = new Vector3(0, 1, 1.5f);
+        Quaternion spawnRot = Quaternion.identity;
+
+        if (prefab)
+        {
+            roomRoot = Instantiate(prefab.gameObject, Vector3.zero, Quaternion.identity).transform;
+            roomRoot.name = $"Room_{node.type}_{node.layer + 1} ({prefab.name})";
+            var room = roomRoot.GetComponent<RoomPrefab>();
+            FillPrefabRoom(node, room);
+            if (room.playerSpawn) { spawnPos = room.playerSpawn.position; spawnRot = room.playerSpawn.rotation; }
+        }
+        else
+        {
+            roomRoot = new GameObject($"Room_{node.type}_{node.layer + 1}").transform;
+            BuildRoom(node);
+        }
+
+        TeleportPlayer(spawnPos, spawnRot);
         if (mapView) mapView.Refresh(Current);
+
+        // Each shop room keeps its own stock for the whole run
+        if (node.type == NodeType.Shop)
+        {
+            var shop = FindFirstObjectByType<ShopManager>(FindObjectsInactive.Include);
+            if (shop) shop.SetShopKey($"Floor1_Room{node.id}");
+            ShowMessage("Shop - walk up to the counter and press E");
+        }
+        else if (node.type == NodeType.Event || node.type == NodeType.Rest)
+            ShowMessage($"{node.type} room - coming soon. Pick a door to continue.");
     }
 
-    void TeleportPlayer(Vector3 pos)
+    // ---------------- Room from a prefab ----------------
+
+    void FillPrefabRoom(MapNode node, RoomPrefab room)
+    {
+        // Enemy on the Enemy Spawn (only in fight rooms)
+        if (node.IsCombat)
+        {
+            var group = Pick(node.type);
+            if (group != null && group.enemies.Count > 0)
+            {
+                Transform at = room.enemySpawn ? room.enemySpawn : roomRoot;
+                SpawnEncounter(group.enemies, at.position, at.rotation);
+            }
+            else RoomCleared = true;
+        }
+
+        // One door per next room, centred on the available slots. Unused slots are walled off.
+        var nexts = Map.Next(node);
+        var slots = room.doorSlots ?? new Transform[0];
+        if (slots.Length < nexts.Count)
+            Debug.LogWarning($"{room.name} has {slots.Length} door slots but needs {nexts.Count}. Add more Door Slots.", room);
+
+        int first = Mathf.Max(0, (slots.Length - nexts.Count) / 2);
+        for (int i = 0; i < slots.Length; i++)
+        {
+            if (!slots[i]) continue;
+            int n = i - first;
+            if (n >= 0 && n < nexts.Count) BuildDoor(nexts[n], slots[i].position, slots[i].rotation);
+            else Box("BlockedDoor", slots[i].position + Vector3.up * 1.3f, new Vector3(1.8f, 2.6f, 0.2f), wallMat, slots[i].rotation);
+        }
+    }
+
+    void TeleportPlayer(Vector3 pos, Quaternion rot)
     {
         if (!player) return;
         var cc = player.GetComponent<CharacterController>();
         if (cc) cc.enabled = false;                       // CharacterController ignores position changes while on
-        player.SetPositionAndRotation(pos, Quaternion.identity);
+        player.SetPositionAndRotation(pos, Quaternion.Euler(0, rot.eulerAngles.y, 0));
         if (cc) cc.enabled = true;
 
         // Look straight ahead again (MouseLook re-reads its angle when re-enabled)
@@ -198,7 +271,8 @@ public class DungeonManager : MonoBehaviour
         if (node.IsCombat)
         {
             var group = Pick(node.type);
-            if (group != null && group.enemies.Count > 0) SpawnEncounter(group.enemies, new Vector3(0, 0, HallLength * 0.55f));
+            if (group != null && group.enemies.Count > 0)
+                SpawnEncounter(group.enemies, new Vector3(0, 0, HallLength * 0.55f), Quaternion.Euler(0, 180, 0));
             else RoomCleared = true;
         }
 
@@ -210,7 +284,7 @@ public class DungeonManager : MonoBehaviour
         for (int i = 0; i < nexts.Count; i++)
         {
             float x = (i - (nexts.Count - 1) / 2f) * DoorSpacing;
-            BuildDoor(nexts[i], new Vector3(x, 0, endZ));
+            BuildDoor(nexts[i], new Vector3(x, 0, endZ), Quaternion.identity);
         }
     }
 
@@ -221,12 +295,12 @@ public class DungeonManager : MonoBehaviour
         return list.Count > 0 ? list[Random.Range(0, list.Count)] : null;
     }
 
-    void SpawnEncounter(List<EnemyData> enemies, Vector3 pos)
+    // pos / rot in world space. rot = the way the enemy faces (towards the player).
+    void SpawnEncounter(List<EnemyData> enemies, Vector3 pos, Quaternion rot)
     {
         var go = new GameObject("Encounter");
-        go.transform.SetParent(roomRoot, false);
-        go.transform.localPosition = pos;
-        go.transform.localRotation = Quaternion.Euler(0, 180, 0);    // facing the player
+        go.transform.SetParent(roomRoot, true);
+        go.transform.SetPositionAndRotation(pos, rot);
 
         for (int i = 0; i < enemies.Count; i++)
         {
@@ -245,14 +319,19 @@ public class DungeonManager : MonoBehaviour
         enc.Setup(enemies, engageRange);
     }
 
-    void BuildDoor(MapNode target, Vector3 pos)
+    // pos = bottom-centre of the doorway (world). rot forward = out of the room.
+    void BuildDoor(MapNode target, Vector3 pos, Quaternion rot)
     {
-        Material mat = target.type == NodeType.Boss ? doorBossMat : target.type == NodeType.Elite ? doorEliteMat : doorEnemyMat;
-        Box("Door_" + target.type, pos + new Vector3(0, 1.3f, -0.05f), new Vector3(1.6f, 2.6f, 0.1f), mat);
+        Material mat = target.type == NodeType.Boss ? doorBossMat
+                     : target.type == NodeType.Elite ? doorEliteMat
+                     : target.type == NodeType.Enemy ? doorEnemyMat
+                     : (doorOtherMat ? doorOtherMat : doorEnemyMat);
+        Vector3 up = Vector3.up, back = rot * Vector3.back;
+        Box("Door_" + target.type, pos + up * 1.3f + back * 0.05f, new Vector3(1.6f, 2.6f, 0.1f), mat, rot);
 
         var trigger = new GameObject("DoorTrigger_" + target.id);
-        trigger.transform.SetParent(roomRoot, false);
-        trigger.transform.localPosition = pos + new Vector3(0, 1.3f, -0.6f);
+        trigger.transform.SetParent(roomRoot, true);
+        trigger.transform.SetPositionAndRotation(pos + up * 1.3f + back * 0.6f, rot);
         var col = trigger.AddComponent<BoxCollider>();
         col.isTrigger = true;
         col.size = new Vector3(1.6f, 2.6f, 0.8f);
@@ -260,7 +339,7 @@ public class DungeonManager : MonoBehaviour
         rb.isKinematic = true; rb.useGravity = false;
         trigger.AddComponent<DungeonDoor>().Setup(target);
 
-        Label(pos + new Vector3(0, 3.1f, -0.2f), DoorLabel(target.type), DoorColor(target.type), 0.035f);
+        Label(pos + up * 3.1f + back * 0.2f, DoorLabel(target.type), DoorColor(target.type), 0.035f, rot);
     }
 
     public static string DoorLabel(NodeType t)
@@ -281,21 +360,22 @@ public class DungeonManager : MonoBehaviour
         t == NodeType.Boss ? new Color(0.85f, 0.4f, 1f) :
         t == NodeType.Elite ? new Color(1f, 0.6f, 0.2f) : Color.white;
 
-    void Box(string name, Vector3 pos, Vector3 scale, Material mat)
+    // pos / rot in world space (the room root sits at the origin).
+    void Box(string name, Vector3 pos, Vector3 scale, Material mat, Quaternion? rot = null)
     {
         var b = GameObject.CreatePrimitive(PrimitiveType.Cube);
         b.name = name;
-        b.transform.SetParent(roomRoot, false);
-        b.transform.localPosition = pos;
+        b.transform.SetParent(roomRoot, true);
+        b.transform.SetPositionAndRotation(pos, rot ?? Quaternion.identity);
         b.transform.localScale = scale;
         if (mat) b.GetComponent<Renderer>().sharedMaterial = mat;
     }
 
-    void Label(Vector3 pos, string text, Color color, float size)
+    void Label(Vector3 pos, string text, Color color, float size, Quaternion? rot = null)
     {
         var go = new GameObject("Label");
-        go.transform.SetParent(roomRoot, false);
-        go.transform.localPosition = pos;
+        go.transform.SetParent(roomRoot, true);
+        go.transform.SetPositionAndRotation(pos, rot ?? Quaternion.identity);
         var tm = go.AddComponent<TextMesh>();
         tm.font = font;
         go.GetComponent<MeshRenderer>().sharedMaterial = font.material;

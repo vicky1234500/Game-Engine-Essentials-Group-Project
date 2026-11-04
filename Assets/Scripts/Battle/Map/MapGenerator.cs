@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-// Makes a random floor map, Slay the Spire style.
+// Makes a random floor map.
 //
 //   - A grid of `layers` rows x `lanes` columns (5 x 3).
 //   - Draw `paths` lines from the bottom to the top. Each step goes left, straight or right,
@@ -11,7 +11,11 @@ using UnityEngine;
 //   - Room types: first rows are always Enemy, later rows have a chance to be Elite.
 public static class MapGenerator
 {
-    public static FloorMap Generate(int layers, int lanes, int paths, float eliteChance, int eliteFromLayer)
+    // shop/event/restChance: chance for a room (from row 2 up) to be that type instead of a fight.
+    // 0 = never (default), so the floor stays all fights until those rooms are made.
+    public static FloorMap Generate(int layers, int lanes, int paths, float eliteChance, int eliteFromLayer,
+                                   float shopChance = 0f, float eventChance = 0f, float restChance = 0f,
+                                   int shopFromLayer = 1, int eventFromLayer = 1)
     {
         var map = new FloorMap { layers = layers, lanes = lanes };
         var grid = new MapNode[layers, lanes];
@@ -65,10 +69,16 @@ public static class MapGenerator
             if (grid[layers - 1, c] != null) grid[layers - 1, c].next.Add(map.boss.id);
         }
 
-        // Room types (only fights for now)
+        // Room types: roll once per room. Row 1 is always a fight.
         foreach (var n in map.nodes)
-            if (n.type == NodeType.Enemy && n.layer >= eliteFromLayer && Random.value < eliteChance)
-                n.type = NodeType.Elite;
+        {
+            if (n.type != NodeType.Enemy || n.layer < 1) continue;
+            float roll = Random.value;
+            if (roll < shopChance && n.layer >= shopFromLayer) n.type = NodeType.Shop;
+            else if (roll >= shopChance && roll < shopChance + eventChance && n.layer >= eventFromLayer) n.type = NodeType.Event;
+            else if (roll < shopChance + eventChance + restChance) n.type = NodeType.Rest;
+            else if (n.layer >= eliteFromLayer && Random.value < eliteChance) n.type = NodeType.Elite;
+        }
 
         return map;
     }

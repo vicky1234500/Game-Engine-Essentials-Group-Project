@@ -16,5 +16,6 @@ public class CardInstance
     }
 
     public int ManaCost => data.manaCost;
-    public bool Playable => !data.unplayable && data.type != CardType.Curse;
+    // Curses are unplayable unless they're like Jammed ("pay 1 MANA to exhaust it").
+    public bool Playable => !data.unplayable;
 }

@@ -38,6 +38,7 @@ public class BattleManager : MonoBehaviour
     public DeckManager Deck => deck;
     public readonly List<EnemyCombatant> enemies = new List<EnemyCombatant>();
     public int TurnNumber { get; private set; }
+    public int AttackCardsPlayed { get; private set; }   // Thousand Cuts
 
     public event Action<BattleState> OnStateChanged;
     public event Action<string> OnLog;
@@ -51,6 +52,7 @@ public class BattleManager : MonoBehaviour
     {
         Instance = this;
         player.OnDied += _ => CheckBattleOver();
+        deck.OnCardDrawn += HandleCardDrawn;
     }
 
     void Start()
@@ -66,6 +68,7 @@ public class BattleManager : MonoBehaviour
         spawnPoints = points != null && points.Length > 0 ? points : defaultSpawnPoints;
         SetState(BattleState.Setup);
         TurnNumber = 0;
+        AttackCardsPlayed = 0;
         extraTurnPending = false;
 
         if (!inventory) inventory = FindFirstObjectByType<InventoryGrid>(FindObjectsInactive.Include);
@@ -141,6 +144,7 @@ public class BattleManager : MonoBehaviour
         foreach (var effect in card.data.GetEffects())
             EffectResolver.Resolve(effect, player, target, this, bonusDamage, card.bonusShield);
 
+        if (card.data.type == CardType.Attack) AttackCardsPlayed++;
         deck.MoveToDiscardOrExhaust(card);
         CheckBattleOver();
         return true;
@@ -158,8 +162,23 @@ public class BattleManager : MonoBehaviour
     IEnumerator EnemyPhase()
     {
         // End of player turn
+        // Attack Drone: hits a random enemy at the end of the player's turn
+        if (player.Statuses.Has(StatusType.DroneStrike))
+        {
+            var alive = enemies.FindAll(e => !e.IsDead);
+            if (alive.Count > 0)
+                EffectResolver.DealDamage(player, alive[UnityEngine.Random.Range(0, alive.Count)],
+                                          player.Statuses.Amount(StatusType.DroneStrike), false, this);
+            if (CheckBattleOver()) yield break;
+        }
+
         var leftInHand = deck.DiscardHand();
-        // TODO: Rejection curse - lose 4 HP for each Rejection in leftInHand
+        foreach (var c in leftInHand)                 // Rejection curse
+            if (c.data.curseTrigger == CurseTrigger.EndOfTurnInHandLoseHP)
+            {
+                player.LoseHP(c.data.curseAmount);
+                Log($"{c.data.cardName}: lose {c.data.curseAmount} HP");
+            }
         player.OnTurnEnd();
         if (CheckBattleOver()) yield break;
 
@@ -288,6 +307,7 @@ public class BattleManager : MonoBehaviour
             RunState.lastCreditsEarned = credits;
             RunState.credits += credits;
             Log($"Victory! +{credits} credits");
+            if (player.HealAfterBattle > 0) player.Heal(player.HealAfterBattle);     // Med Pod
         }
         else Log("Defeat...");
 
@@ -296,6 +316,23 @@ public class BattleManager : MonoBehaviour
     }
 
     public void GrantExtraTurn() => extraTurnPending = true;
+
+    // Curses that trigger when drawn (System Error, Tracker).
+    void HandleCardDrawn(CardInstance card)
+    {
+        if (State == BattleState.None) return;
+        switch (card.data.curseTrigger)
+        {
+            case CurseTrigger.OnDrawLoseMana:
+                player.SpendMana(card.data.curseAmount);
+                Log($"{card.data.cardName}: lose {card.data.curseAmount} mana");
+                break;
+            case CurseTrigger.OnDrawEnemiesGainShield:
+                foreach (var e in enemies) if (!e.IsDead) e.GainShield(card.data.curseAmount);
+                Log($"{card.data.cardName}: enemies gain {card.data.curseAmount} shield");
+                break;
+        }
+    }
 
     void SetState(BattleState s)
     {

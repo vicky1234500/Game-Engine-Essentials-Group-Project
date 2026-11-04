@@ -17,6 +17,7 @@ public class DeckManager : MonoBehaviour
 
     public int CardsPerTurn => cardsPerTurn;
     public event Action OnPilesChanged;       // HandView / BattleUI refresh on this
+    public event Action<CardInstance> OnCardDrawn;   // curses like System Error / Tracker react to this
 
     // Build from the backpack. Uses each item's card list (count = copies).
     public void BuildFromInventory(InventoryGrid inventory)
@@ -60,7 +61,7 @@ public class DeckManager : MonoBehaviour
             var card = drawPile[drawPile.Count - 1];
             drawPile.RemoveAt(drawPile.Count - 1);
             hand.Add(card);
-            // TODO: "when drawn" curses (System Error, Tracker) -> BattleManager.OnCardDrawn
+            OnCardDrawn?.Invoke(card);
         }
         Changed();
     }

@@ -16,5 +16,7 @@ public enum StatusType
     Slowed,        // Cryo Gun
     Dizzy,         // Dizzy Poison
     HealingReduced, // Parasite - healing received -50%
-    Regen           // Nano-Injector: +X HP at the end of each turn
+    Regen,          // Nano-Injector: +X HP at the end of each turn
+    Decoy,          // Holo Decoy: the next attack against it misses completely
+    DroneStrike     // Attack Drone: deals X damage to a random enemy at the end of each player turn
 }

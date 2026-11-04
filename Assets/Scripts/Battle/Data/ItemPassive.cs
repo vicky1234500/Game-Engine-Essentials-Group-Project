@@ -8,7 +8,10 @@ public enum PassiveType
     HealPerTurn,         // Black-Market Implant +5 HP at the start of every turn
     ExtraDrawFirstTurn,  // Tactical AI Core: draw 2 extra cards on turn 1
     CreditBonusPercent,  // Stolen Credit Chip +50% money
-    ShopDiscountPercent  // Shop Spoofer: shop prices -15%
+    ShopDiscountPercent, // Shop Spoofer: shop prices -15%
+    HealAfterBattle,     // Med Pod: +15 HP after each won fight
+    RevealMap,           // Map Uplink: the map screen shows the whole floor
+    RestHealBonusPercent // Field Repair Kit: rest rooms heal more (needs Rest rooms, not made yet)
 }
 
 [System.Serializable]

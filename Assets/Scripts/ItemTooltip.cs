@@ -36,6 +36,8 @@ public class ItemTooltip : MonoBehaviour
             if (!string.IsNullOrEmpty(c.description))
                 sb.Append($"<size=12><color=#C8CED6>{c.description}</color></size>\n");
         }
+        if (!string.IsNullOrEmpty(item.data.description))
+            sb.Append($"<i><color=#E8D9A0>{item.data.description}</color></i>\n");
         cardsText.text = sb.ToString().TrimEnd();
 
         gameObject.SetActive(true);

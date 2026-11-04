@@ -17,6 +17,8 @@ public class ItemData : ScriptableObject
     public Color tint = new Color(0.22f, 0.54f, 0.87f);   // attack blue, heal green, defense purple...
     [Tooltip("Shop price in credits. Selling gives half of this.")]
     public int price = 50;
+    [Tooltip("Shown in the tooltip. Mostly for items without cards (Lock Pick, Map Uplink...).")]
+    [TextArea] public string description = "";
     public List<CardEntry> cards = new List<CardEntry>();
     [Tooltip("Bonuses just for having this item in the backpack (Kinetic Vest +10 DF, Ammo Belt +2 gun damage...)")]
     public List<ItemPassive> passives = new List<ItemPassive>();
