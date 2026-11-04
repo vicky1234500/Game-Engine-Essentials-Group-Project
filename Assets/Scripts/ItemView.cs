@@ -94,9 +94,12 @@ public class ItemView : MonoBehaviour,
     }
 
     // Click (without dragging) selects the item. Unity doesn't send a click after a drag.
+    // In sell mode (shop), a click picks the item to sell instead.
     public void OnPointerClick(PointerEventData e)
     {
-        if (e.button == PointerEventData.InputButton.Left) grid.Select(Item);
+        if (e.button != PointerEventData.InputButton.Left) return;
+        if (grid.SellMode) { grid.RequestSell(Item); return; }
+        grid.Select(Item);
     }
 
     // ---------- Drag ----------
@@ -104,6 +107,7 @@ public class ItemView : MonoBehaviour,
     public void OnBeginDrag(PointerEventData e)
     {
         if (e.button != PointerEventData.InputButton.Left) return;
+        if (grid.SellMode) return;          // no dragging while choosing an item to sell
 
         dragging = true;
         discarded = false;

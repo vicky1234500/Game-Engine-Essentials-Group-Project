@@ -7,7 +7,8 @@ public enum PassiveType
     BonusManaPerTurn,    // Neural Booster +1 MANA every turn
     HealPerTurn,         // Black-Market Implant +5 HP at the start of every turn
     ExtraDrawFirstTurn,  // Tactical AI Core: draw 2 extra cards on turn 1
-    CreditBonusPercent   // Stolen Credit Chip +50% money
+    CreditBonusPercent,  // Stolen Credit Chip +50% money
+    ShopDiscountPercent  // Shop Spoofer: shop prices -15%
 }
 
 [System.Serializable]

@@ -16,6 +16,7 @@ MonoBehaviour:
   icon: {fileID: 0}
   size: {x: 1, y: 1}
   tint: {r: 0.25, g: 0.7, b: 0.35, a: 1}
+  price: 10
   cards:
   - card: {fileID: 11400000, guid: ef46e56de3ce26441bb65ab3eec59213, type: 2}
     count: 3

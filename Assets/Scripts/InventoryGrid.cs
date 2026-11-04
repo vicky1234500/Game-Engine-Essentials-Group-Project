@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -26,6 +27,11 @@ public class InventoryGrid : MonoBehaviour, IPointerClickHandler
     [Tooltip("Legacy UI Button that appears when a rotatable item is selected. It stays where you place it. Leave its On Click empty, the script hooks it up.")]
     [SerializeField] Button rotateButton;
 
+    [Header("Backpack upgrade (shop)")]
+    [SerializeField] int maxRows = 6;
+    [Tooltip("These grow by one row each upgrade: InventorySlots, ItemLayer and InventoryBackground.")]
+    [SerializeField] RectTransform[] growWithRows;
+
     [Header("Slot highlight while dragging")]
     [SerializeField] Color validColor = new Color(0.35f, 0.8f, 0.45f, 1f);
     [SerializeField] Color invalidColor = new Color(0.9f, 0.3f, 0.3f, 1f);
@@ -36,6 +42,7 @@ public class InventoryGrid : MonoBehaviour, IPointerClickHandler
     Color[] slotColors;
     bool initialized;
     ItemInstance selected;
+    bool restoring;          // stops saving while the saved backpack is being rebuilt
 
     public RectTransform ItemLayer => itemLayer;
     public ItemTooltip Tooltip => tooltip;
@@ -44,6 +51,15 @@ public class InventoryGrid : MonoBehaviour, IPointerClickHandler
     public Vector2 Step => slotGrid.cellSize + slotGrid.spacing;
     public bool AllowManualRotate => allowManualRotate;
     public ItemInstance Selected => selected;
+    public int Columns => columns;
+    public int Rows => rows;
+    public int MaxRows => maxRows;
+    public bool CanAddRow => rows < maxRows;
+
+    // Shop "Sell": while on, clicking an item asks to sell it instead of selecting it.
+    public bool SellMode { get; set; }
+    public event Action<ItemInstance> OnSellRequested;
+    public void RequestSell(ItemInstance item) => OnSellRequested?.Invoke(item);
 
     void Awake() => EnsureInit();
 
@@ -126,6 +142,7 @@ public class InventoryGrid : MonoBehaviour, IPointerClickHandler
 
         items.Add(item);
         if (item.view) item.view.Refresh();
+        SaveToRunState();
         return true;
     }
 
@@ -136,6 +153,7 @@ public class InventoryGrid : MonoBehaviour, IPointerClickHandler
         for (int y = 0; y < rows; y++)
             if (cells[x, y] == item) cells[x, y] = null;
         items.Remove(item);
+        SaveToRunState();
     }
 
     public void Discard(ItemInstance item)
@@ -159,6 +177,86 @@ public class InventoryGrid : MonoBehaviour, IPointerClickHandler
             if (other != null && other != ignore) return false;
         }
         return true;
+    }
+
+    // Removes every item (used when the character is changed in the Lobby).
+    public void ClearAll()
+    {
+        EnsureInit();
+        foreach (var item in new List<ItemInstance>(items)) Discard(item);
+    }
+
+    // ---------- Backpack upgrade ----------
+
+    // Adds one row at the bottom. Returns false at max size.
+    public bool AddRow()
+    {
+        EnsureInit();
+        if (!CanAddRow) return false;
+
+        // 1. bigger cells array, old items keep their place
+        var newCells = new ItemInstance[columns, rows + 1];
+        for (int x = 0; x < columns; x++)
+        for (int y = 0; y < rows; y++)
+            newCells[x, y] = cells[x, y];
+        cells = newCells;
+        rows++;
+
+        // 2. new slot objects, copied from the first slot
+        Transform template = slotGrid.transform.GetChild(0);
+        int oldCount = slotImages.Length;
+        Array.Resize(ref slotImages, oldCount + columns);
+        Array.Resize(ref slotColors, oldCount + columns);
+        for (int i = 0; i < columns; i++)
+        {
+            Transform slot = Instantiate(template, slotGrid.transform);
+            slot.name = "InventorySlot" + (oldCount + i);
+            Image img = slot.GetComponent<Image>();
+            if (img) img.color = slotColors[0];
+            slotImages[oldCount + i] = img;
+            slotColors[oldCount + i] = slotColors[0];
+        }
+
+        // 3. make the panels taller by one row
+        foreach (var rt in growWithRows)
+            if (rt) rt.sizeDelta += new Vector2(0f, Step.y);
+
+        SaveToRunState();
+        return true;
+    }
+
+    // ---------- Keeping the backpack between scenes ----------
+
+    // Every change is written to RunState, so the next scene can rebuild the same backpack.
+    void SaveToRunState()
+    {
+        if (restoring) return;
+        RunState.SaveBackpack(rows, items);
+    }
+
+    // Rebuilds the backpack from RunState (called by StartingItems when a scene starts).
+    public void RestoreFromRunState()
+    {
+        EnsureInit();
+        var saved = new List<SavedBackpackItem>(RunState.savedBackpack);
+
+        restoring = true;
+        while (rows < RunState.backpackRows && CanAddRow) AddRow();
+
+        foreach (var s in saved)
+        {
+            if (!s.item) continue;
+            var item = new ItemInstance(s.item) { rotated = s.rotated };
+            ItemView view = Instantiate(itemViewPrefab, itemLayer);
+            view.Setup(item, this);
+            if (!TryPlace(item, s.position))
+            {
+                Destroy(view.gameObject);   // spot not valid any more: put it anywhere it fits
+                TryAddItem(s.item);
+            }
+        }
+        restoring = false;
+        SaveToRunState();
     }
 
     // ---------- Selection and rotate button ----------
