@@ -346,8 +346,8 @@ MonoBehaviour:
   shopKey: Lobby
   inventory: {fileID: 0}
   itemPool:
-  - {fileID: 11400000, guid: d87286f2d7692f5418b34da6700185f1, type: 2}
-  - {fileID: 11400000, guid: da529e0838e320f41b39357cc8b81bea, type: 2}
+  - {fileID: 11400000, guid: fb591baf5e068474ab9f5c31f1dea029, type: 2}
+  - {fileID: 11400000, guid: 514f96a27d4535d4c908b18da7b2f2dd, type: 2}
   - {fileID: 11400000, guid: 165834f7438ca3848b61a953e6301b26, type: 2}
   characters:
   - {fileID: 11400000, guid: 7a2fafaa4a52e2b42a9ed461d3a76e2d, type: 2}
