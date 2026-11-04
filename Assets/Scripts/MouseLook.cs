@@ -4,6 +4,7 @@ using UnityEngine.InputSystem;
 // Same as the original MouseLook, but reads the mouse with the new Input System
 // (the project is set to "Input System Package" only, so Input.GetAxis doesn't work).
 // Usual setup: Player = MouseX (turn left/right), Main Camera = MouseY (look up/down).
+// Menus (backpack, shop, character select) turn this script off while they're open.
 [AddComponentMenu("Control Script/Mouse Look")] // add to the Unity editor's component menu
 public class MouseLook : MonoBehaviour
 {
@@ -24,6 +25,13 @@ public class MouseLook : MonoBehaviour
     // min and max pitch angles
     public float minimumVert = -45.0f;
     public float maximumVert = 45.0f;
+
+    // ON = the cursor stays visible while exploring, so HUD buttons (like the backpack icon) can be clicked
+    public bool keepCursorVisible = true;
+
+    // OFF = moving the mouse always looks around
+    // ON  = only look around while holding the right mouse button (easier to click HUD buttons)
+    public bool lookOnlyWhileRightMouseHeld = false;
 
     // old Input.GetAxis("Mouse X") was roughly mouse pixels * 0.1, keep the same feel
     const float PixelsToAxis = 0.1f;
@@ -50,7 +58,18 @@ public class MouseLook : MonoBehaviour
 
     void Update()
     {
+        // other scripts lock/hide the cursor when their menus close, so undo that every frame
+        if (keepCursorVisible)
+        {
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+        }
+
         if (Mouse.current == null) return;
+
+        // optional: only look while the right mouse button is held
+        if (lookOnlyWhileRightMouseHeld && !Mouse.current.rightButton.isPressed) return;
+
         Vector2 delta = Mouse.current.delta.ReadValue() * PixelsToAxis;
 
         // yaw only
