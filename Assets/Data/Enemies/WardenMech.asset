@@ -12,14 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 79b26bded7ebdbb408f712b990754284, type: 3}
   m_Name: WardenMech
   m_EditorClassIdentifier: Assembly-CSharp::EnemyData
-  enemyName: Warden Mech
+  enemyName: Biomech Warlord
   rank: 2
   maxHP: 150
-  modelPrefab: {fileID: 2785625239073397158, guid: 4d4424b4ea971472e8881e6820a60a97, type: 3}
-  modelHeight: 2.7
+  modelPrefab: {fileID: 5576705509832974674, guid: c174d8cd23e214e2ebc956ff961ce8ae, type: 3}
+  modelHeight: 3
   modelLift: 0
   modelYaw: 0
-  hasHurtVoice: 0
+  hasHurtVoice: 1
   moves:
   - moveName: Minigun
     intent: 0

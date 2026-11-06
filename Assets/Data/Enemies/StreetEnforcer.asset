@@ -15,11 +15,11 @@ MonoBehaviour:
   enemyName: Street Enforcer
   rank: 1
   maxHP: 65
-  modelPrefab: {fileID: 5576705509832974674, guid: c174d8cd23e214e2ebc956ff961ce8ae, type: 3}
-  modelHeight: 2.1
+  modelPrefab: {fileID: 2785625239073397158, guid: 4d4424b4ea971472e8881e6820a60a97, type: 3}
+  modelHeight: 2.3
   modelLift: 0
   modelYaw: 0
-  hasHurtVoice: 1
+  hasHurtVoice: 0
   moves:
   - moveName: Punch
     intent: 0

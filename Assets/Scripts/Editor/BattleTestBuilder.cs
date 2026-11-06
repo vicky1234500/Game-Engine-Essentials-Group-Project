@@ -492,7 +492,7 @@ public static class BattleTestBuilder
 
         // Doc: Minigun 3x4, Charging -> Missile Barrage 20 + BURN 3, Repair Protocol +15.
         // (The "summon 2 drones at 50%" part needs smarter AI than the simple move loop, left out for now.)
-        e.warden = Enemy("WardenMech", "Warden Mech", EnemyRank.Boss, 150, 60, 80,
+        e.warden = Enemy("WardenMech", "Biomech Warlord", EnemyRank.Boss, 150, 60, 80,
             Move("Minigun", IntentType.Attack, Dmg(3, 4)),
             Move("Charging", IntentType.Special),
             Move("Missile Barrage", IntentType.Attack, Dmg(20), Status(StatusType.Burn, 3, 3, TargetType.SingleEnemy)),

@@ -23,9 +23,9 @@ public static class EnemyModelSetup
         //         EnemyData          Assets/Prefab/...                         height  lift  says "augh"
         new Entry("SecurityDrone",   "Enemy_EyeDrone",                          0.8f,  0.9f, false),
         new Entry("Rogue",           "protective suit Variant",                 1.8f,  0f,   true),
-        new Entry("StreetEnforcer",  "Biomech_Mutant_Skin_1_bloody Variant",    2.1f,  0f,   true),
+        new Entry("StreetEnforcer",  "boss",                                    2.3f,  0f,   false),
         new Entry("Netrunner",       "Sci_Fi_Character_08_01 Variant",          1.9f,  0f,   true),
-        new Entry("WardenMech",      "boss",                                    2.7f,  0f,   false),
+        new Entry("WardenMech",      "Biomech_Mutant_Skin_1_bloody Variant",    3.0f,  0f,   true),   // boss, shown as "Biomech Warlord"
     };
 
     [MenuItem("Tools/Roguelike/Apply Enemy Models (safe)")]
