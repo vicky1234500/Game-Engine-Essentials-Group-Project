@@ -65,21 +65,23 @@ public class CombatantHUD : MonoBehaviour
         if (intentText)
         {
             var enemy = target as EnemyCombatant;
-            intentText.text = enemy && enemy.NextMove != null ? DescribeIntent(enemy.NextMove) : "";
+            intentText.text = enemy && enemy.NextMove != null ? DescribeIntent(enemy.NextMove, enemy) : "";
         }
 
         if (target.IsDead && target is EnemyCombatant) gameObject.SetActive(false);
     }
 
-    static string DescribeIntent(EnemyMove m)
+    // e.g. "Attack 9", "Attack 3x4", "Wind Up". Damage includes the difficulty multiplier.
+    static string DescribeIntent(EnemyMove m, EnemyCombatant enemy)
     {
         if (m.intent == IntentType.Attack)
         {
             int total = 0, hits = 1;
             foreach (var e in m.effects)
                 if (e.type == EffectType.Damage) { total = e.amount; hits = e.hits; }
+            total = Mathf.RoundToInt(total * (enemy ? enemy.DamageMultiplier : 1f));
             return hits > 1 ? $"Attack {total}x{hits}" : $"Attack {total}";
         }
-        return m.intent.ToString();
+        return string.IsNullOrEmpty(m.moveName) ? m.intent.ToString() : m.moveName;
     }
 }

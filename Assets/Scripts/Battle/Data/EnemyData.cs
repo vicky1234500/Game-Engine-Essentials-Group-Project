@@ -20,7 +20,15 @@ public class EnemyData : ScriptableObject
     public string enemyName = "Rogue";
     public EnemyRank rank = EnemyRank.Normal;
     public int maxHP = 30;
-    public GameObject modelPrefab;                  // 3D model spawned in the battle scene
+    public GameObject modelPrefab;                  // 3D model, in the hallway and in battle
+    [Tooltip("The model is scaled to this height, in metres. The room ceiling is 3 m.")]
+    public float modelHeight = 1.8f;
+    [Tooltip("Metres above the floor. For enemies that hover, like drones.")]
+    public float modelLift = 0f;
+    [Tooltip("Turns the model, in degrees. Use 180 if it has its back to the player.")]
+    public float modelYaw = 0f;
+    [Tooltip("OFF for robots: no \"augh\" voice when hit.")]
+    public bool hasHurtVoice = true;
     [Tooltip("Used in this order, then loops: Move 1 -> Move 2 -> Move 3 -> Move 1...")]
     public List<EnemyMove> moves = new List<EnemyMove>();
 

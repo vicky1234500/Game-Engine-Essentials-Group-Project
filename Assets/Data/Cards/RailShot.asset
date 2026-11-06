@@ -15,12 +15,12 @@ MonoBehaviour:
   cardName: Rail Shot
   type: 0
   manaCost: 3
-  value: 45
-  description: Deal 45 damage. Ignores SHIELD.
+  value: 35
+  description: Deal 35 damage. Ignores SHIELD.
   effects:
   - type: 0
     target: 1
-    amount: 45
+    amount: 35
     hits: 1
     ignoresShield: 1
     status: 0

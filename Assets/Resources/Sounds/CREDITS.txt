@@ -1,0 +1,10 @@
+Sound effect credits. All are CC0 (public domain), so credit is optional.
+
+Hit:          Impact Sounds by Kenney (www.kenney.nl)
+ShieldBlock:  Sci-Fi Sounds by Kenney (www.kenney.nl)
+EnemyDeath:   Sci-Fi Sounds by Kenney (www.kenney.nl)
+Door:         Sci-Fi Sounds by Kenney (www.kenney.nl)
+PlayerHurt:   Hurt Sound Effects by EZduzziteh (opengameart.org/content/hurt-sound-effects)
+EnemyHurt:    Hurt Sound Effects by EZduzziteh (opengameart.org/content/hurt-sound-effects)
+
+To change a sound, swap the audio files in its folder. Each time, one file is picked at random.

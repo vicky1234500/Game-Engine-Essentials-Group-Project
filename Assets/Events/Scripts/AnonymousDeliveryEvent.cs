@@ -276,25 +276,16 @@ public class AnonymousDeliveryEvent : MonoBehaviour
         packageState = PackageState.Opened;
 
         trackerCount++;
+        RunEffects.AddCurse("Tracker");                          // in your deck for the rest of the run
 
         ItemData reward = rewards[Random.Range(0, rewards.Count)];
 
         string message =
             "You break the seal instead of accepting the delivery.\n"
-            + "Added to the prototype record: 1 Tracker curse "
+            + "Added 1 Tracker curse to your deck "
             + "for this run.\n";
 
-        if (inventory.HasSpaceFor(reward)
-            && inventory.TryAddItem(reward))
-        {
-            message += $"Received: {reward.itemName}.";
-        }
-        else
-        {
-            message +=
-                $"Backpack full. {reward.itemName} was not added.\n"
-                + "Overflow pickup is not implemented yet.";
-        }
+        message += RunEffects.GiveItem(inventory, reward);       // backpack full -> dropped on the floor
 
         ShowResult(message);
     }

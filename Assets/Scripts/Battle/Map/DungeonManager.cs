@@ -33,7 +33,7 @@ public class DungeonManager : MonoBehaviour
     [Range(0, 1)] [SerializeField] float eliteChance = 0.2f;
     [Tooltip("Rows before this (0-based) are always normal enemies.")]
     [SerializeField] int eliteFromLayer = 2;
-    [Tooltip("Non-fight rooms (0 = never). Event / Rest are empty walk-through rooms until they're made.")]
+    [Tooltip("Non-fight rooms (0 = never). Rest rooms are empty walk-through rooms until they're made.")]
     [Range(0, 1)] [SerializeField] float shopChance = 0.15f;
     [Range(0, 1)] [SerializeField] float eventChance = 0.25f;
     [Range(0, 1)] [SerializeField] float restChance = 0f;
@@ -44,6 +44,14 @@ public class DungeonManager : MonoBehaviour
     [Header("Rooms")]
     [Tooltip("Assets/Data/RoomLibrary - auto-filled from the folders in Assets/Prefab/Rooms.")]
     [SerializeField] RoomLibrary roomLibrary;
+
+    [Header("Difficulty")]
+    [Tooltip("Multiplies every enemy's HP. 1 = as set in its EnemyData.")]
+    [SerializeField] float enemyHpMultiplier = 1f;
+    [Tooltip("Multiplies every enemy's damage. 1 = as set in its EnemyData.")]
+    [SerializeField] float enemyDamageMultiplier = 1f;
+    [Tooltip("Extra HP + damage for each room deeper. 0.06 = room 5 enemies are +24%. The boss isn't scaled.")]
+    [SerializeField] float scalingPerRoom = 0.06f;
 
     [Header("Encounters (one group is picked at random)")]
     [SerializeField] List<EncounterGroup> normalEncounters = new List<EncounterGroup>();
@@ -109,6 +117,47 @@ public class DungeonManager : MonoBehaviour
     void OnBattleEnded(bool won)
     {
         if (won) RoomCleared = true;
+
+        // Fight Ring elite: pay the bet-free prize instead of normal rewards
+        if (won && eventFightCredits > 0)
+        {
+            RunState.credits += eventFightCredits;
+            RunState.lastCreditsEarned = eventFightCredits;
+            ShowMessage($"The crowd erupts! +{eventFightCredits} credits");
+        }
+        eventFightCredits = 0;
+    }
+
+    // ---------------- Fights started by events ----------------
+
+    int eventFightCredits;
+
+    // Underground Fight Ring: an elite fight right here, no normal rewards, +credits if you win.
+    public void StartEventEliteFight(int winCredits)
+    {
+        StartCoroutine(EventEliteFight(winCredits));
+    }
+
+    IEnumerator EventEliteFight(int winCredits)
+    {
+        yield return null;                                         // let the event popup close first
+        while (InBattle) yield return null;
+
+        var group = Pick(NodeType.Elite);
+        if (group == null || group.enemies.Count == 0 || !player) yield break;
+
+        Vector3 fwd = player.forward; fwd.y = 0; fwd.Normalize();
+        var go = new GameObject("EventFight");
+        go.transform.SetParent(roomRoot, true);
+        go.transform.SetPositionAndRotation(new Vector3(player.position.x, 0, player.position.z) + fwd * 2.5f,
+                                            Quaternion.LookRotation(-fwd));
+        var enc = go.AddComponent<EnemyEncounter>();
+        enc.Setup(group.enemies, 0f);                             // range 0 = never starts by itself
+
+        eventFightCredits = winCredits;
+        RunState.noRewardsNextFight = true;
+        RoomCleared = false;
+        if (BattleTransition.Instance) BattleTransition.Instance.BeginBattle(enc);
     }
 
     bool InBattle => BattleTransition.Instance && BattleTransition.Instance.Busy;
@@ -138,6 +187,7 @@ public class DungeonManager : MonoBehaviour
         if (moving || floorDone || InBattle) return;
         if (!RoomCleared) { ShowMessage("Defeat the enemy first!"); return; }
         if (!Current.next.Contains(node.id)) return;
+        GameAudio.Play(GameAudio.Door);
         StartCoroutine(MoveTo(node));
     }
 
@@ -156,6 +206,11 @@ public class DungeonManager : MonoBehaviour
         Current = node;
         node.visited = true;
         RoomCleared = !node.IsCombat;
+        ApplyDifficulty(node);
+
+        // Nanite Leak "go around": this room gives no rewards
+        RunState.noRewardsThisRoom = RunState.noRewardsNextRoom;
+        RunState.noRewardsNextRoom = false;
 
         if (roomRoot) Destroy(roomRoot.gameObject);
 
@@ -187,8 +242,29 @@ public class DungeonManager : MonoBehaviour
             if (shop) shop.SetShopKey($"Floor1_Room{node.id}");
             ShowMessage("Shop - walk up to the counter and press E");
         }
-        else if (node.type == NodeType.Event || node.type == NodeType.Rest)
-            ShowMessage($"{node.type} room - coming soon. Pick a door to continue.");
+        else if (node.type == NodeType.Boss && RunState.bossIntel)
+        {
+            var group = Pick(NodeType.Boss);   // (only used for the message; the fight picks its own)
+            if (group != null && group.enemies.Count > 0 && group.enemies[0])
+            {
+                var names = new List<string>();
+                foreach (var m in group.enemies[0].moves) names.Add(m.moveName);
+                ShowMessage("Boss intel: " + string.Join(" -> ", names));
+            }
+        }
+        else if (node.type == NodeType.Rest)
+            ShowMessage("Rest room - coming soon. Pick a door to continue.");
+        // Event rooms: the room's EventRoomTrigger opens a random event popup.
+    }
+
+    // Deeper rooms = stronger enemies. Read by BattleManager when the fight starts.
+    void ApplyDifficulty(MapNode node)
+    {
+        if (!battle) return;
+        int depth = node.type == NodeType.Boss ? 0 : Mathf.Max(0, node.layer);
+        float scale = 1f + scalingPerRoom * depth;
+        battle.EnemyHpMultiplier = enemyHpMultiplier * scale;
+        battle.EnemyDamageMultiplier = enemyDamageMultiplier * scale;
     }
 
     // ---------------- Room from a prefab ----------------
@@ -306,6 +382,13 @@ public class DungeonManager : MonoBehaviour
         {
             float x = enemies.Count == 1 ? 0 : (i - (enemies.Count - 1) / 2f) * 1.3f;
             float s = i == 0 ? 1f : 0.75f;
+            if (enemies[i] && enemies[i].modelPrefab)
+            {
+                EnemyModel.Spawn(enemies[i], go.transform, new Vector3(x, 0, 0), s);
+                continue;
+            }
+
+            // No model yet: a capsule stands in for it.
             var body = GameObject.CreatePrimitive(PrimitiveType.Capsule);
             body.name = "Model_" + (enemies[i] ? enemies[i].enemyName : "?");
             Destroy(body.GetComponent<Collider>());
@@ -339,7 +422,7 @@ public class DungeonManager : MonoBehaviour
         rb.isKinematic = true; rb.useGravity = false;
         trigger.AddComponent<DungeonDoor>().Setup(target);
 
-        Label(pos + up * 3.1f + back * 0.2f, DoorLabel(target.type), DoorColor(target.type), 0.035f, rot);
+        Label(pos + up * 2.8f + back * 0.2f, DoorLabel(target.type), DoorColor(target.type), 0.035f, rot);
     }
 
     public static string DoorLabel(NodeType t)

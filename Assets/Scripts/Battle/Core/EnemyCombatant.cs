@@ -9,19 +9,23 @@ public class EnemyCombatant : Combatant
     public EnemyData Data { get; private set; }
     public EnemyAI AI { get; private set; }
     public EnemyMove NextMove { get; private set; }   // the "intent" shown above its head
+    public float DamageMultiplier { get; private set; } = 1f;   // difficulty (set by BattleManager)
 
     public override string DisplayName => Data ? Data.enemyName : name;
     public override bool IsBoss => Data && Data.rank == EnemyRank.Boss;
+    protected override bool HasHurtVoice => Data && Data.hasHurtVoice;
 
-    public void Setup(EnemyData data)
+    // hpMultiplier / damageMultiplier come from the difficulty settings (DungeonManager).
+    public void Setup(EnemyData data, float hpMultiplier = 1f, float damageMultiplier = 1f)
     {
+        DamageMultiplier = damageMultiplier;
         Data = data;
         AI = new EnemyAI(data);
-        InitHP(data.maxHP);
+        InitHP(Mathf.Max(1, Mathf.RoundToInt(data.maxHP * hpMultiplier)));
 
         if (data.modelPrefab)
         {
-            Instantiate(data.modelPrefab, transform);
+            EnemyModel.Spawn(data, transform, Vector3.zero);
             if (placeholderModel) placeholderModel.SetActive(false);
         }
     }

@@ -26,10 +26,24 @@ public class DeckManager : MonoBehaviour
         if (!inventory) { Debug.LogWarning("DeckManager: no inventory, deck is empty."); return; }
 
         foreach (var item in inventory.Items)
+        {
+            // Equipment Miniaturizer: +2 / -1 damage per hit on this item's cards
+            int perHit = 0;
+            if (item.view)
+            {
+                var mod = item.view.GetComponent<ItemModification>();
+                if (mod) perHit = mod.DamagePerHitOffset;
+            }
+
             foreach (var entry in item.data.cards)
                 if (entry.card)
                     for (int i = 0; i < entry.count; i++)
-                        drawPile.Add(new CardInstance(entry.card, item.data));
+                        drawPile.Add(new CardInstance(entry.card, item.data) { bonusDamage = perHit });
+        }
+
+        // Curses events added for the whole run (Rejection, Tracker...)
+        foreach (var curse in RunState.runCurses)
+            if (curse) drawPile.Add(new CardInstance(curse));
 
         Shuffle(drawPile);
         Changed();

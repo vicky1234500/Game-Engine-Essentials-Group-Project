@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
   itemName: Overclocked Exo-Suit
   icon: {fileID: 0}
-  size: {x: 5, y: 1}
+  size: {x: 3, y: 2}
   tint: {r: 0.45, g: 0.3, b: 0.8, a: 1}
   price: 130
   description: 
@@ -22,7 +22,7 @@ MonoBehaviour:
   - card: {fileID: 11400000, guid: a5808519bff25ad44b0b6f2c960bc7fc, type: 2}
     count: 2
   - card: {fileID: 11400000, guid: 5284a3a005af8cb49bcb2bfc9e8a7135, type: 2}
-    count: 2
+    count: 1
   passives:
   - type: 0
     amount: 30

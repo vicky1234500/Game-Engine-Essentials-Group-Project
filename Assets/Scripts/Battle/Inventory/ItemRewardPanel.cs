@@ -38,6 +38,15 @@ public class ItemRewardPanel : MonoBehaviour
         if (!inventory) inventory = FindFirstObjectByType<InventoryGrid>(FindObjectsInactive.Include);
         picked = false;
         if (messageText) messageText.text = "";
+
+        // Fight Ring elite / room after a Nanite Leak detour: no item choice
+        if (RunState.lastFightHadNoRewards)
+        {
+            foreach (var b in choiceButtons) b.gameObject.SetActive(false);
+            if (skipButton) skipButton.interactable = true;
+            Say("No rewards this time.");
+            return;
+        }
         Roll();
     }
 
@@ -109,6 +118,19 @@ public class ItemRewardPanel : MonoBehaviour
         foreach (var b in choiceButtons) b.interactable = false;
         if (skipButton) skipButton.interactable = false;
         StartCoroutine(BackToExploring(delayAfterPick));
+    }
+
+    // Used by events too (RunEffects.GiveItem) when the backpack is full.
+    public bool DropNearPlayer(ItemData item)
+    {
+        if (!player)
+        {
+            var p = GameObject.FindGameObjectWithTag("Player");
+            if (p) player = p.transform;
+        }
+        if (!dropPrefab || !player || !item) return false;
+        Drop(item);
+        return true;
     }
 
     void Drop(ItemData item)

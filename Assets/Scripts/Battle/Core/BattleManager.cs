@@ -40,6 +40,10 @@ public class BattleManager : MonoBehaviour
     public int TurnNumber { get; private set; }
     public int AttackCardsPlayed { get; private set; }   // Thousand Cuts
 
+    // Difficulty for the NEXT fight. DungeonManager sets these per room (1 = normal).
+    public float EnemyHpMultiplier { get; set; } = 1f;
+    public float EnemyDamageMultiplier { get; set; } = 1f;
+
     public event Action<BattleState> OnStateChanged;
     public event Action<string> OnLog;
     public event Action OnEnemiesChanged;
@@ -79,6 +83,7 @@ public class BattleManager : MonoBehaviour
 
         foreach (var data in enemyList) SpawnEnemy(data);
         foreach (var e in enemies) e.PlanNextMove();
+        ApplyRunEffectsAtStart();
 
         StartPlayerTurn();
     }
@@ -91,7 +96,7 @@ public class BattleManager : MonoBehaviour
         Transform point = spawnPoints != null && index < spawnPoints.Length ? spawnPoints[index] : transform;
         var enemy = Instantiate(enemyPrefab, point.position, point.rotation);
         enemy.name = data.enemyName;
-        enemy.Setup(data);
+        enemy.Setup(data, EnemyHpMultiplier, EnemyDamageMultiplier);
         enemy.OnDied += OnEnemyDied;
         enemies.Add(enemy);
 
@@ -303,7 +308,7 @@ public class BattleManager : MonoBehaviour
 
         if (won)
         {
-            int credits = BattleRewards.RollCredits(enemies, player.CreditBonusPercent);
+            int credits = noRewards ? 0 : BattleRewards.RollCredits(enemies, player.CreditBonusPercent);
             RunState.lastCreditsEarned = credits;
             RunState.credits += credits;
             Log($"Victory! +{credits} credits");
@@ -316,6 +321,40 @@ public class BattleManager : MonoBehaviour
     }
 
     public void GrantExtraTurn() => extraTurnPending = true;
+
+    bool noRewards;   // this fight gives no credits / item choice (Fight Ring elite, Nanite Leak detour)
+
+    // Effects from events that last the whole run.
+    void ApplyRunEffectsAtStart()
+    {
+        noRewards = RunState.noRewardsNextFight || RunState.noRewardsThisRoom;
+        RunState.noRewardsNextFight = false;
+        RunState.lastFightHadNoRewards = noRewards;
+
+        // Corrupted Terminal: Static curses for the next few fights
+        if (RunState.staticFightsLeft > 0)
+        {
+            var staticCard = ItemDatabase.FindCard("Static");
+            if (staticCard)
+                for (int i = 0; i < RunState.staticPerFight; i++) deck.AddTemporaryCard(staticCard);
+            RunState.staticFightsLeft--;
+            Log($"Corrupted code: {RunState.staticPerFight} Static added ({RunState.staticFightsLeft} fights left)");
+        }
+
+        // AI Oracle: start OVERCLOCKED
+        if (RunState.battleStartOverclockTurns > 0)
+            player.ApplyStatus(StatusType.Overclocked, 1, RunState.battleStartOverclockTurns);
+
+        // AI Oracle: boss intel
+        if (RunState.bossIntel)
+            foreach (var e in enemies)
+                if (e.IsBoss && e.Data)
+                {
+                    var names = new System.Collections.Generic.List<string>();
+                    foreach (var m in e.Data.moves) names.Add(m.moveName);
+                    Log($"Boss intel: {string.Join(" -> ", names)} (repeats)");
+                }
+    }
 
     // Curses that trigger when drawn (System Error, Tracker).
     void HandleCardDrawn(CardInstance card)

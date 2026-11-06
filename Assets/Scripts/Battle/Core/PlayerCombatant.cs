@@ -52,6 +52,7 @@ public class PlayerCombatant : Combatant
     {
         BonusDefense = 0; BonusManaPerTurn = 0; GunDamageBonus = 0;
         HealPerTurn = 0; ExtraDrawFirstTurn = 0; CreditBonusPercent = 0; HealAfterBattle = 0;
+        BonusDefense = RunState.bonusDefense;                 // Ripperdoc implant etc. (lasts the whole run)
         if (!inventory) return;
 
         foreach (var item in inventory.Items)

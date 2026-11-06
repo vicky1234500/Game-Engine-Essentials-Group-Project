@@ -13,16 +13,20 @@ MonoBehaviour:
   m_Name: StreetEnforcer
   m_EditorClassIdentifier: Assembly-CSharp::EnemyData
   enemyName: Street Enforcer
-  rank: 0
-  maxHP: 45
-  modelPrefab: {fileID: 0}
+  rank: 1
+  maxHP: 65
+  modelPrefab: {fileID: 5576705509832974674, guid: c174d8cd23e214e2ebc956ff961ce8ae, type: 3}
+  modelHeight: 2.1
+  modelLift: 0
+  modelYaw: 0
+  hasHurtVoice: 1
   moves:
   - moveName: Punch
     intent: 0
     effects:
     - type: 0
       target: 1
-      amount: 7
+      amount: 9
       hits: 1
       ignoresShield: 0
       status: 0
@@ -33,7 +37,7 @@ MonoBehaviour:
     effects:
     - type: 1
       target: 0
-      amount: 10
+      amount: 12
       hits: 1
       ignoresShield: 0
       status: 0
@@ -44,7 +48,7 @@ MonoBehaviour:
     effects:
     - type: 0
       target: 1
-      amount: 14
+      amount: 16
       hits: 1
       ignoresShield: 0
       status: 0
@@ -58,5 +62,5 @@ MonoBehaviour:
       status: 4
       duration: 2
       summon: {fileID: 0}
-  minCredits: 20
-  maxCredits: 30
+  minCredits: 25
+  maxCredits: 35

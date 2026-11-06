@@ -70,7 +70,8 @@ public class RipperdocEvent : MonoBehaviour
         }
 
         // Never reset the shared run balance when entering an event.
-        defense = Mathf.Max(0, startingDF);
+        var realPlayer = RunEffects.Player;                    // show the real DF
+        defense = realPlayer ? realPlayer.Defense : Mathf.Max(0, startingDF);
         implantCost = Mathf.Max(0, implantCost);
         defenseBonus = Mathf.Max(0, defenseBonus);
         rejectionCount = 0;
@@ -144,6 +145,7 @@ public class RipperdocEvent : MonoBehaviour
 
         RunState.credits -= implantCost;
         defense += defenseBonus;
+        GrantDefense();
 
         ShowResult(
             "The surgeon installs a reinforced armor implant.\n"
@@ -161,6 +163,8 @@ public class RipperdocEvent : MonoBehaviour
 
         defense += defenseBonus;
         rejectionCount++;
+        GrantDefense();
+        RunEffects.AddCurse("Rejection");                       // in your deck for the rest of the run
 
         ShowResult(
             "The experimental implant locks into place. "
@@ -170,6 +174,14 @@ public class RipperdocEvent : MonoBehaviour
             + "Rejection: unplayable; lose 4 HP if it remains "
             + "in your hand at the end of a turn."
         );
+    }
+
+    // +DF for the rest of the run (applied to the player now and at the start of every fight).
+    void GrantDefense()
+    {
+        RunEffects.AddDefense(defenseBonus);
+        var p = RunEffects.Player;
+        if (p) p.BonusDefense += defenseBonus;
     }
 
     void ShowResult(string message)

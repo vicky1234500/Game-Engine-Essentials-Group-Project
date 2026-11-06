@@ -20,5 +20,5 @@ MonoBehaviour:
   description: 
   cards:
   - card: {fileID: 11400000, guid: 2371c190e606d8040ba5880cca4939bf, type: 2}
-    count: 2
+    count: 1
   passives: []

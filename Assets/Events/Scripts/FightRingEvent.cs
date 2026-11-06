@@ -108,6 +108,7 @@ public class FightRingEvent : MonoBehaviour
             + "The announcer calls for a challenger. "
             + "A bookmaker offers you a bet on the house fighter.";
 
+        eliteFightConnected = Object.FindFirstObjectByType<DungeonManager>() != null;   // only in the dungeon
         fightButton.interactable = eliteFightConnected;
         leaveButton.interactable = true;
 
@@ -198,9 +199,12 @@ public class FightRingEvent : MonoBehaviour
         phase = Phase.Fighting;
         eventPanel.SetActive(false);
 
-        // The future integration must resume combat, start an elite
-        // battle, suppress its normal rewards, and report the outcome.
+        // Close the popup, then the dungeon starts an elite fight here:
+        // no normal rewards, +eliteVictoryCredits if you win, normal Game Over if you lose.
         onStartEliteFight.Invoke();
+        onReturnToMap.Invoke();
+        var dungeon = Object.FindFirstObjectByType<DungeonManager>();
+        if (dungeon) dungeon.StartEventEliteFight(eliteVictoryCredits);
     }
 
     public void ResolveEliteVictory()

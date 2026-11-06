@@ -4846,8 +4846,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b228a55f89ffa514c8f704b6cd5ee2c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InventoryToggle
-<<<<<<< HEAD
-=======
 --- !u!1 &1224263714
 GameObject:
   m_ObjectHideFlags: 0
@@ -4932,7 +4930,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1224263714}
   m_CullTransparentMesh: 1
->>>>>>> 8f406f8c67985542cea2481e3d14e731d07b9566
 --- !u!1 &1267890653
 GameObject:
   m_ObjectHideFlags: 0
@@ -5911,6 +5908,9 @@ MonoBehaviour:
   shopFromLayer: 1
   eventFromLayer: 1
   roomLibrary: {fileID: 11400000, guid: 404aa7372eb8e9946b1610987550e103, type: 2}
+  enemyHpMultiplier: 1
+  enemyDamageMultiplier: 1
+  scalingPerRoom: 0.06
   normalEncounters:
   - enemies:
     - {fileID: 11400000, guid: 0d511bba147dd914bbea3a40a8cc0d9d, type: 2}
@@ -6801,7 +6801,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -451}
+  m_AnchoredPosition: {x: 620, y: -451}
   m_SizeDelta: {x: 315, y: 140}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1801365834

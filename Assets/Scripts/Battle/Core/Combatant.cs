@@ -63,9 +63,20 @@ public abstract class Combatant : MonoBehaviour
             int absorbed = Mathf.Min(Shield, amount);
             Shield -= absorbed;
             amount -= absorbed;
+            if (absorbed > 0) GameAudio.Play(GameAudio.ShieldBlock);
         }
 
         return LoseHP(amount);
+    }
+
+    // Robots override this so they don't say "augh".
+    protected virtual bool HasHurtVoice => true;
+
+    void PlayHurtSound()
+    {
+        bool isEnemy = this is EnemyCombatant;
+        if (isEnemy && HP <= 0) GameAudio.Play(GameAudio.EnemyDeath);
+        else if (HasHurtVoice) GameAudio.Play(isEnemy ? GameAudio.EnemyHurt : GameAudio.PlayerHurt, 0.8f);
     }
 
     public int LoseHP(int amount)
@@ -74,6 +85,7 @@ public abstract class Combatant : MonoBehaviour
 
         int lost = Mathf.Min(HP, amount);
         HP -= lost;
+        if (lost > 0) PlayHurtSound();
 
         NotifyChanged();
 

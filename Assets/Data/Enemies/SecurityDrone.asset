@@ -14,15 +14,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyData
   enemyName: Security Drone
   rank: 0
-  maxHP: 22
-  modelPrefab: {fileID: 0}
+  maxHP: 34
+  modelPrefab: {fileID: 2684462249747191448, guid: 4d15ff53cf2984f0a972321387a6ebfe, type: 3}
+  modelHeight: 0.8
+  modelLift: 0.9
+  modelYaw: 0
+  hasHurtVoice: 0
   moves:
   - moveName: Laser
     intent: 0
     effects:
     - type: 0
       target: 1
-      amount: 5
+      amount: 7
       hits: 1
       ignoresShield: 0
       status: 0
@@ -33,7 +37,7 @@ MonoBehaviour:
     effects:
     - type: 2
       target: 0
-      amount: 5
+      amount: 8
       hits: 1
       ignoresShield: 0
       status: 0
@@ -44,11 +48,11 @@ MonoBehaviour:
     effects:
     - type: 0
       target: 1
-      amount: 5
+      amount: 7
       hits: 1
       ignoresShield: 0
       status: 0
       duration: 1
       summon: {fileID: 0}
-  minCredits: 8
-  maxCredits: 15
+  minCredits: 10
+  maxCredits: 16

@@ -348,12 +348,10 @@ public class VendingMachineEvent : MonoBehaviour
             return;
         }
 
-        // Outside-backpack reward staging is not connected yet.
-        ShowResult(
-            resultMessage
-            + $"\nBackpack full. {pendingReward.itemName} was not added."
-            + "\nOverflow pickup is not implemented yet."
-        );
+        // Backpack full: dropped on the floor, picked up once there's space.
+        string line = RunEffects.GiveItem(null, pendingReward);
+        pendingReward = null;
+        ShowResult(resultMessage + "\n" + line);
     }
 
     void ShowResult(string message)
