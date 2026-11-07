@@ -4846,6 +4846,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b228a55f89ffa514c8f704b6cd5ee2c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InventoryToggle
+<<<<<<< Updated upstream
+=======
+
+
+>>>>>>> Stashed changes
 --- !u!1 &1224263714
 GameObject:
   m_ObjectHideFlags: 0
@@ -4930,6 +4935,10 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1224263714}
   m_CullTransparentMesh: 1
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
 --- !u!1 &1267890653
 GameObject:
   m_ObjectHideFlags: 0
