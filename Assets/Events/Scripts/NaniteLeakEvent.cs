@@ -244,12 +244,8 @@ public class NaniteLeakEvent : MonoBehaviour
             return;
         }
 
-        // Outside-backpack reward staging is not connected yet.
-        ShowResult(
-            message
-            + $"\nBackpack full. {reward.itemName} was not added."
-            + "\nOverflow pickup is not implemented yet."
-        );
+        // Backpack full: dropped on the floor, picked up once there's space.
+        ShowResult(message + "\n" + RunEffects.GiveItem(null, reward));
     }
 
     public void TakeDetour()
@@ -263,10 +259,11 @@ public class NaniteLeakEvent : MonoBehaviour
 
         phase = Phase.Result;
         suppressNextNodeRewards = true;
+        RunState.noRewardsNextRoom = true;                       // the next room gives no credits / items
 
         ShowResult(
             "You take a maintenance passage around the leak.\n"
-            + "Penalty recorded: the next node grants no credit "
+            + "Penalty: the next room grants no credit "
             + "or item rewards.\n"
             + "Purchases, healing, and other effects remain available."
         );

@@ -14,6 +14,12 @@ public class BackpackTailorEvent : MonoBehaviour
     [SerializeField] Button tradeButton;
     [SerializeField] Button leaveButton;
 
+    [Header("Backpack (set by the EventExplorationBridge)")]
+    [SerializeField] InventoryGrid inventory;
+    [SerializeField] InventoryToggle inventoryToggle;
+    [Min(0)]
+    [SerializeField] int payCost = 50;
+
     [Header("Connect to the map later")]
     [SerializeField] UnityEvent onReturnToMap = new UnityEvent();
 
@@ -59,24 +65,75 @@ public class BackpackTailorEvent : MonoBehaviour
         tradeButton.gameObject.SetActive(true);
         leaveButton.gameObject.SetActive(true);
 
-        // Shell only. Backpack expansion is not connected yet.
-        payButton.interactable = false;
-        tradeButton.interactable = false;
+        payButton.onClick.AddListener(PayForRow);
+        tradeButton.onClick.AddListener(TradeForRow);
+        done = false;
+        RefreshButtons();
 
         leaveButton.interactable = true;
         leaveButton.onClick.AddListener(Leave);
 
-        SetLabel(
-            payButton,
-            "Pay 50 credits - Add 2 backpack tiles"
-        );
-
-        SetLabel(
-            tradeButton,
-            "Trade an item of 3+ tiles - Add 3 backpack tiles"
-        );
 
         SetLabel(leaveButton, "Leave");
+    }
+
+    // ---------- Upgrades ----------
+
+    bool done;
+
+    void Update()
+    {
+        if (ready && !closed && !done) RefreshButtons();
+    }
+
+    void RefreshButtons()
+    {
+        bool roomToGrow = inventory && inventory.CanAddRow;
+        ItemInstance selected = inventory ? inventory.Selected : null;
+        bool bigEnough = selected != null && RunEffects.Tiles(selected.data) >= 3;
+
+        payButton.interactable = roomToGrow && RunState.credits >= payCost;
+        SetLabel(payButton, !roomToGrow ? "Backpack is already the biggest it can be"
+                          : $"Pay {payCost} credits - Add a backpack row (+{inventory.Columns} tiles)");
+
+        tradeButton.interactable = roomToGrow && bigEnough;
+        SetLabel(tradeButton, selected == null
+            ? "Trade an item of 3+ tiles - open the backpack (0) and click one first"
+            : bigEnough ? $"Trade {selected.data.itemName} - Add a backpack row (+{inventory.Columns} tiles)"
+                        : $"{selected.data.itemName} is too small (needs 3+ tiles)");
+
+        statusText.text = inventory ? $"Credits: {RunState.credits}     Backpack: {inventory.Columns} x {inventory.Rows}" : "";
+    }
+
+    public void PayForRow()
+    {
+        if (!ready || closed || done || !inventory || !inventory.CanAddRow || RunState.credits < payCost) return;
+        RunState.credits -= payCost;
+        inventory.AddRow();
+        Finish($"Paid {payCost} credits. Your backpack gained a row.");
+    }
+
+    public void TradeForRow()
+    {
+        if (!ready || closed || done || !inventory || !inventory.CanAddRow) return;
+        ItemInstance selected = inventory.Selected;
+        if (selected == null || RunEffects.Tiles(selected.data) < 3) return;
+
+        string name = selected.data.itemName;
+        inventory.Discard(selected);
+        inventory.AddRow();
+        Finish($"The tailor strips your {name} for parts. Your backpack gained a row.");
+    }
+
+    void Finish(string message)
+    {
+        done = true;
+        if (inventoryToggle) inventoryToggle.CloseInventory();
+        descriptionText.text = message;
+        statusText.text = $"Credits: {RunState.credits}     Backpack: {inventory.Columns} x {inventory.Rows}";
+        payButton.gameObject.SetActive(false);
+        tradeButton.gameObject.SetActive(false);
+        SetLabel(leaveButton, "Continue");
     }
 
     public void Leave()

@@ -199,11 +199,12 @@ public class AIOracleEvent : MonoBehaviour
         }
 
         floorOverclockEnabled = true;
+        RunState.battleStartOverclockTurns = overclockedTurns;  // every fight this floor starts OVERCLOCKED
 
         ShowResult(
             "A surge of code rewrites your combat routines.\n"
             + $"Maximum HP reduced by {maxHPCost} for this run.\n"
-            + "Optimization recorded: start every battle on this floor "
+            + "Optimization installed: start every battle on this floor "
             + $"OVERCLOCKED for {overclockedTurns} turns."
         );
     }
@@ -219,11 +220,12 @@ public class AIOracleEvent : MonoBehaviour
 
         phase = Phase.Result;
         bossIntelUnlocked = true;
+        RunState.bossIntel = true;                               // boss moves shown in the boss room + battle log
 
         ShowResult(
             "The AI transfers an encrypted combat dossier.\n"
-            + "Boss intel recorded: reveal all of the boss's moves "
-            + "before the fight."
+            + "Boss intel: the boss's moves will be shown when you "
+            + "reach its room and at the start of the fight."
         );
     }
 

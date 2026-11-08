@@ -22,7 +22,7 @@ MonoBehaviour:
   - card: {fileID: 11400000, guid: 00aba22da7e9ada478cef0157153e335, type: 2}
     count: 1
   - card: {fileID: 11400000, guid: 0825935f9806fac4eb0b20af72646d0a, type: 2}
-    count: 3
+    count: 2
   passives:
   - type: 2
     amount: 1

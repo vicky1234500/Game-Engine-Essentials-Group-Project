@@ -125,7 +125,11 @@ public class SupplyCrateEvent : MonoBehaviour
         }
 
         // Never initialize or reset the player's HP here.
-        lockPickUses = Mathf.Max(0, startingLockPickUses);
+        // Real Lock Pick: needs the item in the backpack; 3 uses shared across the run.
+        bool hasPick = RunEffects.FindInBackpack(inventory, "Lock Pick") != null
+                       || RunEffects.FindInBackpack(inventory, "LockPick") != null;
+        if (hasPick && RunState.lockPickUses < 0) RunState.lockPickUses = Mathf.Max(0, startingLockPickUses);
+        lockPickUses = hasPick ? Mathf.Max(0, RunState.lockPickUses) : 0;
         smashDamage = Mathf.Max(1, smashDamage);
 
         rewards.Clear();
@@ -210,7 +214,7 @@ public class SupplyCrateEvent : MonoBehaviour
             lockPickButton,
             lockPickUses > 0
                 ? "Use Lock Pick - Consume 1 use and receive an item"
-                : "Use Lock Pick - No uses remaining"
+                : "Use Lock Pick - You need a Lock Pick"
         );
 
         string warning = player.HP <= smashDamage
@@ -241,6 +245,13 @@ public class SupplyCrateEvent : MonoBehaviour
 
         phase = Phase.Result;
         lockPickUses--;
+        RunState.lockPickUses = lockPickUses;
+        if (lockPickUses <= 0)                                   // used up: the Lock Pick breaks
+        {
+            var pick = RunEffects.FindInBackpack(inventory, "Lock Pick") ?? RunEffects.FindInBackpack(inventory, "LockPick");
+            if (pick != null) inventory.Discard(pick);
+            RunState.lockPickUses = -1;
+        }
 
         GiveReward(
             "The magnetic lock clicks open.\n"
@@ -327,12 +338,8 @@ public class SupplyCrateEvent : MonoBehaviour
             return;
         }
 
-        // Outside-backpack reward staging is not connected yet.
-        ShowResult(
-            message
-            + $"\nBackpack full. {reward.itemName} was not added."
-            + "\nOverflow pickup is not implemented yet."
-        );
+        // Backpack full: dropped on the floor, picked up once there's space.
+        ShowResult(message + "\n" + RunEffects.GiveItem(null, reward));
     }
 
     void ShowResult(string message)

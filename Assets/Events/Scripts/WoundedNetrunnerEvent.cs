@@ -14,6 +14,11 @@ public class WoundedNetrunnerEvent : MonoBehaviour
     [SerializeField] Button robButton;
     [SerializeField] Button leaveButton;
 
+    [Header("Help her")]
+    [Min(0)]
+    [SerializeField] int helpHPCost = 10;
+    [SerializeField] InventoryGrid inventory;             // set by the EventExplorationBridge
+
     [Header("Robbery reward")]
     [Min(0)]
     [SerializeField] int robberyCredits = 50;
@@ -66,6 +71,7 @@ public class WoundedNetrunnerEvent : MonoBehaviour
         phase = Phase.Choice;
 
         robButton.onClick.AddListener(RobNetrunner);
+        helpButton.onClick.AddListener(HelpNetrunner);
         leaveButton.onClick.AddListener(LeaveOrContinue);
 
         eventPanel.SetActive(true);
@@ -73,8 +79,8 @@ public class WoundedNetrunnerEvent : MonoBehaviour
         robButton.gameObject.SetActive(true);
         leaveButton.gameObject.SetActive(true);
 
-        // Cyberdeck is still awaiting confirmation.
-        helpButton.interactable = false;
+        var p = RunEffects.Player;
+        helpButton.interactable = p && p.HP > helpHPCost && ItemDatabase.FindItem("Cyberdeck");
         robButton.interactable = true;
         leaveButton.interactable = true;
 
@@ -106,6 +112,28 @@ public class WoundedNetrunnerEvent : MonoBehaviour
             RefreshStatus();
     }
 
+    public void HelpNetrunner()
+    {
+        var p = RunEffects.Player;
+        if (!ready || phase != Phase.Choice || !p || p.HP <= helpHPCost)
+            return;
+
+        phase = Phase.Result;
+        p.LoseHP(helpHPCost);
+        string got = RunEffects.GiveItem(inventory, ItemDatabase.FindItem("Cyberdeck"));
+
+        descriptionText.text =
+            "You get her somewhere safe. It costs you, but she keeps her word.\n"
+            + $"Lost {helpHPCost} HP.\n" + got;
+
+        RefreshStatus();
+        helpButton.gameObject.SetActive(false);
+        robButton.gameObject.SetActive(false);
+        leaveButton.gameObject.SetActive(true);
+        leaveButton.interactable = true;
+        SetLabel(leaveButton, "Continue");
+    }
+
     public void RobNetrunner()
     {
         if (!ready || phase != Phase.Choice)
@@ -116,12 +144,13 @@ public class WoundedNetrunnerEvent : MonoBehaviour
 
         RunState.credits += robberyCredits;
         trackerCount++;
+        RunEffects.AddCurse("Tracker");                          // in your deck for the rest of the run
 
         descriptionText.text =
             "You take her credits and turn away.\n"
             + "Behind you, her terminal sends a tracking report.\n"
             + $"Received {robberyCredits} credits.\n"
-            + "Recorded: 1 Tracker curse for this run.";
+            + "Added 1 Tracker curse to your deck for this run.";
 
         RefreshStatus();
 

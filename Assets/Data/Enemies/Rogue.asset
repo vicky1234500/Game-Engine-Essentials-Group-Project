@@ -14,15 +14,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyData
   enemyName: Rogue
   rank: 0
-  maxHP: 30
-  modelPrefab: {fileID: 0}
+  maxHP: 42
+  modelPrefab: {fileID: 794708929920962051, guid: da2ac8458644540c085b76c55e10baaf, type: 3}
+  modelHeight: 1.8
+  modelLift: 0
+  modelYaw: 0
+  hasHurtVoice: 1
   moves:
   - moveName: Slash
     intent: 0
     effects:
     - type: 0
       target: 1
-      amount: 3
+      amount: 6
       hits: 1
       ignoresShield: 0
       status: 0
@@ -33,7 +37,7 @@ MonoBehaviour:
     effects:
     - type: 0
       target: 1
-      amount: 6
+      amount: 9
       hits: 1
       ignoresShield: 0
       status: 0
@@ -50,5 +54,5 @@ MonoBehaviour:
       status: 7
       duration: 2
       summon: {fileID: 0}
-  minCredits: 10
+  minCredits: 12
   maxCredits: 20

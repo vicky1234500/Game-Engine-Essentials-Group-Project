@@ -64,8 +64,26 @@ public class ShopUI : MonoBehaviour
         if (confirmSellButton) confirmSellButton.onClick.AddListener(OnConfirmSell);
         if (cancelSellButton) cancelSellButton.onClick.AddListener(OnCancelSell);
 
+        // The upgrade button is saved as hidden in the scene, and nothing else turns it on.
+        if (upgradeButton) upgradeButton.gameObject.SetActive(true);
+
         shop.OnChanged += Refresh;
         HideAll();
+    }
+
+    void Update()
+    {
+        if (!IsOpen) return;
+
+        // Closing the backpack locks the cursor. MouseLook normally undoes that every frame,
+        // but it is turned off while the shop is open, so the shop has to keep the cursor free.
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+
+        // The backpack's own Back button closes the backpack without telling the shop.
+        // If that happens while selling, finish selling so the shop window comes back.
+        if (sellModeBar && sellModeBar.activeSelf && inventoryToggle && !inventoryToggle.IsOpen)
+            StopSelling();
     }
 
     void OnDestroy()

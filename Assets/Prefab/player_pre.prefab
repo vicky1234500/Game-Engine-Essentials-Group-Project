@@ -946,7 +946,7 @@ Animator:
   m_WarningMessage: "\nBinding warning: Some generic clip(s) animate transforms that
     are already bound by a Humanoid avatar. These transforms can only be changed
     by Humanoid clips.\n\tTransform 'lowerarm_r'\n\tTransform 'upperarm_r'\n\tFrom
-    animation clip 'Walking Backwards'"
+    animation clip 'Walking Backwards'\n\tFrom animation clip 'hold cards'"
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
@@ -975,7 +975,7 @@ CharacterController:
   m_StepOffset: 0.4
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
-  m_Center: {x: 0, y: 1.08, z: 0}
+  m_Center: {x: 0, y: 1, z: 0}
 --- !u!114 &8900738789681532410
 MonoBehaviour:
   m_ObjectHideFlags: 0

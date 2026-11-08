@@ -1,0 +1,69 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 79b26bded7ebdbb408f712b990754284, type: 3}
+  m_Name: WardenMech
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyData
+  enemyName: Biomech Warlord
+  rank: 2
+  maxHP: 150
+  modelPrefab: {fileID: 5576705509832974674, guid: c174d8cd23e214e2ebc956ff961ce8ae, type: 3}
+  modelHeight: 3
+  modelLift: 0
+  modelYaw: 0
+  hasHurtVoice: 1
+  moves:
+  - moveName: Minigun
+    intent: 0
+    effects:
+    - type: 0
+      target: 1
+      amount: 3
+      hits: 4
+      ignoresShield: 0
+      status: 0
+      duration: 1
+      summon: {fileID: 0}
+  - moveName: Charging
+    intent: 5
+    effects: []
+  - moveName: Missile Barrage
+    intent: 0
+    effects:
+    - type: 0
+      target: 1
+      amount: 20
+      hits: 1
+      ignoresShield: 0
+      status: 0
+      duration: 1
+      summon: {fileID: 0}
+    - type: 3
+      target: 1
+      amount: 3
+      hits: 1
+      ignoresShield: 0
+      status: 1
+      duration: 3
+      summon: {fileID: 0}
+  - moveName: Repair Protocol
+    intent: 4
+    effects:
+    - type: 2
+      target: 0
+      amount: 15
+      hits: 1
+      ignoresShield: 0
+      status: 0
+      duration: 1
+      summon: {fileID: 0}
+  minCredits: 60
+  maxCredits: 80

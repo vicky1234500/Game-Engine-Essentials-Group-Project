@@ -209,28 +209,28 @@ public static class BattleTestBuilder
         throwKnife.returnToHandNextTurn = true;
         var dissolve = Card("Dissolve", "Dissolve", CardType.Attack, 2, "Deal damage equal to 3x the enemy's CORRODE.",
                             new CardEffect { type = EffectType.DamagePerStatus, target = TargetType.SingleEnemy, status = StatusType.Corrode, amount = 3, hits = 1 });
-        it.knife = Item("Knife", "Nanite Knife", 2, 1, WeaponTint, null, E(slice, 3), E(throwKnife, 1), E(dissolve, 1));
+        it.knife = Item("Knife", "Nanite Knife", 2, 1, WeaponTint, null, E(slice, 2), E(throwKnife, 1), E(dissolve, 1));
         var purge = Card("Purge", "Purge", CardType.Skill, 0, "Remove CORRODE, BURN, GLITCHED and HACKED.", Fx(EffectType.RemoveStatuses, TargetType.Self, 0));
-        it.bandage = Item("Bandage", "Bandage", 1, 1, HealTint, null, E(patch, 3), E(purge, 1));
+        it.bandage = Item("Bandage", "Bandage", 1, 1, HealTint, null, E(patch, 2), E(purge, 1));
 
         // ---- Weapons
         var shoot = Gun(Card("Shoot", "Shoot", CardType.Attack, 1, "Deal 5 damage.", Dmg(5)));
         var dshoot = Gun(Card("DoubleShoot", "Double Shoot", CardType.Attack, 2, "Deal 5 damage twice.", Dmg(5, 2)));
         var whip = Gun(Card("PistolWhip", "Pistol Whip", CardType.Attack, 1, "Deal 4 damage. Apply GLITCHED for 2 turns.",
                             Dmg(4), Status(StatusType.Glitched, 1, 2, TargetType.SingleEnemy)));
-        it.rewards.Add(Item("Pistol", "Pistol", 2, 1, WeaponTint, null, E(shoot, 3), E(dshoot, 1), E(whip, 1)));
+        it.rewards.Add(Item("Pistol", "Pistol", 2, 1, WeaponTint, null, E(shoot, 2), E(dshoot, 1), E(whip, 1)));
 
         var zap = Card("Zap", "Zap", CardType.Attack, 1, "Deal 6 damage. Apply OVERLOADED for 2 turns (+25% damage taken).",
                        Dmg(6), Status(StatusType.Overloaded, 1, 2, TargetType.SingleEnemy));
         var discharge = Card("FullDischarge", "Full Discharge", CardType.Attack, 3, "Deal 22 damage.", Dmg(22));
-        it.rewards.Add(Item("ShockBaton", "Shock Baton", 3, 1, WeaponTint, null, E(zap, 3), E(discharge, 1)));
+        it.rewards.Add(Item("ShockBaton", "Shock Baton", 3, 1, WeaponTint, null, E(zap, 2), E(discharge, 1)));
 
         var frag = Card("Frag", "Frag", CardType.Attack, 2, "Deal 9 damage to ALL enemies.", DmgAll(9));
         var incendiary = Card("Incendiary", "Incendiary", CardType.Attack, 2, "Deal 5 damage to ALL enemies. Apply 3 BURN.",
                               DmgAll(5), Status(StatusType.Burn, 3, 3, TargetType.AllEnemies));
         var emp = Card("EMP", "EMP", CardType.Skill, 1, "Apply SHORT-CIRCUIT (skips its next action, not bosses) and remove all SHIELD.",
                        Status(StatusType.ShortCircuit, 1, 2, TargetType.SingleEnemy), Fx(EffectType.RemoveShield, TargetType.SingleEnemy, 0));
-        it.rewards.Add(Item("GrenadeBelt", "Grenade Belt", 2, 1, WeaponTint, null, E(frag, 1), E(incendiary, 1), E(flash, 2), E(emp, 1)));
+        it.rewards.Add(Item("GrenadeBelt", "Grenade Belt", 2, 1, WeaponTint, null, E(frag, 1), E(incendiary, 1), E(flash, 1), E(emp, 1)));
 
         // ---- Healing
         var adrenaline = Card("AdrenalineShot", "Adrenaline Shot", CardType.Heal, 1,
@@ -244,16 +244,16 @@ public static class BattleTestBuilder
                             Status(StatusType.Regen, 3, 3, TargetType.Self));
         var repair = Card("Repair", "Repair", CardType.Heal, 2, "Restore 12 HP. Remove CORRODE, BURN, GLITCHED and HACKED.",
                           Heal(12), Fx(EffectType.RemoveStatuses, TargetType.Self, 0));
-        it.rewards.Add(Item("NanoInjector", "Nano-Injector", 2, 1, HealTint, null, E(nanobots, 2), E(repair, 1)));
+        it.rewards.Add(Item("NanoInjector", "Nano-Injector", 2, 1, HealTint, null, E(nanobots, 1), E(repair, 1)));
 
         var medBeam = Card("MedBeam", "Med Beam", CardType.Heal, 1, "Restore 8 HP.", Heal(8));
         var fullRestore = Card("FullRestore", "Full Restore", CardType.Heal, 3, "Restore 40 HP. Exhaust.", Heal(40));
         fullRestore.exhaust = true;
-        it.rewards.Add(Item("MedPod", "Med Pod", 2, 2, HealTint, null, E(medBeam, 3), E(fullRestore, 1)));
+        it.rewards.Add(Item("MedPod", "Med Pod", 2, 2, HealTint, null, E(medBeam, 2), E(fullRestore, 1)));
 
         // ---- Shield
         var plate = Card("Plate", "Plate", CardType.Defense, 0, "Gain 3 SHIELD.", Shield(3));
-        it.rewards.Add(Item("NanoPlating", "Nano-Plating", 2, 1, ShieldTint, null, E(plate, 6)));
+        it.rewards.Add(Item("NanoPlating", "Nano-Plating", 2, 1, ShieldTint, null, E(plate, 3)));
 
         var harden = Card("Harden", "Harden", CardType.Defense, 1, "Gain 6 SHIELD.", Shield(6));
         it.rewards.Add(Item("KineticVest", "Kinetic Vest", 2, 1, ShieldTint,
@@ -262,7 +262,7 @@ public static class BattleTestBuilder
         var bash = Card("ShieldBash", "Shield Bash", CardType.Defense, 2, "Gain 12 SHIELD. Deal 8 damage. Apply GLITCHED for 2 turns.",
                         Shield(12), Dmg(8), Status(StatusType.Glitched, 1, 2, TargetType.SingleEnemy));
         var bulwark = Card("Bulwark", "Bulwark", CardType.Defense, 3, "Gain 35 SHIELD.", Shield(35));
-        it.rewards.Add(Item("RiotShield", "Riot Shield", 2, 2, ShieldTint, null, E(raise, 3), E(bash, 1), E(bulwark, 1)));
+        it.rewards.Add(Item("RiotShield", "Riot Shield", 2, 2, ShieldTint, null, E(raise, 2), E(bash, 1), E(bulwark, 1)));
 
         BuildMoreItems(it);
         if (!it.knife) Debug.LogWarning("BattleTestBuilder: Assets/Data/Items/Knife.asset not found.");
@@ -287,32 +287,32 @@ public static class BattleTestBuilder
         // ---- ATTACK ITEMS
         var flick = Card("Flick", "Flick", CardType.Attack, 0, "Deal 2 damage. Apply 1 CORRODE.",
                          Dmg(2), Status(StatusType.Corrode, 1, 1, TargetType.SingleEnemy));
-        it.rewards.Add(Item("MicroBlades", "Micro-Blades", 1, 1, WeaponTint, null, E(flick, 8)));
+        it.rewards.Add(Item("MicroBlades", "Micro-Blades", 1, 1, WeaponTint, null, E(flick, 3)));
 
         var eslash = Card("EnergySlash", "Slash", CardType.Attack, 1, "Deal 7 damage.", Dmg(7));
         var cuts = Card("ThousandCuts", "Thousand Cuts", CardType.Attack, 3, "Deal 3 damage for every attack card played this fight.",
                         Fx(EffectType.DamagePerAttackPlayed, TargetType.SingleEnemy, 3));
-        it.rewards.Add(Item("EnergySword", "Energy Sword", 3, 1, WeaponTint, null, E(eslash, 4), E(cuts, 1)));
+        it.rewards.Add(Item("EnergySword", "Energy Sword", 3, 1, WeaponTint, null, E(eslash, 2), E(cuts, 1)));
 
         var spray = Gun(Card("Spray", "Spray", CardType.Attack, 1, "Deal 4 damage three times.", Dmg(4, 3)));
         var hackRounds = Gun(Card("HackRounds", "Hack Rounds", CardType.Attack, 1, "Deal 4 damage three times. Apply HACKED.",
                                   Dmg(4, 3), Status(StatusType.Hacked, 1, 2, TargetType.SingleEnemy)));
-        it.rewards.Add(Item("OverclockedSMG", "Overclocked SMG", 3, 1, WeaponTint, null, E(spray, 4), E(hackRounds, 1), E(jammed, 2)));
+        it.rewards.Add(Item("OverclockedSMG", "Overclocked SMG", 3, 1, WeaponTint, null, E(spray, 2), E(hackRounds, 1), E(jammed, 1)));
 
         var deploy = Card("Deploy", "Deploy", CardType.Attack, 1, "Drone deals 4 damage to a random enemy at the end of each turn for 3 turns.",
                           Status(StatusType.DroneStrike, 4, 3, TargetType.Self));
         var droneLaser = Card("DroneLaser", "Laser", CardType.Attack, 1, "Deal 5 damage. Apply 2 BURN.",
                               Dmg(5), Status(StatusType.Burn, 2, 3, TargetType.SingleEnemy));
         var selfDestruct = Card("SelfDestruct", "Self-Destruct", CardType.Attack, 2, "Deal 18 damage.", Dmg(18));
-        it.rewards.Add(Item("AttackDrone", "Attack Drone", 3, 1, WeaponTint, null, E(deploy, 2), E(droneLaser, 2), E(selfDestruct, 1)));
+        it.rewards.Add(Item("AttackDrone", "Attack Drone", 3, 1, WeaponTint, null, E(deploy, 1), E(droneLaser, 1), E(selfDestruct, 1)));
 
         var blast = Gun(Card("Blast", "Blast", CardType.Attack, 2, "Deal 14 damage to ALL enemies.", DmgAll(14)));
         var pointBlank = Gun(Card("PointBlank", "Point Blank", CardType.Attack, 2, "Deal 18 damage.", Dmg(18)));
         var pump = Card("Pump", "Pump", CardType.Skill, 0, "Draw 2 cards.", Fx(EffectType.Draw, TargetType.Self, 2));
-        it.rewards.Add(Item("Shotgun", "Shotgun", 2, 2, WeaponTint, null, E(blast, 2), E(pointBlank, 2), E(pump, 1)));
+        it.rewards.Add(Item("Shotgun", "Shotgun", 2, 2, WeaponTint, null, E(blast, 1), E(pointBlank, 1), E(pump, 1)));
 
-        var railShot = Gun(Card("RailShot", "Rail Shot", CardType.Attack, 3, "Deal 45 damage. Ignores SHIELD.",
-                                new CardEffect { type = EffectType.Damage, target = TargetType.SingleEnemy, amount = 45, hits = 1, ignoresShield = true }));
+        var railShot = Gun(Card("RailShot", "Rail Shot", CardType.Attack, 3, "Deal 35 damage. Ignores SHIELD.",
+                                new CardEffect { type = EffectType.Damage, target = TargetType.SingleEnemy, amount = 35, hits = 1, ignoresShield = true }));
         it.rewards.Add(Item("Railgun", "Railgun", 3, 2, WeaponTint, null, E(railShot, 1)));
 
         // ---- DEFENSE ITEMS
@@ -321,8 +321,8 @@ public static class BattleTestBuilder
         it.rewards.Add(Item("HoloDecoy", "Holo Decoy", 1, 1, ShieldTint, null, E(decoy, 1)));
 
         var fortress = Card("Fortress", "Fortress", CardType.Defense, 2, "Gain 20 SHIELD.", Shield(20));
-        it.rewards.Add(Item("OverclockedExoSuit", "Overclocked Exo-Suit", 5, 1, ShieldTint,
-                            new[] { new ItemPassive { type = PassiveType.BonusDF, amount = 30 } }, E(fortress, 2), E(systemError, 2)));
+        it.rewards.Add(Item("OverclockedExoSuit", "Overclocked Exo-Suit", 3, 2, ShieldTint,
+                            new[] { new ItemPassive { type = PassiveType.BonusDF, amount = 30 } }, E(fortress, 2), E(systemError, 1)));
 
         // ---- HEALING ITEMS
         it.rewards.Add(Item("BlackMarketImplant", "Black-Market Implant", 2, 1, HealTint,
@@ -339,16 +339,16 @@ public static class BattleTestBuilder
         // ---- SUPPORT / UTILITY ITEMS
         var smoke = Card("SmokeBomb", "Smoke Bomb", CardType.Skill, 1, "Become CLOAKED for 2 turns (attacks have 50% to miss).",
                          Status(StatusType.Cloaked, 1, 2, TargetType.Self));
-        it.rewards.Add(Item("SmokeGrenades", "Smoke Grenades", 1, 1, ShieldTint, null, E(smoke, 2)));
+        it.rewards.Add(Item("SmokeGrenades", "Smoke Grenades", 1, 1, ShieldTint, null, E(smoke, 1)));
 
         var overclock = Card("Overclock", "Overclock", CardType.Skill, 1, "Become OVERCLOCKED: +3 attack damage, lose 2 HP each turn. 2 turns.",
                              Status(StatusType.Overclocked, 1, 2, TargetType.Self));
         it.rewards.Add(Item("NeuralBooster", "Neural Booster", 1, 1, SupportTint,
-                            new[] { new ItemPassive { type = PassiveType.BonusManaPerTurn, amount = 1 } }, E(overclock, 1), E(staticCurse, 3)));
+                            new[] { new ItemPassive { type = PassiveType.BonusManaPerTurn, amount = 1 } }, E(overclock, 1), E(staticCurse, 2)));
 
         var quickReload = Card("QuickReload", "Quick Reload", CardType.Skill, 0, "Draw 1 card.", Fx(EffectType.Draw, TargetType.Self, 1));
         it.rewards.Add(Item("AmmoBelt", "Ammo Belt", 2, 1, SupportTint,
-                            new[] { new ItemPassive { type = PassiveType.GunDamage, amount = 2 } }, E(quickReload, 3)));
+                            new[] { new ItemPassive { type = PassiveType.GunDamage, amount = 2 } }, E(quickReload, 2)));
 
         var hack = Card("Hack", "Hack", CardType.Skill, 1, "Apply HACKED: its next action hits a random target.",
                         Status(StatusType.Hacked, 1, 2, TargetType.SingleEnemy));
@@ -357,7 +357,7 @@ public static class BattleTestBuilder
         var bootUp = Card("BootUp", "Boot Up", CardType.Skill, 0, "Draw 2 cards.", Fx(EffectType.Draw, TargetType.Self, 2));
         var crash = Card("SystemCrash", "System Crash", CardType.Skill, 2, "Apply SHORT-CIRCUIT (not bosses).",
                          Status(StatusType.ShortCircuit, 1, 2, TargetType.SingleEnemy));
-        it.rewards.Add(Item("Cyberdeck", "Cyberdeck", 3, 1, SupportTint, null, E(hack, 2), E(glitchSpike, 1), E(bootUp, 1), E(crash, 1)));
+        it.rewards.Add(Item("Cyberdeck", "Cyberdeck", 3, 1, SupportTint, null, E(hack, 1), E(glitchSpike, 1), E(bootUp, 1), E(crash, 1)));
 
         var overrideCard = Card("Override", "Override", CardType.Skill, 3, "Take an extra turn. Exhaust.", Fx(EffectType.ExtraTurn, TargetType.Self, 0));
         overrideCard.exhaust = true;
@@ -462,26 +462,41 @@ public static class BattleTestBuilder
     // Enemies (from the doc). Moves are used in order and loop.
     // =====================================================================
 
-    struct Enemies { public EnemyData rogue, drone, enforcer; }
+    // Balance pass: normal 34-42 HP / 6-9 dmg, elites 60-65, boss = Warden Mech (doc) 150 HP.
+    // DungeonManager scales them up a little each room deeper.
+    struct Enemies { public EnemyData rogue, drone, enforcer, netrunner, warden; }
 
     static Enemies BuildEnemies()
     {
         var e = new Enemies();
 
-        e.rogue = Enemy("Rogue", "Rogue", EnemyRank.Normal, 30, 10, 20,
-            Move("Slash", IntentType.Attack, Dmg(3)),
-            Move("Shoot Gun", IntentType.Attack, Dmg(6)),
+        e.rogue = Enemy("Rogue", "Rogue", EnemyRank.Normal, 42, 12, 20,
+            Move("Slash", IntentType.Attack, Dmg(6)),
+            Move("Shoot Gun", IntentType.Attack, Dmg(9)),
             Move("Smoke Bomb", IntentType.Defend, Status(StatusType.Cloaked, 1, 2, TargetType.Self)));
 
-        e.drone = Enemy("SecurityDrone", "Security Drone", EnemyRank.Normal, 22, 8, 15,
-            Move("Laser", IntentType.Attack, Dmg(5)),
-            Move("Self-Repair", IntentType.Heal, Heal(5)),
-            Move("Laser", IntentType.Attack, Dmg(5)));
+        e.drone = Enemy("SecurityDrone", "Security Drone", EnemyRank.Normal, 34, 10, 16,
+            Move("Laser", IntentType.Attack, Dmg(7)),
+            Move("Self-Repair", IntentType.Heal, Heal(8)),
+            Move("Laser", IntentType.Attack, Dmg(7)));
 
-        e.enforcer = Enemy("StreetEnforcer", "Street Enforcer", EnemyRank.Normal, 45, 20, 30,
-            Move("Punch", IntentType.Attack, Dmg(7)),
-            Move("Wind Up", IntentType.Defend, Shield(10)),
-            Move("Smash", IntentType.Attack, Dmg(14), Status(StatusType.Glitched, 1, 2, TargetType.SingleEnemy)));
+        e.enforcer = Enemy("StreetEnforcer", "Street Enforcer", EnemyRank.Elite, 65, 25, 35,
+            Move("Punch", IntentType.Attack, Dmg(9)),
+            Move("Wind Up", IntentType.Defend, Shield(12)),
+            Move("Smash", IntentType.Attack, Dmg(16), Status(StatusType.Glitched, 1, 2, TargetType.SingleEnemy)));
+
+        e.netrunner = Enemy("Netrunner", "Netrunner", EnemyRank.Elite, 60, 25, 35,
+            Move("Data Spike", IntentType.Attack, Dmg(8)),
+            Move("Firewall", IntentType.Defend, Shield(12)),
+            Move("Glitch Burst", IntentType.Attack, Dmg(10), Status(StatusType.Glitched, 1, 2, TargetType.SingleEnemy)));
+
+        // Doc: Minigun 3x4, Charging -> Missile Barrage 20 + BURN 3, Repair Protocol +15.
+        // (The "summon 2 drones at 50%" part needs smarter AI than the simple move loop, left out for now.)
+        e.warden = Enemy("WardenMech", "Biomech Warlord", EnemyRank.Boss, 150, 60, 80,
+            Move("Minigun", IntentType.Attack, Dmg(3, 4)),
+            Move("Charging", IntentType.Special),
+            Move("Missile Barrage", IntentType.Attack, Dmg(20), Status(StatusType.Burn, 3, 3, TargetType.SingleEnemy)),
+            Move("Repair Protocol", IntentType.Heal, Heal(15)));
 
         return e;
     }
@@ -971,6 +986,118 @@ public static class BattleTestBuilder
     }
 
     // =====================================================================
+    // Balance pass: Tools > Roguelike > Apply Balance Pass
+    //   - stronger enemies (+ Netrunner elite, Warden Mech boss), fewer cards per item, all items + ItemDatabase
+    //   - backpack prefab -> 3x3 (upgrades still add rows)
+    //   - Dungeon scene: ONLY the DungeonManager's encounter lists + difficulty are changed
+    // =====================================================================
+
+    const string InventoryPrefabPath = "Assets/Prefab/Inventory/InventoryCanvas.prefab";
+
+    [MenuItem("Tools/Roguelike/Apply Balance Pass")]
+    public static void ApplyBalancePass()
+    {
+        if (!EditorUtility.DisplayDialog("Apply balance pass?",
+                "Updates all enemy, card and item assets, makes the backpack 3x3 (InventoryCanvas prefab), " +
+                "and sets the encounters + difficulty on the DungeonManager in the Dungeon scene " +
+                "(nothing else in that scene is changed).\n\nCommit to git first. Continue?", "Apply", "Cancel")) return;
+        if (!EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo()) return;
+
+        Prepare();
+        BuildCards();
+        var items = BuildItems();
+        BuildItemDatabase(items);
+        var en = BuildEnemies();
+        AssetDatabase.SaveAssets();
+
+        ResizeBackpack(3, 3);
+
+        if (System.IO.File.Exists(DungeonPath))
+        {
+            var scene = EditorSceneManager.OpenScene(DungeonPath, OpenSceneMode.Single);
+            DungeonManager dm = null;
+            foreach (var root in scene.GetRootGameObjects())
+                if (!dm) dm = root.GetComponentInChildren<DungeonManager>(true);
+            if (dm)
+            {
+                var so = new SerializedObject(dm);
+                SetGroups(so.FindProperty("normalEncounters"), new[] { new[] { en.rogue }, new[] { en.drone }, new[] { en.rogue, en.drone } });
+                SetGroups(so.FindProperty("eliteEncounters"), new[] { new[] { en.enforcer }, new[] { en.netrunner } });
+                SetGroups(so.FindProperty("bossEncounters"), new[] { new[] { en.warden } });
+                so.FindProperty("enemyHpMultiplier").floatValue = 1f;
+                so.FindProperty("enemyDamageMultiplier").floatValue = 1f;
+                so.FindProperty("scalingPerRoom").floatValue = 0.06f;
+                so.ApplyModifiedPropertiesWithoutUndo();
+                EditorSceneManager.MarkSceneDirty(scene);
+                EditorSceneManager.SaveScene(scene);
+            }
+            else Debug.LogWarning("Balance pass: no DungeonManager in the Dungeon scene.");
+        }
+        Debug.Log("Balance pass applied: enemies, items (fewer cards), 3x3 backpack, Dungeon encounters (boss = Warden Mech).");
+    }
+
+    // Changes the backpack grid in the InventoryCanvas prefab and fits the background around it.
+    static void ResizeBackpack(int cols, int rows)
+    {
+        if (!AssetDatabase.LoadAssetAtPath<GameObject>(InventoryPrefabPath))
+        {
+            Debug.LogWarning("Balance pass: " + InventoryPrefabPath + " not found, backpack not resized.");
+            return;
+        }
+        var root = PrefabUtility.LoadPrefabContents(InventoryPrefabPath);
+        var grid = root.GetComponentInChildren<InventoryGrid>(true);
+        var so = new SerializedObject(grid);
+        int oldCols = so.FindProperty("columns").intValue, oldRows = so.FindProperty("rows").intValue;
+        var slotGrid = (GridLayoutGroup)so.FindProperty("slotGrid").objectReferenceValue;
+        Vector2 step = slotGrid.cellSize + slotGrid.spacing;
+
+        so.FindProperty("columns").intValue = cols;
+        so.FindProperty("rows").intValue = rows;
+        if (so.FindProperty("maxRows").intValue < rows) so.FindProperty("maxRows").intValue = rows;
+
+        // slots: exactly cols x rows
+        slotGrid.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
+        slotGrid.constraintCount = cols;
+        var slots = slotGrid.transform;
+        for (int i = slots.childCount - 1; i >= cols * rows; i--) Object.DestroyImmediate(slots.GetChild(i).gameObject);
+        for (int i = slots.childCount; i < cols * rows; i++)
+            Object.Instantiate(slots.GetChild(0).gameObject, slots).name = "InventorySlot" + i;
+
+        // background: keep its left + top edge, shrink/grow with the grid, and grow DOWN when a row is bought
+        float dx = (cols - oldCols) * step.x, dy = (rows - oldRows) * step.y;
+        var bg = FindChild(grid.transform, "InventoryBackground") as RectTransform;
+        if (bg)
+        {
+            bg.sizeDelta += new Vector2(dx, dy);
+            bg.anchoredPosition += new Vector2(dx / 2f, -dy / 2f);
+            var top = bg.anchoredPosition + new Vector2(0, bg.sizeDelta.y * (1f - bg.pivot.y));
+            bg.pivot = new Vector2(bg.pivot.x, 1f);
+            bg.anchoredPosition = new Vector2(bg.anchoredPosition.x, top.y);
+            var grow = so.FindProperty("growWithRows");
+            grow.arraySize = 1;
+            grow.GetArrayElementAtIndex(0).objectReferenceValue = bg;
+        }
+        var title = FindChild(grid.transform, "Title") as RectTransform;
+        if (title) title.anchoredPosition += new Vector2(dx / 2f, 0);
+        var trash = FindChild(grid.transform, "Trashbin") as RectTransform;
+        if (trash) trash.anchoredPosition += new Vector2(dx, 0);
+
+        so.ApplyModifiedPropertiesWithoutUndo();
+        PrefabUtility.SaveAsPrefabAsset(root, InventoryPrefabPath);
+        PrefabUtility.UnloadPrefabContents(root);
+    }
+
+    // Direct child first (InventoryMenu > Title, not the tooltip's Title), then anywhere below.
+    static Transform FindChild(Transform t, string name)
+    {
+        var direct = t.Find(name);
+        if (direct) return direct;
+        foreach (var c in t.GetComponentsInChildren<Transform>(true))
+            if (c.name == name) return c;
+        return null;
+    }
+
+    // =====================================================================
     // Dungeon: DungeonManager, map screen (M), floor cleared panel
     // =====================================================================
 
@@ -1048,8 +1175,8 @@ public static class BattleTestBuilder
         so.FindProperty("mapView").objectReferenceValue = mapView;
         // Encounters: boss is just a normal enemy for now
         SetGroups(so.FindProperty("normalEncounters"), new[] { new[] { en.rogue }, new[] { en.drone }, new[] { en.rogue, en.drone } });
-        SetGroups(so.FindProperty("eliteEncounters"), new[] { new[] { en.enforcer } });
-        SetGroups(so.FindProperty("bossEncounters"), new[] { new[] { en.enforcer } });
+        SetGroups(so.FindProperty("eliteEncounters"), new[] { new[] { en.enforcer }, new[] { en.netrunner } });
+        SetGroups(so.FindProperty("bossEncounters"), new[] { new[] { en.warden } });
         so.ApplyModifiedPropertiesWithoutUndo();
 
         cleared.gameObject.SetActive(false);

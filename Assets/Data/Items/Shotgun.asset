@@ -20,9 +20,9 @@ MonoBehaviour:
   description: 
   cards:
   - card: {fileID: 11400000, guid: a341e2539de7ef84d980d8cbce41a5d1, type: 2}
-    count: 2
+    count: 1
   - card: {fileID: 11400000, guid: 814e2e570c311204d92659159ef11a0d, type: 2}
-    count: 2
+    count: 1
   - card: {fileID: 11400000, guid: 620817d91308d514bb0755dbda9b53be, type: 2}
     count: 1
   passives: []

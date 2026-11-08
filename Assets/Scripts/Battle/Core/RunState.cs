@@ -20,6 +20,19 @@ public static class RunState
     public static int backpackRows;        
     public static readonly Dictionary<string, List<ShopSlot>> shopStocks = new Dictionary<string, List<ShopSlot>>();
 
+    // ---- Effects from events that last the whole run (see RunEffects) ----
+    public static readonly List<CardData> runCurses = new List<CardData>();  // Rejection / Tracker added to every fight's deck
+    public static int bonusDefense;              // Ripperdoc: +10 DF
+    public static int staticPerFight;            // Corrupted Terminal: Static cards added to each fight...
+    public static int staticFightsLeft;          // ...for this many more fights
+    public static int battleStartOverclockTurns; // AI Oracle: start every fight OVERCLOCKED for X turns
+    public static bool bossIntel;                // AI Oracle: show the boss's moves before the fight
+    public static bool noRewardsNextRoom;        // Nanite Leak "go around": the next room gives no rewards
+    public static bool noRewardsThisRoom;        //   (moved here when that room is entered)
+    public static bool noRewardsNextFight;       // Fight Ring: the elite fight gives no normal rewards
+    public static bool lastFightHadNoRewards;    // read by the victory panel
+    public static int lockPickUses = -1;         // Lock Pick: 3 uses (-1 = not used yet)
+
     // Called when a new run begins (RunStarter in the Lobby).
     public static void StartNewRun()
     {
@@ -27,6 +40,14 @@ public static class RunState
         lastCreditsEarned = 0;
         ClearBackpack();
         shopStocks.Clear();
+
+        runCurses.Clear();
+        bonusDefense = 0;
+        staticPerFight = staticFightsLeft = 0;
+        battleStartOverclockTurns = 0;
+        bossIntel = false;
+        noRewardsNextRoom = noRewardsThisRoom = noRewardsNextFight = lastFightHadNoRewards = false;
+        lockPickUses = -1;
     }
 
     // Start-of-run money: the character's starting credits (+ test extra).

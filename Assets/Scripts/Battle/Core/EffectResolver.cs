@@ -102,6 +102,7 @@ public static class EffectResolver
 
         int dmg = CalculateDamage(source, target, baseDamage);
         int lost = target.TakeDamage(dmg, ignoresShield);
+        if (lost > 0) GameAudio.Play(GameAudio.Hit);
         battle.Log($"{source.DisplayName} hits {target.DisplayName} for {dmg} ({lost} HP lost)");
     }
 
@@ -112,6 +113,7 @@ public static class EffectResolver
         if (source && source.Statuses.Has(StatusType.Overclocked)) dmg += OverclockedBonus;
         if (source && source.Statuses.Has(StatusType.Glitched)) dmg *= GlitchedMultiplier;
         if (target.Statuses.Has(StatusType.Overloaded)) dmg *= OverloadedMultiplier;
+        if (source is EnemyCombatant enemy) dmg *= enemy.DamageMultiplier;       // difficulty
         int rounded = Mathf.Max(0, Mathf.RoundToInt(dmg));
         return DefenseFormula.Apply(rounded, target.Defense);    // DF reduces damage taken (then SHIELD absorbs)
     }

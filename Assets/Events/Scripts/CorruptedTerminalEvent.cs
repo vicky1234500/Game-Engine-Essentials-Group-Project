@@ -24,6 +24,11 @@ public class CorruptedTerminalEvent : MonoBehaviour
     [Min(1)]
     [SerializeField] int affectedFights = 3;
 
+    [Header("Purge")]
+    [Min(0)]
+    [SerializeField] int purgeHPCost = 10;
+    [SerializeField] InventoryGrid inventory;             // set by the EventExplorationBridge
+
     [Header("Exploration callback")]
     [SerializeField] UnityEvent onReturnToMap = new UnityEvent();
 
@@ -80,6 +85,7 @@ public class CorruptedTerminalEvent : MonoBehaviour
         phase = Phase.Choice;
 
         hackButton.onClick.AddListener(HackTerminal);
+        purgeButton.onClick.AddListener(PurgeTerminal);
         leaveButton.onClick.AddListener(ContinueOrLeave);
 
         eventPanel.SetActive(true);
@@ -90,8 +96,8 @@ public class CorruptedTerminalEvent : MonoBehaviour
 
         hackButton.interactable = true;
 
-        // Item selection and curse removal are not connected yet.
-        purgeButton.interactable = false;
+        var p = RunEffects.Player;
+        purgeButton.interactable = p && p.HP > purgeHPCost && RunEffects.HasAnyCurse(inventory);
 
         leaveButton.interactable = true;
 
@@ -111,7 +117,9 @@ public class CorruptedTerminalEvent : MonoBehaviour
 
         SetLabel(
             purgeButton,
-            "Purge - Curse removal connection pending"
+            RunEffects.HasAnyCurse(inventory)
+                ? $"Purge - Lose {purgeHPCost} HP; remove one curse card permanently"
+                : "Purge - You have no curse cards"
         );
 
         SetLabel(leaveButton, "Leave");
@@ -135,12 +143,14 @@ public class CorruptedTerminalEvent : MonoBehaviour
         RunState.credits += creditReward;
         staticCopies = staticCopiesPerFight;
         remainingAffectedFights = affectedFights;
+        RunState.staticPerFight = staticCopiesPerFight;          // added to your next fights for real
+        RunState.staticFightsLeft = affectedFights;
 
         descriptionText.text =
             "The transfer succeeds, but corrupted code "
             + "infects your combat systems.\n"
             + $"Received {creditReward} credits.\n"
-            + $"Recorded: add {staticCopies} Static curse cards "
+            + $"Added {staticCopies} Static curse cards "
             + $"to each of your next {remainingAffectedFights} fights.\n"
             + "Static is unplayable and takes up a hand slot.";
 
@@ -152,6 +162,30 @@ public class CorruptedTerminalEvent : MonoBehaviour
         leaveButton.gameObject.SetActive(true);
         leaveButton.interactable = true;
 
+        SetLabel(leaveButton, "Continue");
+    }
+
+    public void PurgeTerminal()
+    {
+        var p = RunEffects.Player;
+        if (!ready || phase != Phase.Choice || !p || p.HP <= purgeHPCost)
+            return;
+
+        string removed = RunEffects.RemoveOneCurse(inventory);
+        if (removed == null) return;
+
+        phase = Phase.Result;
+        p.LoseHP(purgeHPCost);
+
+        descriptionText.text =
+            "You force a system purge. The feedback burns, but the corruption is gone.\n"
+            + $"Lost {purgeHPCost} HP. Removed: {removed}.";
+        RefreshStatus();
+
+        hackButton.gameObject.SetActive(false);
+        purgeButton.gameObject.SetActive(false);
+        leaveButton.gameObject.SetActive(true);
+        leaveButton.interactable = true;
         SetLabel(leaveButton, "Continue");
     }
 
