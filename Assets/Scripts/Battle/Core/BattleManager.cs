@@ -146,8 +146,9 @@ public class BattleManager : MonoBehaviour
         Log($"Player plays {card.data.cardName}");
 
         int bonusDamage = card.bonusDamage + (card.data.isGun ? player.GunDamageBonus : 0);   // Ammo Belt
+        string hitSound = GameAudio.For(card.data.attackSound, card.data.isGun);              // slash, laser, explosion...
         foreach (var effect in card.data.GetEffects())
-            EffectResolver.Resolve(effect, player, target, this, bonusDamage, card.bonusShield);
+            EffectResolver.Resolve(effect, player, target, this, bonusDamage, card.bonusShield, hitSound);
 
         if (card.data.type == CardType.Attack) AttackCardsPlayed++;
         deck.MoveToDiscardOrExhaust(card);
@@ -173,7 +174,7 @@ public class BattleManager : MonoBehaviour
             var alive = enemies.FindAll(e => !e.IsDead);
             if (alive.Count > 0)
                 EffectResolver.DealDamage(player, alive[UnityEngine.Random.Range(0, alive.Count)],
-                                          player.Statuses.Amount(StatusType.DroneStrike), false, this);
+                                          player.Statuses.Amount(StatusType.DroneStrike), false, this, GameAudio.Laser);
             if (CheckBattleOver()) yield break;
         }
 
@@ -242,9 +243,9 @@ public class BattleManager : MonoBehaviour
                     type = effect.type, target = TargetType.SingleEnemy, amount = effect.amount, hits = effect.hits,
                     ignoresShield = effect.ignoresShield, status = effect.status, duration = effect.duration, summon = effect.summon
                 };
-                EffectResolver.Resolve(copy, enemy, forcedTarget, this);
+                EffectResolver.Resolve(copy, enemy, forcedTarget, this, hitSound: GameAudio.For(move.sound));
             }
-            else EffectResolver.Resolve(effect, enemy, null, this);
+            else EffectResolver.Resolve(effect, enemy, null, this, hitSound: GameAudio.For(move.sound));
         }
     }
 

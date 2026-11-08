@@ -23,6 +23,7 @@ MonoBehaviour:
   moves:
   - moveName: Minigun
     intent: 0
+    sound: 3
     effects:
     - type: 0
       target: 1
@@ -37,6 +38,7 @@ MonoBehaviour:
     effects: []
   - moveName: Missile Barrage
     intent: 0
+    sound: 4
     effects:
     - type: 0
       target: 1

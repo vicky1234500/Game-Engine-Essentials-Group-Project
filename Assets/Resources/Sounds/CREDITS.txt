@@ -1,10 +1,19 @@
-Sound effect credits. All are CC0 (public domain), so credit is optional.
+Sound effect credits.
 
-Hit:          Impact Sounds by Kenney (www.kenney.nl)
-ShieldBlock:  Sci-Fi Sounds by Kenney (www.kenney.nl)
-EnemyDeath:   Sci-Fi Sounds by Kenney (www.kenney.nl)
-Door:         Sci-Fi Sounds by Kenney (www.kenney.nl)
-PlayerHurt:   Hurt Sound Effects by EZduzziteh (opengameart.org/content/hurt-sound-effects)
-EnemyHurt:    Hurt Sound Effects by EZduzziteh (opengameart.org/content/hurt-sound-effects)
+Hit:          Impact Sounds by Kenney (www.kenney.nl), CC0
+Slash:        knifeSlice from 50 RPG sound effects by Kenney (opengameart.org/content/50-rpg-sound-effects), CC0
+Laser:        laserSmall_002 from Sci-Fi Sounds by Kenney (www.kenney.nl), CC0
+LaserBurst:   Laser weapon burst fire by celestialghost8 (opengameart.org/content/laser-weapon-burst-fire), CC0
+Railgun:      laserLarge_001 from Sci-Fi Sounds by Kenney (www.kenney.nl), CC0
+Explosion:    explosionCrunch_000 from Sci-Fi Sounds by Kenney (www.kenney.nl), CC0
+Burn:         Catching fire by themightyglider (opengameart.org/content/catching-fire), CC0
+ShortCircuit: paralyzer-discharge-01 from Tinysized SFX by Vehicle (opengameart.org/content/fantasy-sound-effects-tinysized-sfx), CC0
+Status:       squish_05 from Squish Sounds Effects by EZduzziteh (opengameart.org/content/squish-sounds-effects), CC0
+ShieldBlock:  Sci-Fi Sounds by Kenney (www.kenney.nl), CC0
+EnemyDeath:   Sci-Fi Sounds by Kenney (www.kenney.nl), CC0
+Door:         Sci-Fi Sounds by Kenney (www.kenney.nl), CC0
+EnemyHurt:    Hurt Sound Effects by EZduzziteh (opengameart.org/content/hurt-sound-effects), CC0
+PlayerHurt:   stabbed.mp3, added by Vicky (add its source and licence here)
 
 To change a sound, swap the audio files in its folder. Each time, one file is picked at random.
+Which card uses which sound: "Attack Sound" on the card (Auto = Laser for guns, Punch for the rest).

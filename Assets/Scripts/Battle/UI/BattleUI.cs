@@ -22,7 +22,7 @@ public class BattleUI : MonoBehaviour
     [SerializeField] Text victoryCreditsText;
     [SerializeField] GameObject defeatPanel;
 
-    public CardView SelectedCard { get; private set; }
+    public CardViewBase SelectedCard { get; private set; }   // 2D CardView or 3D CardView3D
 
     readonly System.Collections.Generic.Queue<string> log = new System.Collections.Generic.Queue<string>();
 
@@ -87,8 +87,8 @@ public class BattleUI : MonoBehaviour
 
     // ---------- Targeting ----------
 
-    // CardView calls this when clicked.
-    public void OnCardClicked(CardView card)
+    // CardView / CardView3D calls this when clicked.
+    public void OnCardClicked(CardViewBase card)
     {
         if (battle.State != BattleState.PlayerTurn) return;
 

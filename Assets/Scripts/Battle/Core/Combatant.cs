@@ -72,11 +72,12 @@ public abstract class Combatant : MonoBehaviour
     // Robots override this so they don't say "augh".
     protected virtual bool HasHurtVoice => true;
 
-    void PlayHurtSound()
+    // Hurt voice. Only EffectResolver.DealDamage calls this, so it plays when an attack hits,
+    // not for BURN, POISON, OVERCLOCKED or curse HP loss.
+    public void PlayHurtSound()
     {
-        bool isEnemy = this is EnemyCombatant;
-        if (isEnemy && HP <= 0) GameAudio.Play(GameAudio.EnemyDeath);
-        else if (HasHurtVoice) GameAudio.Play(isEnemy ? GameAudio.EnemyHurt : GameAudio.PlayerHurt, 0.8f);
+        if (IsDead || !HasHurtVoice) return;
+        GameAudio.Play(this is EnemyCombatant ? GameAudio.EnemyHurt : GameAudio.PlayerHurt, 0.8f);
     }
 
     public int LoseHP(int amount)
@@ -85,7 +86,7 @@ public abstract class Combatant : MonoBehaviour
 
         int lost = Mathf.Min(HP, amount);
         HP -= lost;
-        if (lost > 0) PlayHurtSound();
+        if (lost > 0 && HP <= 0 && this is EnemyCombatant) GameAudio.Play(GameAudio.EnemyDeath);   // death sound for any cause
 
         NotifyChanged();
 

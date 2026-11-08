@@ -5527,6 +5527,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::HandView
   deck: {fileID: 480742671}
   cardPrefab: {fileID: 222819753536484208, guid: 63ceed69b909f5e4fa21cfa8d35510f1, type: 3}
+  card3DPrefab: {fileID: 2082132309792948634, guid: 54f8a4e520c494db6800ce1fa4b7b6b4, type: 3}
+  cardDistance: 3
+  cardScale: 1
+  cardYaw: 180
+  cardSpacing: 0.42
+  cardLift: 0.15
+  fanAngle: 4
+  fanDrop: 0.01
+  hoverRaise: 0.3
+  hoverScale: 1.15
 --- !u!114 &1403527994
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -1,0 +1,3 @@
+Energy Sword by ova Xen, CC0 (no credit needed).
+https://opengameart.org/content/energy-sword
+Needs the glTFast package (com.unity.cloud.gltfast) to import .glb files.

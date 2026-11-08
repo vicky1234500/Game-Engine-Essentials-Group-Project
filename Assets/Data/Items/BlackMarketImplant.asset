@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: BlackMarketImplant
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
   itemName: Black-Market Implant
-  icon: {fileID: 0}
+  icon: {fileID: 3976813044105019482, guid: d673c6bc3f890494ebec08f08827ec2b, type: 3}
+  model: {fileID: 2009179735760177064, guid: 0e2a5ffc1c9d44acaa690971a80059b4, type: 3}
   size: {x: 2, y: 1}
   tint: {r: 0.25, g: 0.7, b: 0.35, a: 1}
   price: 70

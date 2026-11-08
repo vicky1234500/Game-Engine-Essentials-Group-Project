@@ -11,7 +11,8 @@ public static class EffectResolver
     public const float CloakedMissChance = 0.5f;      // CLOAKED: 50% chance to miss
 
     public static void Resolve(CardEffect e, Combatant source, Combatant chosenTarget,
-                               BattleManager battle, int bonusDamage = 0, int bonusShield = 0)
+                               BattleManager battle, int bonusDamage = 0, int bonusShield = 0,
+                               string hitSound = GameAudio.Hit)
     {
         List<Combatant> targets = battle.GetTargets(source, e.target, chosenTarget);
 
@@ -20,7 +21,7 @@ public static class EffectResolver
             case EffectType.Damage:
                 foreach (var t in targets)
                     for (int h = 0; h < e.hits && !t.IsDead; h++)
-                        DealDamage(source, t, e.amount + bonusDamage, e.ignoresShield, battle);
+                        DealDamage(source, t, e.amount + bonusDamage, e.ignoresShield, battle, hitSound);
                 break;
 
             case EffectType.Shield:
@@ -33,6 +34,10 @@ public static class EffectResolver
 
             case EffectType.ApplyStatus:
                 foreach (var t in targets) t.ApplyStatus(e.status, e.amount, e.duration);
+                // Damage-over-time statuses (Burn, Corrode...) make their sound when they hurt (StatusContainer), not here.
+                // Others only play if they have their own folder, e.g. Sounds/ShortCircuit.
+                if (targets.Count > 0 && !StatusContainer.IsDamageOverTime(e.status))
+                    GameAudio.Play(e.status.ToString(), 0.7f);
                 break;
 
             case EffectType.RemoveStatuses:   // Bandage "Purge"
@@ -66,7 +71,7 @@ public static class EffectResolver
                 foreach (var t in targets)
                 {
                     int dmg = t.Statuses.Amount(e.status) * e.amount;
-                    if (dmg > 0) DealDamage(source, t, dmg + bonusDamage, e.ignoresShield, battle);
+                    if (dmg > 0) DealDamage(source, t, dmg + bonusDamage, e.ignoresShield, battle, hitSound);
                     else battle.Log($"{t.DisplayName} has no {e.status}.");
                 }
                 break;
@@ -77,7 +82,7 @@ public static class EffectResolver
 
             case EffectType.DamagePerAttackPlayed:
                 foreach (var t in targets)
-                    DealDamage(source, t, e.amount * battle.AttackCardsPlayed + bonusDamage, e.ignoresShield, battle);
+                    DealDamage(source, t, e.amount * battle.AttackCardsPlayed + bonusDamage, e.ignoresShield, battle, hitSound);
                 break;
 
             case EffectType.Summon:
@@ -86,7 +91,8 @@ public static class EffectResolver
         }
     }
 
-    public static void DealDamage(Combatant source, Combatant target, int baseDamage, bool ignoresShield, BattleManager battle)
+    public static void DealDamage(Combatant source, Combatant target, int baseDamage, bool ignoresShield, BattleManager battle,
+                                  string hitSound = GameAudio.Hit)
     {
         if (target.Statuses.Has(StatusType.Decoy))                  // Holo Decoy: always misses, once
         {
@@ -102,7 +108,8 @@ public static class EffectResolver
 
         int dmg = CalculateDamage(source, target, baseDamage);
         int lost = target.TakeDamage(dmg, ignoresShield);
-        if (lost > 0) GameAudio.Play(GameAudio.Hit);
+        GameAudio.Play(hitSound, 0.8f, GameAudio.Hit);   // plays even if SHIELD blocked it; empty folder falls back to Hit
+        if (lost > 0) target.PlayHurtSound();             // only attacks make them say "augh", not BURN or POISON
         battle.Log($"{source.DisplayName} hits {target.DisplayName} for {dmg} ({lost} HP lost)");
     }
 

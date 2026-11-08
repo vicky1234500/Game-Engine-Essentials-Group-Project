@@ -58,6 +58,8 @@ public class DungeonManager : MonoBehaviour
     [SerializeField] List<EncounterGroup> eliteEncounters = new List<EncounterGroup>();
     [SerializeField] List<EncounterGroup> bossEncounters = new List<EncounterGroup>();
     [SerializeField] float engageRange = 3f;
+    [Tooltip("Most enemies in one normal/elite fight. If a group has more, that many are picked at random. The boss isn't limited.")]
+    [SerializeField] int maxEnemiesPerRoom = 1;
 
     [Header("Scene")]
     [SerializeField] BattleManager battle;
@@ -143,8 +145,8 @@ public class DungeonManager : MonoBehaviour
         yield return null;                                         // let the event popup close first
         while (InBattle) yield return null;
 
-        var group = Pick(NodeType.Elite);
-        if (group == null || group.enemies.Count == 0 || !player) yield break;
+        var enemies = PickEnemies(NodeType.Elite);
+        if (enemies.Count == 0 || !player) yield break;
 
         Vector3 fwd = player.forward; fwd.y = 0; fwd.Normalize();
         var go = new GameObject("EventFight");
@@ -152,7 +154,7 @@ public class DungeonManager : MonoBehaviour
         go.transform.SetPositionAndRotation(new Vector3(player.position.x, 0, player.position.z) + fwd * 2.5f,
                                             Quaternion.LookRotation(-fwd));
         var enc = go.AddComponent<EnemyEncounter>();
-        enc.Setup(group.enemies, 0f);                             // range 0 = never starts by itself
+        enc.Setup(enemies, 0f);                                   // range 0 = never starts by itself
 
         eventFightCredits = winCredits;
         RunState.noRewardsNextFight = true;
@@ -274,11 +276,11 @@ public class DungeonManager : MonoBehaviour
         // Enemy on the Enemy Spawn (only in fight rooms)
         if (node.IsCombat)
         {
-            var group = Pick(node.type);
-            if (group != null && group.enemies.Count > 0)
+            var enemies = PickEnemies(node.type);
+            if (enemies.Count > 0)
             {
                 Transform at = room.enemySpawn ? room.enemySpawn : roomRoot;
-                SpawnEncounter(group.enemies, at.position, at.rotation);
+                SpawnEncounter(enemies, at.position, at.rotation);
             }
             else RoomCleared = true;
         }
@@ -346,9 +348,9 @@ public class DungeonManager : MonoBehaviour
         // Enemy in the middle of the hallway (the player has to walk past it)
         if (node.IsCombat)
         {
-            var group = Pick(node.type);
-            if (group != null && group.enemies.Count > 0)
-                SpawnEncounter(group.enemies, new Vector3(0, 0, HallLength * 0.55f), Quaternion.Euler(0, 180, 0));
+            var enemies = PickEnemies(node.type);
+            if (enemies.Count > 0)
+                SpawnEncounter(enemies, new Vector3(0, 0, HallLength * 0.55f), Quaternion.Euler(0, 180, 0));
             else RoomCleared = true;
         }
 
@@ -362,6 +364,20 @@ public class DungeonManager : MonoBehaviour
             float x = (i - (nexts.Count - 1) / 2f) * DoorSpacing;
             BuildDoor(nexts[i], new Vector3(x, 0, endZ), Quaternion.identity);
         }
+    }
+
+    // A random group's enemies, cut down to maxEnemiesPerRoom (random ones) unless it's the boss.
+    List<EnemyData> PickEnemies(NodeType type)
+    {
+        var group = Pick(type);
+        var enemies = new List<EnemyData>();
+        if (group == null) return enemies;
+        foreach (var e in group.enemies) if (e) enemies.Add(e);
+
+        if (type != NodeType.Boss)
+            while (enemies.Count > Mathf.Max(1, maxEnemiesPerRoom))
+                enemies.RemoveAt(Random.Range(0, enemies.Count));
+        return enemies;
     }
 
     EncounterGroup Pick(NodeType type)

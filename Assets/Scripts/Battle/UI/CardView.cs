@@ -3,7 +3,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 // One card in the hand. Make a UI prefab with: background Image, name, cost, description texts.
-public class CardView : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler
+public class CardView : CardViewBase, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler
 {
     [SerializeField] Image background;
     [SerializeField] Image itemIcon;            // icon of the item this card came from
@@ -19,8 +19,6 @@ public class CardView : MonoBehaviour, IPointerClickHandler, IPointerEnterHandle
     [SerializeField] Color skillColor = new Color(0.22f, 0.54f, 0.87f);
     [SerializeField] Color curseColor = new Color(0.2f, 0.2f, 0.2f);
     [SerializeField] float hoverRaise = 30f;
-
-    public CardInstance Card { get; private set; }
 
     public void Setup(CardInstance card)
     {
@@ -50,7 +48,7 @@ public class CardView : MonoBehaviour, IPointerClickHandler, IPointerEnterHandle
         }
     }
 
-    public void SetSelected(bool selected)
+    public override void SetSelected(bool selected)
     {
         if (selectedOutline) selectedOutline.SetActive(selected);
     }

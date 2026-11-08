@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: Knife
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
   itemName: Nanite Knife
-  icon: {fileID: -778707665, guid: 3fb386464cb7ca54782bceb700c6d56f, type: 3}
+  icon: {fileID: 6764707825347140516, guid: 5e8a6d07e4fd2f54d8a9ae6aa37b7c9d, type: 3}
+  model: {fileID: 1890647897046526433, guid: 9e92a4a235df0429e9194c6700353d36, type: 3}
   size: {x: 2, y: 1}
   tint: {r: 0.83, g: 0.14, b: 0.23, a: 1}
   price: 10

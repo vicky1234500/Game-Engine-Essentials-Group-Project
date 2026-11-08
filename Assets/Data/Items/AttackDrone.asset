@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: AttackDrone
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
   itemName: Attack Drone
-  icon: {fileID: 0}
+  icon: {fileID: -5172017513212111993, guid: e3b720b4e0545c44297169da41c50f96, type: 3}
+  model: {fileID: 2684462249747191448, guid: 4d15ff53cf2984f0a972321387a6ebfe, type: 3}
   size: {x: 3, y: 1}
   tint: {r: 0.83, g: 0.14, b: 0.23, a: 1}
   price: 90

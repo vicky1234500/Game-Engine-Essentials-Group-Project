@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: Pistol
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
   itemName: Pistol
-  icon: {fileID: 0}
+  icon: {fileID: 4319395737909131107, guid: 9dffac642c0b32a4aa016302af2bd6f0, type: 3}
+  model: {fileID: 2860783163538316192, guid: 82439de09fbe3498da1c1bebde825111, type: 3}
   size: {x: 2, y: 1}
   tint: {r: 0.83, g: 0.14, b: 0.23, a: 1}
   price: 20

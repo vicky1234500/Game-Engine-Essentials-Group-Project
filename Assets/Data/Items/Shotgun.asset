@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: Shotgun
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
   itemName: Shotgun
-  icon: {fileID: 0}
+  icon: {fileID: -2408530018317867212, guid: b900ef41997f6bd4b92f83fc272ac218, type: 3}
+  model: {fileID: 4307946634697206448, guid: cfba4fec61dee499bb0bd0312ca3ae9c, type: 3}
   size: {x: 2, y: 2}
   tint: {r: 0.83, g: 0.14, b: 0.23, a: 1}
   price: 110
