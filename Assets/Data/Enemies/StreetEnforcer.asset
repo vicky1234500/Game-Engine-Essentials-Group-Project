@@ -16,7 +16,7 @@ MonoBehaviour:
   rank: 1
   maxHP: 65
   modelPrefab: {fileID: 2785625239073397158, guid: 4d4424b4ea971472e8881e6820a60a97, type: 3}
-  modelHeight: 2.3
+  modelHeight: 3.1
   modelLift: 0
   modelYaw: 0
   hasHurtVoice: 0
@@ -32,6 +32,7 @@ MonoBehaviour:
       status: 0
       duration: 1
       summon: {fileID: 0}
+    sound: 0
   - moveName: Wind Up
     intent: 1
     effects:
@@ -43,6 +44,7 @@ MonoBehaviour:
       status: 0
       duration: 1
       summon: {fileID: 0}
+    sound: 0
   - moveName: Smash
     intent: 0
     effects:
@@ -62,5 +64,6 @@ MonoBehaviour:
       status: 4
       duration: 2
       summon: {fileID: 0}
+    sound: 0
   minCredits: 25
   maxCredits: 35
