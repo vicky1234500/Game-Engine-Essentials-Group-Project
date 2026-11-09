@@ -3564,7 +3564,7 @@ MonoBehaviour:
   inventory: {fileID: 1204450393}
   inventoryToggle: {fileID: 1204450394}
   battleManager: {fileID: 480742672}
-  enableF8Test: 1
+  enableF8Test: 0
   repeatAfterAllEvents: 1
 --- !u!4 &966667438
 Transform:
