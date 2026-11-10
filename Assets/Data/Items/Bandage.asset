@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: Bandage
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
   itemName: Bandage
-  icon: {fileID: 0}
+  icon: {fileID: 1462799768519014029, guid: 8cf98307f0fa6a8408b8fa113163b898, type: 3}
+  model: {fileID: 2772970097767701043, guid: 5ff0d149e6cfa41faad7c5ddf07efe64, type: 3}
   size: {x: 1, y: 1}
   tint: {r: 0.25, g: 0.7, b: 0.35, a: 1}
   price: 10

@@ -36,21 +36,35 @@ public class StatusContainer
     public void Remove(StatusType t) => statuses.Remove(t);
     public void Clear() => statuses.Clear();
 
+    // Statuses that hurt every turn. Their sound plays then (below), not when they're applied.
+    public static bool IsDamageOverTime(StatusType t) =>
+        t == StatusType.Corrode || t == StatusType.Burn || t == StatusType.Bleed || t == StatusType.Poison;
+
     // Called at the START of the owner's turn: damage-over-time.
     public void TickStartOfTurn(Combatant owner)
     {
         if (statuses.TryGetValue(StatusType.Corrode, out var corrode))
         {
+            GameAudio.Play(GameAudio.Status, 0.7f);
             owner.TakeDamage(corrode.amount, ignoresShield: false);
             corrode.amount -= 1;                         // X drops by 1 each turn
             if (corrode.amount <= 0) Remove(StatusType.Corrode);
         }
         if (statuses.TryGetValue(StatusType.Burn, out var burn))
+        {
+            GameAudio.Play(GameAudio.Burn, 0.7f);
             owner.TakeDamage(burn.amount, ignoresShield: true);   // BURN ignores SHIELD
+        }
         if (statuses.TryGetValue(StatusType.Bleed, out var bleed))
+        {
+            GameAudio.Play(GameAudio.Status, 0.7f);
             owner.TakeDamage(bleed.amount, ignoresShield: true);
+        }
         if (statuses.TryGetValue(StatusType.Poison, out var poison))
+        {
+            GameAudio.Play(GameAudio.Status, 0.7f);
             owner.TakeDamage(poison.amount, ignoresShield: true);
+        }
     }
 
     // Called at the END of the owner's turn: count down durations.

@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: NanoInjector
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
   itemName: Nano-Injector
-  icon: {fileID: 0}
+  icon: {fileID: -1583306623310417319, guid: a2c469482b9166b418a882cb43078b1f, type: 3}
+  model: {fileID: 3017467952764627572, guid: 18d2c388460744e6b9af6c0cf8b62228, type: 3}
   size: {x: 2, y: 1}
   tint: {r: 0.25, g: 0.7, b: 0.35, a: 1}
   price: 20

@@ -13,6 +13,8 @@ public class ItemData : ScriptableObject
 {
     public string itemName = "Knife";
     public Sprite icon;                                   // draw it in the item's shape (knife = 2:1)
+    [Tooltip("3D model of the item. Shown on its 3D cards. Tools > Roguelike > Apply Item Models makes the icon from it.")]
+    public GameObject model;
     public Vector2Int size = new Vector2Int(2, 1);        // width x height in slots
     public Color tint = new Color(0.22f, 0.54f, 0.87f);   // attack blue, heal green, defense purple...
     [Tooltip("Shop price in credits. Selling gives half of this.")]

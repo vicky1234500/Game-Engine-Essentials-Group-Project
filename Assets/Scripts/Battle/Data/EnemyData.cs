@@ -12,6 +12,8 @@ public class EnemyMove
     public string moveName = "Slash";
     public IntentType intent = IntentType.Attack;   // which icon to show above the enemy
     public List<CardEffect> effects = new List<CardEffect>();
+    [Tooltip("Sound when this move hits. Auto = Punch.")]
+    public AttackSound sound = AttackSound.Auto;
 }
 
 [CreateAssetMenu(fileName = "NewEnemy", menuName = "Roguelike/Enemy")]

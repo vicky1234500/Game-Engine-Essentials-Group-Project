@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: GrenadeBelt
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
   itemName: Grenade Belt
-  icon: {fileID: 0}
+  icon: {fileID: -2509139907555557884, guid: 116f9eedd3196d749b6f7fc2814b0a8f, type: 3}
+  model: {fileID: 5927704263462265860, guid: 6d25b6cf8b03a46cfbb554b82bbe087b, type: 3}
   size: {x: 2, y: 1}
   tint: {r: 0.83, g: 0.14, b: 0.23, a: 1}
   price: 20

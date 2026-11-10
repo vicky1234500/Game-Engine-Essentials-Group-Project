@@ -3,6 +3,9 @@ using UnityEngine;
 
 public enum CardType { Attack, Defense, Skill, Heal, Curse }
 
+// Sound when a card (or enemy move) hits. Auto = Laser for guns, Punch for everything else.
+public enum AttackSound { Auto, Punch, Slash, Laser, Explosion, LaserBurst, Railgun }
+
 // Curse cards that do something by themselves (doc CURSE CARDS).
 public enum CurseTrigger
 {
@@ -29,6 +32,8 @@ public class CardData : ScriptableObject
     public bool returnToHandNextTurn;
     [Tooltip("Pistol, SMG, Shotgun, Railgun cards. Ammo Belt gives these bonus damage.")]
     public bool isGun;
+    [Tooltip("Sound when this card hits. Auto = Laser for guns, Punch for everything else.")]
+    public AttackSound attackSound = AttackSound.Auto;
 
     [Header("Curse cards")]
     public CurseTrigger curseTrigger = CurseTrigger.None;

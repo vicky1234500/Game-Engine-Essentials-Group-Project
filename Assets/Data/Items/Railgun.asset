@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: Railgun
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
   itemName: Railgun
-  icon: {fileID: 0}
+  icon: {fileID: 6241454495075796874, guid: 748f600938e769c4bb83bac0c89f57ad, type: 3}
+  model: {fileID: 1068883851219138797, guid: 6a60c69df8e1e46a2b34b0653b04e09a, type: 3}
   size: {x: 3, y: 2}
   tint: {r: 0.83, g: 0.14, b: 0.23, a: 1}
   price: 150

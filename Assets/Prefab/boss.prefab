@@ -53,9 +53,17 @@ PrefabInstance:
       value: boss
       objectReference: {fileID: 0}
     - target: {fileID: 5866666021909216657, guid: ba12c3bacc1ee478ca9a71a95472bc9c, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5866666021909216657, guid: ba12c3bacc1ee478ca9a71a95472bc9c, type: 3}
       propertyPath: m_Controller
       value: 
       objectReference: {fileID: 9100000, guid: a06b6a257cac3462489cbc0b714502e6, type: 2}
+    - target: {fileID: 5866666021909216657, guid: ba12c3bacc1ee478ca9a71a95472bc9c, type: 3}
+      propertyPath: m_ApplyRootMotion
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
