@@ -19,9 +19,11 @@ MonoBehaviour:
     rooms:
     - {fileID: 5490939388464014946, guid: 31f3648b2ff82e4428f9243c6da6fc09, type: 3}
   - type: 2
-    rooms: []
+    rooms:
+    - {fileID: 5490939388464014946, guid: 40d22834a4a68204a964d40642021d29, type: 3}
   - type: 3
-    rooms: []
+    rooms:
+    - {fileID: 4136375743110325328, guid: 883f9a1748ac72a408dc35a3c9e744fd, type: 3}
   - type: 4
     rooms:
     - {fileID: 1240676160133649903, guid: f58484cfc05991749a4525155a4a5b8b, type: 3}

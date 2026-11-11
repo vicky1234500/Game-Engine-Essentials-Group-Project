@@ -31,6 +31,8 @@ public class BattleManager : MonoBehaviour
 
     [Header("Timing")]
     [SerializeField] float enemyActionDelay = 0.8f;
+    [Tooltip("ON: only Attack moves play the attack animation. OFF: every move (defend, buff...) plays it too.")]
+    [SerializeField] bool animateOnlyAttackMoves = true;
 
     public BattleState State { get; private set; } = BattleState.None;
     public bool InBattle => State != BattleState.None;
@@ -207,8 +209,27 @@ public class BattleManager : MonoBehaviour
 
             yield return new WaitForSeconds(enemyActionDelay);
 
-            if (enemy.ConsumeSkip()) Log($"{enemy.DisplayName} can't act!");
-            else ExecuteEnemyMove(enemy, enemy.NextMove);
+            if (enemy.ConsumeSkip())
+            {
+                Log($"{enemy.DisplayName} can't act!");
+            }
+            else
+            {
+                EnemyMove move = enemy.NextMove;
+                bool animate = move != null && (!animateOnlyAttackMoves || move.intent == IntentType.Attack);
+
+                if (animate)
+                {
+                    enemy.PlayAttack();                                       // start the swing
+                    yield return new WaitForSeconds(enemy.AttackHitDelay);    // wait until the hit lands
+                }
+
+                ExecuteEnemyMove(enemy, move);                                // apply damage / effects
+                if (CheckBattleOver()) yield break;
+
+                if (animate)
+                    yield return new WaitForSeconds(enemy.AttackRecoverTime); // let the animation finish
+            }
 
             enemy.OnTurnEnd();
             if (CheckBattleOver()) yield break;
