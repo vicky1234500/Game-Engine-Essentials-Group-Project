@@ -11,7 +11,7 @@ public static class MainMenuBuilder
 {
     const string ScenePath = "Assets/Scenes/MainMenu.unity";
     const string BackgroundPath = "Assets/UI/Backgrounds/bg_menu.png";   // optional
-    const string GameTitle = "Grand Theft Auto 7";
+    const string GameTitle = "YOUR GAME NAME";
 
     static readonly Color Bg = Hex("#070A12");
     static readonly Color Panel = Hex("#0E1424");
@@ -56,9 +56,9 @@ public static class MainMenuBuilder
 
         var title = Txt("Title", canvas, GameTitle, 110, TextAnchor.MiddleLeft, Light, FontStyle.Bold);
         PlaceLeft(title.rectTransform, new Vector2(160, 250), new Vector2(1100, 150));
-        var outline = title.gameObject.AddComponent<Outline>();
-        outline.OutlineColor = new Color(Cyan.r, Cyan.g, Cyan.b, 0.55f);
-        outline.OutlineWidth = 3f;
+        var outline = title.gameObject.AddComponent<UnityEngine.UI.Outline>();
+        outline.effectColor = new Color(Cyan.r, Cyan.g, Cyan.b, 0.55f);
+        outline.effectDistance = new Vector2(3, -3);
         var sub = Txt("Subtitle", canvas, "TURN-BASED ROGUELIKE", 30, TextAnchor.MiddleLeft, Dim);
         PlaceLeft(sub.rectTransform, new Vector2(166, 160), new Vector2(900, 50));
 
@@ -203,9 +203,9 @@ public static class MainMenuBuilder
 
     static void AddBorder(GameObject go)
     {
-        var o = go.AddComponent<Outline>();
-        o.OutlineColor = new Color(Cyan.r, Cyan.g, Cyan.b, 0.7f);
-        o.OutlineWidth = 3f;
+        var o = go.AddComponent<UnityEngine.UI.Outline>();
+        o.effectColor = new Color(Cyan.r, Cyan.g, Cyan.b, 0.7f);
+        o.effectDistance = new Vector2(2, -2);
     }
 
     static Image Img(string name, Transform parent, Color color)
