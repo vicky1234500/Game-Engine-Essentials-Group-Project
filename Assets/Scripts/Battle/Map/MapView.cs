@@ -32,8 +32,10 @@ public class MapView : MonoBehaviour
     [SerializeField] Texture shopIcon;
     [SerializeField] Texture eventIcon;
     [SerializeField] Texture restIcon;
+    [Tooltip("Round backing behind each icon, also used for the rings (joystick_back in the Map prefab).")]
+    [SerializeField] Texture nodeBackground;
 
-    class NodeView { public Graphic body; public Image ring; public Color baseColor; }
+    class NodeView { public Graphic body; public Graphic ring; public Graphic backing; public Color baseColor; }
 
     readonly Dictionary<int, NodeView> views = new Dictionary<int, NodeView>();
     readonly List<(Image line, int from, int to)> lines = new List<(Image, int, int)>();
@@ -116,6 +118,15 @@ public class MapView : MonoBehaviour
         Vector2 pos = Position(n);
         float size = n.type == NodeType.Boss ? nodeSize * 1.4f : nodeSize;
 
+        if (icon && nodeBackground)
+        {
+            // Like the Map prefab: a round backing with the room icon on it, and a round ring around it.
+            // The blue circle sits a bit outside the icon, the ring a bit outside the circle.
+            v.ring = MakeIcon("Ring_" + n.id, pos, Vector2.one * (size * 1.3f + 16), nodeBackground, Color.clear);
+            v.backing = MakeIcon("Backing_" + n.id, pos, Vector2.one * size * 1.3f, nodeBackground, Color.white);
+            v.body = MakeIcon("Node_" + n.id, pos, Vector2.one * size * 0.7f, icon, v.baseColor);
+            return v;
+        }
         v.ring = MakeImage("Ring_" + n.id, pos, Vector2.one * (size + 14), Color.clear);
         if (icon)
         {
@@ -152,10 +163,12 @@ public class MapView : MonoBehaviour
             if (!views.TryGetValue(n.id, out var v)) continue;
             bool show = Visible(n);
             v.body.enabled = v.ring.enabled = show;
+            if (v.backing) v.backing.enabled = show;
             foreach (var t in v.body.GetComponentsInChildren<Text>()) t.enabled = show;
             Color c = v.baseColor;
             if (n.visited && n != current) c.a = 0.35f;
             v.body.color = c;
+            if (v.backing) v.backing.color = new Color(1f, 1f, 1f, c.a);
 
             if (n == current) v.ring.color = currentRing;
             else if (current.next.Contains(n.id)) v.ring.color = nextRing;
