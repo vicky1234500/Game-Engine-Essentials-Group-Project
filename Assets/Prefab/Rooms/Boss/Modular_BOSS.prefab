@@ -25,7 +25,7 @@ Transform:
   m_GameObject: {fileID: 1406620959184403015}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 26.01}
+  m_LocalPosition: {x: -19.53, y: 0, z: 26.01}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -234,7 +234,7 @@ Transform:
   m_GameObject: {fileID: 2817827528661354247}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -3, y: 0, z: 26.01}
+  m_LocalPosition: {x: -22.53, y: 0, z: 26.01}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -364,6 +364,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1192903554551909287}
   - component: {fileID: 4136375743110325328}
+  - component: {fileID: 8333877678545309487}
   m_Layer: 0
   m_Name: Modular_BOSS
   m_TagString: Untagged
@@ -407,6 +408,21 @@ MonoBehaviour:
   - {fileID: 1538044555764853343}
   - {fileID: 1808321016847181708}
   - {fileID: 1608738385333028488}
+--- !u!114 &8333877678545309487
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5125740480817608067}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ff78fd9ccd84f7941abf7e2db5e4a313, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RoomMusicSettings
+  exploreMusic: {fileID: 8300000, guid: 76b3b4fb161284a898b0ad494e8b7186, type: 3}
+  battleMusic: {fileID: 8300000, guid: 1734f213825fd49708cdd84e1bb5dc29, type: 3}
+  volume: 1
 --- !u!1 &5266783470122202655
 GameObject:
   m_ObjectHideFlags: 0
@@ -536,7 +552,7 @@ Transform:
   m_GameObject: {fileID: 8080183169934066569}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 3, y: 0, z: 26.01}
+  m_LocalPosition: {x: -16.53, y: 0, z: 26.01}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

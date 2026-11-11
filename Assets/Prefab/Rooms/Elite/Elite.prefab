@@ -671,6 +671,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5027362434207953181}
   - component: {fileID: 5490939388464014946}
+  - component: {fileID: 162173019946861599}
   m_Layer: 0
   m_Name: Elite
   m_TagString: Untagged
@@ -716,6 +717,21 @@ MonoBehaviour:
   - {fileID: 2858762828462781103}
   - {fileID: 395467873532312037}
   - {fileID: 1905496458137197460}
+--- !u!114 &162173019946861599
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7524001779168057693}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ff78fd9ccd84f7941abf7e2db5e4a313, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RoomMusicSettings
+  exploreMusic: {fileID: 8300000, guid: 76b3b4fb161284a898b0ad494e8b7186, type: 3}
+  battleMusic: {fileID: 8300000, guid: ac6af8430e3ab459c8c99ecffd79667e, type: 3}
+  volume: 1
 --- !u!1 &8038929324298117561
 GameObject:
   m_ObjectHideFlags: 0
