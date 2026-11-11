@@ -50,7 +50,7 @@ public class ItemView : MonoBehaviour,
 
         outline = GetComponent<Outline>();
         if (!outline && background) outline = background.GetComponent<Outline>();
-        if (outline) outlineNormalColor = outline.effectColor;
+        if (outline) outlineNormalColor = outline.OutlineColor;
         SetSelected(false);
         bool hasIcon = icon && item.data.icon;
         if (icon) { icon.sprite = item.data.icon; icon.enabled = hasIcon; }
@@ -90,7 +90,7 @@ public class ItemView : MonoBehaviour,
             c.a = selected ? selectedAlpha : normalAlpha;
             background.color = c;
         }
-        if (outline) outline.effectColor = selected ? selectedOutlineColor : outlineNormalColor;
+        if (outline) outline.OutlineColor = selected ? selectedOutlineColor : outlineNormalColor;
     }
 
     // Click (without dragging) selects the item. Unity doesn't send a click after a drag.
