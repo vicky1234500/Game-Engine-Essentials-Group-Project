@@ -26,9 +26,6 @@ public class MouseLook : MonoBehaviour
     public float minimumVert = -45.0f;
     public float maximumVert = 45.0f;
 
-    // ON = the cursor stays visible while exploring, so HUD buttons (like the backpack icon) can be clicked
-    public bool keepCursorVisible = true;
-
     // OFF = moving the mouse always looks around
     // ON  = only look around while holding the right mouse button (easier to click HUD buttons)
     public bool lookOnlyWhileRightMouseHeld = false;
@@ -58,13 +55,6 @@ public class MouseLook : MonoBehaviour
 
     void Update()
     {
-        // other scripts lock/hide the cursor when their menus close, so undo that every frame
-        if (keepCursorVisible)
-        {
-            Cursor.lockState = CursorLockMode.None;
-            Cursor.visible = true;
-        }
-
         if (Mouse.current == null) return;
 
         // optional: only look while the right mouse button is held

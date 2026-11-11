@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
   itemName: Energy Sword
   icon: {fileID: -4363154517817616898, guid: 13b63d4b2fb145e4da66c7c3e76bbf7a, type: 3}
-  model: {fileID: 1890647897046526433, guid: 9e92a4a235df0429e9194c6700353d36, type: 3}
+  model: {fileID: -2283424461367873406, guid: d630900d0adac564b90659ea03edeb80, type: 3}
   size: {x: 3, y: 1}
   tint: {r: 0.83, g: 0.14, b: 0.23, a: 1}
   price: 90

@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: MapUplink
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
   itemName: Map Uplink
-  icon: {fileID: 0}
+  icon: {fileID: 5977027885226419069, guid: aacfca30465077c4f861917f5e5df7df, type: 3}
+  model: {fileID: 2075202317535574087, guid: ae871d6c37de14bccb338122d809dd42, type: 3}
   size: {x: 1, y: 1}
   tint: {r: 0.2, g: 0.65, b: 0.75, a: 1}
   price: 50

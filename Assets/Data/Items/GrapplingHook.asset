@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: GrapplingHook
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
   itemName: Grappling Hook
-  icon: {fileID: 0}
+  icon: {fileID: 67798685135089430, guid: ba3760035789189418119a9939ecab9f, type: 3}
+  model: {fileID: 1541897874618489807, guid: 448a683a59eb946df8371958dfc5a818, type: 3}
   size: {x: 2, y: 1}
   tint: {r: 0.6, g: 0.55, b: 0.35, a: 1}
   price: 70

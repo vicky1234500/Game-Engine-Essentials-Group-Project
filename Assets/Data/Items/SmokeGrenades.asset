@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: SmokeGrenades
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
   itemName: Smoke Grenades
-  icon: {fileID: 0}
+  icon: {fileID: -528963879855393542, guid: 25bb86ba79b5d544987cf3532ea621dc, type: 3}
+  model: {fileID: 1928871291089818659, guid: aa21543b1c1004f1492f15c151873533, type: 3}
   size: {x: 1, y: 1}
   tint: {r: 0.45, g: 0.3, b: 0.8, a: 1}
   price: 50

@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: MedPod
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
   itemName: Med Pod
-  icon: {fileID: 0}
+  icon: {fileID: 7454728790936851256, guid: 614fc013d60644b48bcb5d086ee974fc, type: 3}
+  model: {fileID: 6427204013425631052, guid: 0dd98dcd70123471db724927c6225cc8, type: 3}
   size: {x: 2, y: 2}
   tint: {r: 0.25, g: 0.7, b: 0.35, a: 1}
   price: 15

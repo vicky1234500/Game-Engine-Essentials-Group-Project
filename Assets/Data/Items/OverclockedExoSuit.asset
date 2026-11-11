@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: OverclockedExoSuit
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
   itemName: Overclocked Exo-Suit
-  icon: {fileID: 0}
+  icon: {fileID: 2747851698493552021, guid: 80225a8b441882243af6936302c22f35, type: 3}
+  model: {fileID: 8270337480245789974, guid: 67e6a36264e8342d0beaef85f9b061ec, type: 3}
   size: {x: 3, y: 2}
   tint: {r: 0.45, g: 0.3, b: 0.8, a: 1}
   price: 130
