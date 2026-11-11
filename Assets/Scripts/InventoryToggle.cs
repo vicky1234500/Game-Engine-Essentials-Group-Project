@@ -6,14 +6,16 @@ using UnityEngine.InputSystem;
 public class InventoryToggle : MonoBehaviour
 {
     [SerializeField] GameObject inventoryMenu;        // Canvas > InventoryMenu
-    [SerializeField] GameObject hudWhenClosed;         // Canvas > InGame ("Press 0 to open inventory")
+    [SerializeField] GameObject hudWhenClosed;         // Canvas > InGame ("Press I to open inventory")
     [SerializeField] Behaviour[] disableWhileOpen;     // optional: PlayerMovement / mouse-look scripts
-    [SerializeField] bool useKeyboard = true;          // key 0 / numpad 0 toggles
+    [SerializeField] bool useKeyboard = true;          // the I key toggles
 
     [Header("Cursor")]
     [SerializeField] bool lockCursorWhenClosed = false; // OFF = cursor always visible (needed for clickable buttons)
 
     public bool IsOpen { get; private set; }
+
+    readonly System.Collections.Generic.List<MouseLook> pausedLooks = new System.Collections.Generic.List<MouseLook>();
 
     void Start()
     {
@@ -27,7 +29,7 @@ public class InventoryToggle : MonoBehaviour
         var kb = Keyboard.current;
         if (kb == null) return;
 
-        if (kb.digit0Key.wasPressedThisFrame || kb.numpad0Key.wasPressedThisFrame)
+        if (kb.iKey.wasPressedThisFrame)
             ToggleInventory();
     }
 
@@ -73,6 +75,23 @@ public class InventoryToggle : MonoBehaviour
 
         foreach (var b in disableWhileOpen)
             if (b) b.enabled = !open;
+
+        // Stop looking around while the backpack is open, then resume only what this menu stopped.
+        if (open)
+        {
+            foreach (var look in FindObjectsByType<MouseLook>(FindObjectsSortMode.None))
+            {
+                if (!look.enabled) continue;
+                look.enabled = false;
+                pausedLooks.Add(look);
+            }
+        }
+        else
+        {
+            foreach (var look in pausedLooks)
+                if (look) look.enabled = true;
+            pausedLooks.Clear();
+        }
 
         // Clear button focus, so pressing Space/Enter later doesn't click the button again.
         if (EventSystem.current) EventSystem.current.SetSelectedGameObject(null);

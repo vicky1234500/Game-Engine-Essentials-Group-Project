@@ -36,6 +36,7 @@ public class CardView3D : CardViewBase, IPointerClickHandler, IPointerEnterHandl
         foreach (var gr in go.GetComponentsInChildren<UnityEngine.UI.GraphicRaycaster>(true)) gr.enabled = false;
 
         view.AddHitbox(extraHitboxBelow);
+        view.AddOutline();
         return view;
     }
 
@@ -113,11 +114,36 @@ public class CardView3D : CardViewBase, IPointerClickHandler, IPointerEnterHandl
         box.size = size + new Vector3(0, below, 0);
     }
 
-    public override void SetSelected(bool selected) => Selected = selected;
+    // Outlines the card itself (not the item model on it) while it is selected.
+    const float SelectedOutlineWidth = 6f;
+    Outline outline;
+
+    void AddOutline()
+    {
+        var card = GetComponentInChildren<Card>(true);
+        foreach (var filter in GetComponentsInChildren<MeshFilter>(true))
+        {
+            if (card && card.models && filter.transform.IsChildOf(card.models)) continue;
+            if (!filter.sharedMesh || !filter.sharedMesh.isReadable) continue;
+
+            outline = filter.gameObject.AddComponent<Outline>();
+            outline.OutlineWidth = SelectedOutlineWidth;
+            outline.enabled = false;
+            return;
+        }
+        Debug.LogWarning("CardView3D: no readable card mesh found, so the card can't show an outline. Turn on Read/Write for the card model.", this);
+    }
+
+    public override void SetSelected(bool selected)
+    {
+        Selected = selected;
+        if (outline) outline.enabled = selected;
+    }
 
     public void OnPointerClick(PointerEventData e)
     {
         if (BattleUI.Instance) BattleUI.Instance.OnCardClicked(this);
+        else SetSelected(!Selected);   // no battle running (the preview scene): just toggle it
     }
 
     public void OnPointerEnter(PointerEventData e) => Hovered = true;

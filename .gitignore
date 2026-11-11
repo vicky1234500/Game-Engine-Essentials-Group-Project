@@ -123,6 +123,8 @@ CLAUDE.md
 /Assets/Resources/SoundCandidates.meta
 /Assets/Scenes/SoundTest.unity
 /Assets/Scenes/SoundTest.unity.meta
+/Assets/Scenes/ContentPreview.unity
+/Assets/Scenes/ContentPreview.unity.meta
 /Assets/Scripts/Debug/
 /Assets/Scripts/Debug.meta
 /Assets/Scripts/Editor/SoundTestScene.cs
