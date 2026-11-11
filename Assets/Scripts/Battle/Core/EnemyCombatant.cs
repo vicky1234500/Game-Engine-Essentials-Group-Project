@@ -61,7 +61,7 @@ public class EnemyCombatant : Combatant
     public bool ConsumeSkip()
     {
         if (Statuses.Has(StatusType.ShortCircuit)) { RemoveStatus(StatusType.ShortCircuit); return true; }
-        if (Statuses.Has(StatusType.Frozen))       { RemoveStatus(StatusType.Frozen);       return true; }
+        if (Statuses.Has(StatusType.Frozen)) { RemoveStatus(StatusType.Frozen); return true; }
         return false;
     }
 
@@ -82,6 +82,8 @@ public class EnemyCombatant : Combatant
 
         if (attackRoutine != null) StopCoroutine(attackRoutine);
         attackRoutine = StartCoroutine(AttackRoutine());
+
+
     }
 
     IEnumerator AttackRoutine()

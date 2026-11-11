@@ -163,7 +163,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff78fd9ccd84f7941abf7e2db5e4a313, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RoomMusicSettings
-  exploreMusic: {fileID: 8300000, guid: 76b3b4fb161284a898b0ad494e8b7186, type: 3}
+  exploreMusic: {fileID: 8300000, guid: d164decd50aa84726b1368554bb910e3, type: 3}
   battleMusic: {fileID: 8300000, guid: ac6af8430e3ab459c8c99ecffd79667e, type: 3}
   volume: 1
 --- !u!1 &8038929324298117561

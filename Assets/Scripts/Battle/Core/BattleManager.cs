@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.Video;
 public enum BattleState { None, Setup, PlayerTurn, EnemyTurn, Victory, Defeat }
 
 // Runs the fight: turn order, playing cards, enemy turns, win/lose.
@@ -208,7 +208,10 @@ public class BattleManager : MonoBehaviour
             if (enemy.IsDead) continue;
 
             yield return new WaitForSeconds(enemyActionDelay);
-
+            GameObject[] bloodObjects = FindObjectsByType<GameObject>(
+                                   FindObjectsInactive.Include,
+                                   FindObjectsSortMode.None
+                               );
             if (enemy.ConsumeSkip())
             {
                 Log($"{enemy.DisplayName} can't act!");
@@ -220,8 +223,25 @@ public class BattleManager : MonoBehaviour
 
                 if (animate)
                 {
+
                     enemy.PlayAttack();                                       // start the swing
+
                     yield return new WaitForSeconds(enemy.AttackHitDelay);    // wait until the hit lands
+                    foreach (var bloodObject in bloodObjects)
+                    {
+                        if (bloodObject.CompareTag("blood"))
+                        {
+                            bloodObject.SetActive(true);  //set blood effect to active when the enemy attacks
+                            VideoPlayer vp = bloodObject.GetComponentInChildren<VideoPlayer>();
+
+                            if (vp != null)
+                            {
+                                vp.Stop();
+                                vp.time = 0;
+                                vp.Play();
+                            }
+                        }
+                    }
                 }
 
                 ExecuteEnemyMove(enemy, move);                                // apply damage / effects
@@ -230,8 +250,15 @@ public class BattleManager : MonoBehaviour
                 if (animate)
                     yield return new WaitForSeconds(enemy.AttackRecoverTime); // let the animation finish
             }
-
+            foreach (var bloodObject in bloodObjects)
+            {
+                if (bloodObject.CompareTag("blood"))
+                {
+                    bloodObject.SetActive(false);
+                }
+            }
             enemy.OnTurnEnd();
+
             if (CheckBattleOver()) yield break;
         }
 
@@ -249,6 +276,7 @@ public class BattleManager : MonoBehaviour
         Combatant forcedTarget = null;
         if (enemy.Statuses.Has(StatusType.Hacked))
         {
+
             var all = new List<Combatant> { player };
             foreach (var e in enemies) if (!e.IsDead) all.Add(e);
             forcedTarget = all[UnityEngine.Random.Range(0, all.Count)];
@@ -261,8 +289,14 @@ public class BattleManager : MonoBehaviour
             {
                 var copy = new CardEffect
                 {
-                    type = effect.type, target = TargetType.SingleEnemy, amount = effect.amount, hits = effect.hits,
-                    ignoresShield = effect.ignoresShield, status = effect.status, duration = effect.duration, summon = effect.summon
+                    type = effect.type,
+                    target = TargetType.SingleEnemy,
+                    amount = effect.amount,
+                    hits = effect.hits,
+                    ignoresShield = effect.ignoresShield,
+                    status = effect.status,
+                    duration = effect.duration,
+                    summon = effect.summon
                 };
                 EffectResolver.Resolve(copy, enemy, forcedTarget, this, hitSound: GameAudio.For(move.sound));
             }
@@ -317,10 +351,12 @@ public class BattleManager : MonoBehaviour
 
     bool CheckBattleOver()
     {
+
         if (State == BattleState.None || State == BattleState.Setup) return false;
         if (State == BattleState.Victory || State == BattleState.Defeat) return true;
         if (player.IsDead) { EndBattle(false); return true; }
         if (enemies.TrueForAll(e => e.IsDead)) { EndBattle(true); return true; }
+
         return false;
     }
 
