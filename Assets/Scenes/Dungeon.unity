@@ -8241,6 +8241,15 @@ MonoBehaviour:
   content: {fileID: 1522245303}
   mapSize: {x: 560, y: 640}
   nodeSize: 54
+  windowFrame: {fileID: 321333638551451235, guid: a122d9a04e87f7124ed0ca8281dcd725, type: 3}
+  startIcon: {fileID: 6192944022281365145, guid: 2d631397e1e98bd40aaea5a93db03653, type: 3}
+  enemyIcon: {fileID: 6192944022281365145, guid: 19ff26ab45ab88d4083aa26a0616bf2d, type: 3}
+  eliteIcon: {fileID: 6192944022281365145, guid: 0043ad83f3ce08c40866aa49dc851475, type: 3}
+  bossIcon: {fileID: 6192944022281365145, guid: 2976c2e85e4973b4194611d35c4257ef, type: 3}
+  shopIcon: {fileID: 6192944022281365145, guid: bcd007209880db24ea7a896923cd5b14, type: 3}
+  eventIcon: {fileID: 6192944022281365145, guid: 69cef6ff6d5935642a48034ae4bfb0cc, type: 3}
+  restIcon: {fileID: 6192944022281365145, guid: 2d5004ccf78305f438a3ec04bdb5c6b3, type: 3}
+  nodeBackground: {fileID: 2800000, guid: 53d7cf26f104b3645bd513691464f49d, type: 3}
   startColor: {r: 0.6, g: 0.6, b: 0.65, a: 1}
   enemyColor: {r: 0.75, g: 0.25, b: 0.3, a: 1}
   eliteColor: {r: 1, g: 0.55, b: 0.15, a: 1}

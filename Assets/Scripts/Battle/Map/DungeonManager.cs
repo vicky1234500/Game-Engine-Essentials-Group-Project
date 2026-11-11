@@ -173,6 +173,14 @@ public class DungeonManager : MonoBehaviour
             else if (Keyboard.current != null && Keyboard.current.mKey.wasPressedThisFrame) mapView.Toggle(Current);
         }
 
+        // Rest room: E rests once
+        if (Current != null && Current.type == NodeType.Rest && !restUsed && !InBattle && !moving
+            && (!mapView || !mapView.IsOpen) && Keyboard.current != null && Keyboard.current.eKey.wasPressedThisFrame)
+        {
+            restUsed = true;
+            RestAtRoom();
+        }
+
         // Boss beaten and back from the reward screen -> floor cleared
         if (!floorDone && Current != null && Current.type == NodeType.Boss && RoomCleared && !InBattle && !moving)
             ShowFloorCleared();
@@ -255,12 +263,16 @@ public class DungeonManager : MonoBehaviour
             }
         }
         else if (node.type == NodeType.Rest)
-            RestAtRoom();
+        {
+            restUsed = false;
+            ShowMessage("Rest room - press E to rest and recover HP. Pick a door when you're ready.", 6f);
+        }
         // Event rooms: the room's EventRoomTrigger opens a random event popup.
     }
 
     [Tooltip("Share of max HP a Rest room restores (0.3 = 30%).")]
     [Range(0, 1)] [SerializeField] float restHealPercent = 0.3f;
+    bool restUsed;
 
     // Rest room: heals on entry. Field Repair Kit (RestHealBonusPercent) makes it heal more.
     void RestAtRoom()
@@ -522,11 +534,13 @@ public class DungeonManager : MonoBehaviour
         hudText.text = $"Floor 1   {where}   Credits {RunState.credits}   M = map   I = backpack";
     }
 
-    public void ShowMessage(string msg)
+    public void ShowMessage(string msg) => ShowMessage(msg, 2.5f);
+
+    public void ShowMessage(string msg, float seconds)
     {
         if (!messageText) return;
         messageText.text = msg;
-        messageHideAt = Time.time + 2.5f;
+        messageHideAt = Time.time + seconds;
     }
 
     void ShowFloorCleared()
