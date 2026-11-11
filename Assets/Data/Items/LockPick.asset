@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: LockPick
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
   itemName: Lock Pick
-  icon: {fileID: 0}
+  icon: {fileID: -7729190253949506911, guid: 06054e4f5eb75c845855763b5a6d303e, type: 3}
+  model: {fileID: 984228510327819824, guid: ee331417c7bf04b25b61d54c60aa4bf3, type: 3}
   size: {x: 1, y: 1}
   tint: {r: 0.6, g: 0.55, b: 0.35, a: 1}
   price: 50

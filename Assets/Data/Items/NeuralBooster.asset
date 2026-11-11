@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: NeuralBooster
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
   itemName: Neural Booster
-  icon: {fileID: 0}
+  icon: {fileID: -2677413207411902235, guid: 2d6cb59fdd47b0e46a2e53c2d3269e30, type: 3}
+  model: {fileID: 3557694955480225060, guid: a1620c8423c1d418fb270c3a95f3ef63, type: 3}
   size: {x: 1, y: 1}
   tint: {r: 0.2, g: 0.65, b: 0.75, a: 1}
   price: 50

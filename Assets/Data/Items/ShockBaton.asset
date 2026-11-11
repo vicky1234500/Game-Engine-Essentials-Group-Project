@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: ShockBaton
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
   itemName: Shock Baton
-  icon: {fileID: 0}
+  icon: {fileID: -3216364488660088477, guid: e00e07d518fc6bd43b4838127c267fe7, type: 3}
+  model: {fileID: 5321012970179670071, guid: c51a1bdde84834792991aee9ace7d4b8, type: 3}
   size: {x: 3, y: 1}
   tint: {r: 0.83, g: 0.14, b: 0.23, a: 1}
   price: 25

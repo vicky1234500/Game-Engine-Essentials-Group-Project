@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: KineticVest
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
   itemName: Kinetic Vest
-  icon: {fileID: 0}
+  icon: {fileID: 7110664523699441487, guid: 292cf447424b4424192f20fbbf7e9357, type: 3}
+  model: {fileID: -6689036041284674117, guid: 75c33519b3bf4439c96f2730cd7dbb99, type: 3}
   size: {x: 2, y: 1}
   tint: {r: 0.45, g: 0.3, b: 0.8, a: 1}
   price: 40

@@ -727,7 +727,7 @@ public static class BattleTestBuilder
         var canvas = canvasGo.transform;
 
         // Exploration HUD
-        var explore = Txt("ExplorationHUD", canvas, "W = walk forward   Mouse = look   0 = backpack   Walk up to an enemy to fight", 28, TextAnchor.MiddleCenter, Color.white);
+        var explore = Txt("ExplorationHUD", canvas, "W = walk forward   Mouse = look   I = backpack   Walk up to an enemy to fight", 28, TextAnchor.MiddleCenter, Color.white);
         Place(explore.rectTransform, new Vector2(0.5f, 1), new Vector2(0.5f, 1), new Vector2(0.5f, 1), new Vector2(0, -20), new Vector2(1200, 50));
 
         var battleUIGo = BuildBattleUI(canvas, bm, dm, pc, cardPrefab, items.rewards, dropPrefab, player.transform, grid);

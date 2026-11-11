@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: Cyberdeck
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
   itemName: Cyberdeck
-  icon: {fileID: 0}
+  icon: {fileID: 5253738373723337043, guid: a221d7208d761a7469a7281bdc08d6d2, type: 3}
+  model: {fileID: 5235222087191302592, guid: 2a00f4dd4289f4936ac6066b3f3d5a5c, type: 3}
   size: {x: 3, y: 1}
   tint: {r: 0.2, g: 0.65, b: 0.75, a: 1}
   price: 90

@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: StolenCreditChip
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
   itemName: Stolen Credit Chip
-  icon: {fileID: 0}
+  icon: {fileID: -1840209223051274370, guid: e3fe8cef34b036643aa441f279199503, type: 3}
+  model: {fileID: 4507040007204520756, guid: e262ee3d89cf746dfa4dd0c938f8cff1, type: 3}
   size: {x: 1, y: 1}
   tint: {r: 0.2, g: 0.65, b: 0.75, a: 1}
   price: 50

@@ -36,7 +36,10 @@ public static class ItemModelSetup
         { "OverclockedExoSuit", "Assets/Prefab/armor.prefab" },
         { "OverclockedSMG",     "Assets/models/weapons/Sci Fi Guns/Prefabs/Sci Fi SMG.prefab" },
         { "Pistol",             "Assets/Prefab/K-39.prefab" },
-        { "PortableWorkbench",  "Assets/Prefab/desk__design___sci-fi_workstation__neon_termi.prefab" },
+        { "PortableWorkbench",  "Assets/Prefab/sci-fi_table.prefab" },
+        { "FieldRepairKit",     "Assets/Prefab/Field Repair Kit.prefab" },
+        { "LockPick",           "Assets/Prefab/electric_lockpicking_gun.prefab" },
+        { "AmmoBelt",           "Assets/Prefab/Belt_A.prefab" },
         { "Railgun",            "Assets/Prefab/Railgun 1.prefab" },
         { "RiotShield",         "Assets/Prefab/sci-fi_energy_riot_shield.prefab" },
         { "ShockBaton",         "Assets/Prefab/stun_baton.prefab" },
@@ -66,6 +69,13 @@ public static class ItemModelSetup
                 continue;
             }
 
+            // Already done (e.g. running it again after Unity ran out of memory partway): skip it.
+            if (item.model == model && item.icon && AssetDatabase.GetAssetPath(item.icon) == $"{IconFolder}/{itemName}.png")
+            {
+                done++;
+                continue;
+            }
+
             Sprite icon = null;
             try { icon = MakeIcon(model, item.size, $"{IconFolder}/{itemName}.png"); }
             catch (System.Exception e) { Debug.LogWarning($"Item models: couldn't make the icon for {itemName}: {e.Message}"); }
@@ -75,6 +85,9 @@ public static class ItemModelSetup
             if (icon) so.FindProperty("icon").objectReferenceValue = icon;
             so.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(item);
+            AssetDatabase.SaveAssetIfDirty(item);          // keeps progress if Unity stops partway
+            EditorUtility.UnloadUnusedAssetsImmediate();   // big models' textures otherwise pile up in memory
+            System.GC.Collect();
             done++;
         }
         AssetDatabase.SaveAssets();

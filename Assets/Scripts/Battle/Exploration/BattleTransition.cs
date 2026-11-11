@@ -26,7 +26,7 @@ public class BattleTransition : MonoBehaviour
     [SerializeField] bool lockCursorWhileExploring = true;
 
     [Header("UI")]
-    [SerializeField] GameObject[] explorationUI;       // e.g. Canvas > InGame ("Press 0 to open inventory")
+    [SerializeField] GameObject[] explorationUI;       // e.g. Canvas > InGame ("Press I to open inventory")
     [SerializeField] GameObject battleUI;              // the object with BattleUI on it
     [SerializeField] CanvasGroup fadeScreen;           // full-screen black Image, on top of everything
     [SerializeField] float fadeTime = 0.25f;

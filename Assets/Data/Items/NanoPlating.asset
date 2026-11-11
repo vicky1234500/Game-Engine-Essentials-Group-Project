@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: NanoPlating
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
   itemName: Nano-Plating
-  icon: {fileID: 0}
+  icon: {fileID: 2582329135069297414, guid: 898bd9dc52d6c9148bd14042502de97a, type: 3}
+  model: {fileID: -6689036041284674117, guid: 0d7e278e6440542f6a6ecb9f98252afa, type: 3}
   size: {x: 2, y: 1}
   tint: {r: 0.45, g: 0.3, b: 0.8, a: 1}
   price: 20

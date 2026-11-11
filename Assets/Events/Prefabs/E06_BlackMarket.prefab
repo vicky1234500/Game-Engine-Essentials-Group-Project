@@ -153,6 +153,9 @@ MonoBehaviour:
   tradeButton: {fileID: 6716604016070883134}
   buyButton: {fileID: 9178766322609743861}
   leaveButton: {fileID: 6556882372277161622}
+  inventory: {fileID: 0}
+  inventoryToggle: {fileID: 0}
+  sealedPackage: {fileID: 11400000, guid: d9d67d686b72ce941a5c23be2eb5c827, type: 2}
   onReturnToMap:
     m_PersistentCalls:
       m_Calls: []

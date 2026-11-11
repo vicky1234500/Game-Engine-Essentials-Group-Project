@@ -190,16 +190,27 @@ MonoBehaviour:
   leaveButton: {fileID: 8606446994518901710}
   inventory: {fileID: 0}
   inventoryToggle: {fileID: 0}
+  player: {fileID: 0}
   oneTileRewards:
-  - {fileID: 11400000, guid: 04839893efea3dc47b6719d20cbbbbca, type: 2}
+  - {fileID: 11400000, guid: da529e0838e320f41b39357cc8b81bea, type: 2}
+  - {fileID: 11400000, guid: 991bb5b9f435b324f8f98155d7258f76, type: 2}
+  - {fileID: 11400000, guid: 5ad244c426d695b44a4339ac4c356c38, type: 2}
+  - {fileID: 11400000, guid: adaca78445ef00a4e8ec6d4ba5b5d3c0, type: 2}
+  - {fileID: 11400000, guid: f47a25d71c11d2248930772902679c4c, type: 2}
+  - {fileID: 11400000, guid: cca414862e93ee64f8b3e99b58fa8c9c, type: 2}
+  - {fileID: 11400000, guid: eed833148def774488b5d73cbb44261c, type: 2}
   allRewards:
-  - {fileID: 11400000, guid: 04839893efea3dc47b6719d20cbbbbca, type: 2}
-  startingHP: 20
-  startingCredits: 30
+  - {fileID: 11400000, guid: da529e0838e320f41b39357cc8b81bea, type: 2}
+  - {fileID: 11400000, guid: 991bb5b9f435b324f8f98155d7258f76, type: 2}
+  - {fileID: 11400000, guid: 5ad244c426d695b44a4339ac4c356c38, type: 2}
+  - {fileID: 11400000, guid: adaca78445ef00a4e8ec6d4ba5b5d3c0, type: 2}
+  - {fileID: 11400000, guid: f47a25d71c11d2248930772902679c4c, type: 2}
+  - {fileID: 11400000, guid: cca414862e93ee64f8b3e99b58fa8c9c, type: 2}
+  - {fileID: 11400000, guid: eed833148def774488b5d73cbb44261c, type: 2}
   purchaseCost: 15
   kickDamage: 10
   kickRewardChance: 0.5
-  kickTestOutcome: 2
+  kickTestOutcome: 0
   onReturnToMap:
     m_PersistentCalls:
       m_Calls: []

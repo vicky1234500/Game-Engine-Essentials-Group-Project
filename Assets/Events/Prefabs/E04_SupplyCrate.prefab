@@ -1026,10 +1026,15 @@ MonoBehaviour:
   leaveButton: {fileID: 4994787734521224567}
   inventory: {fileID: 0}
   inventoryToggle: {fileID: 0}
+  player: {fileID: 0}
   rewardItems:
   - {fileID: 11400000, guid: 04839893efea3dc47b6719d20cbbbbca, type: 2}
-  startingHP: 10
-  startingLockPickUses: 0
+  - {fileID: 11400000, guid: 991bb5b9f435b324f8f98155d7258f76, type: 2}
+  - {fileID: 11400000, guid: d749205a831394940a23c4e1d136cc8b, type: 2}
+  - {fileID: 11400000, guid: 638b0e24e8be5674d9da1d4dfc0ec66e, type: 2}
+  - {fileID: 11400000, guid: 3ff8ae23d2136644595f9107dae89b09, type: 2}
+  - {fileID: 11400000, guid: 675c1b992ac521444b913f8a76a6671c, type: 2}
+  startingLockPickUses: 3
   smashDamage: 12
   intactChance: 0.5
   smashTestOutcome: 0

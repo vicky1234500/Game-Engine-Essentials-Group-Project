@@ -23,7 +23,17 @@ public class MapView : MonoBehaviour
     [SerializeField] Color currentRing = new Color(1f, 0.9f, 0.2f);
     [SerializeField] Color nextRing = new Color(0.3f, 1f, 0.4f);
 
-    class NodeView { public Image body; public Image ring; public Color baseColor; }
+    [Header("Look (from Assets/Prefab/World Items/Map). Empty icon = coloured square with a letter.")]
+    [SerializeField] GameObject windowFrame;        // sci-fi window drawn behind the map
+    [SerializeField] Texture startIcon;
+    [SerializeField] Texture enemyIcon;
+    [SerializeField] Texture eliteIcon;
+    [SerializeField] Texture bossIcon;
+    [SerializeField] Texture shopIcon;
+    [SerializeField] Texture eventIcon;
+    [SerializeField] Texture restIcon;
+
+    class NodeView { public Graphic body; public Image ring; public Color baseColor; }
 
     readonly Dictionary<int, NodeView> views = new Dictionary<int, NodeView>();
     readonly List<(Image line, int from, int to)> lines = new List<(Image, int, int)>();
@@ -36,7 +46,24 @@ public class MapView : MonoBehaviour
     void Awake()
     {
         font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+        AddWindowFrame();
         if (panel) panel.SetActive(false);
+    }
+
+    void AddWindowFrame()
+    {
+        if (!panel || !windowFrame) return;
+        var frame = (RectTransform)Instantiate(windowFrame, panel.transform, false).transform;
+        frame.SetAsFirstSibling();
+        frame.anchorMin = Vector2.zero;
+        frame.anchorMax = Vector2.one;
+        frame.offsetMin = frame.offsetMax = Vector2.zero;
+
+        var title = frame.GetComponentInChildren<TMPro.TMP_Text>(true);
+        if (title) title.text = "FLOOR MAP";
+
+        var background = panel.GetComponent<Image>();
+        if (background) background.enabled = false;   // the window is the background now
     }
 
     public void Toggle(MapNode current)
@@ -84,11 +111,17 @@ public class MapView : MonoBehaviour
 
     NodeView Node(MapNode n)
     {
-        var v = new NodeView { baseColor = ColorFor(n.type) };
+        Texture icon = IconFor(n.type);
+        var v = new NodeView { baseColor = icon ? IconTint(n.type) : ColorFor(n.type) };
         Vector2 pos = Position(n);
         float size = n.type == NodeType.Boss ? nodeSize * 1.4f : nodeSize;
 
         v.ring = MakeImage("Ring_" + n.id, pos, Vector2.one * (size + 14), Color.clear);
+        if (icon)
+        {
+            v.body = MakeIcon("Node_" + n.id, pos, Vector2.one * size, icon, v.baseColor);
+            return v;
+        }
         v.body = MakeImage("Node_" + n.id, pos, Vector2.one * size, v.baseColor);
 
         var label = new GameObject("Label", typeof(RectTransform)).AddComponent<Text>();
@@ -164,6 +197,48 @@ public class MapView : MonoBehaviour
         rt.anchoredPosition = pos;
         rt.sizeDelta = size;
         return img;
+    }
+
+    RawImage MakeIcon(string name, Vector2 pos, Vector2 size, Texture texture, Color color)
+    {
+        var go = new GameObject(name, typeof(RectTransform));
+        go.transform.SetParent(content, false);
+        var img = go.AddComponent<RawImage>();
+        img.texture = texture;
+        img.color = color;
+        img.raycastTarget = false;
+        var rt = img.rectTransform;
+        rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f);
+        rt.anchoredPosition = pos;
+        rt.sizeDelta = size;
+        return img;
+    }
+
+    Texture IconFor(NodeType t)
+    {
+        switch (t)
+        {
+            case NodeType.Start: return startIcon;
+            case NodeType.Enemy: return enemyIcon;
+            case NodeType.Elite: return eliteIcon;
+            case NodeType.Boss:  return bossIcon;
+            case NodeType.Shop:  return shopIcon;
+            case NodeType.Event: return eventIcon;
+            case NodeType.Rest:  return restIcon;
+            default:             return null;
+        }
+    }
+
+    // The tints used on the icons in the Map prefab.
+    Color IconTint(NodeType t)
+    {
+        switch (t)
+        {
+            case NodeType.Start: return new Color(0.48f, 0.915f, 0.47f);
+            case NodeType.Elite: return eliteColor;
+            case NodeType.Boss:  return new Color(0.915f, 0.09f, 0.09f);
+            default:             return Color.white;
+        }
     }
 
     Color ColorFor(NodeType t)

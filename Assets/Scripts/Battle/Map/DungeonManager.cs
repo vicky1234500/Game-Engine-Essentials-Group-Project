@@ -255,8 +255,35 @@ public class DungeonManager : MonoBehaviour
             }
         }
         else if (node.type == NodeType.Rest)
-            ShowMessage("Rest room - coming soon. Pick a door to continue.");
+            RestAtRoom();
         // Event rooms: the room's EventRoomTrigger opens a random event popup.
+    }
+
+    [Tooltip("Share of max HP a Rest room restores (0.3 = 30%).")]
+    [Range(0, 1)] [SerializeField] float restHealPercent = 0.3f;
+
+    // Rest room: heals on entry. Field Repair Kit (RestHealBonusPercent) makes it heal more.
+    void RestAtRoom()
+    {
+        var combatant = battle ? battle.Player : null;
+        if (!combatant)
+        {
+            ShowMessage("Rest room. Pick a door to continue.");
+            return;
+        }
+
+        int bonusPercent = 0;
+        var backpack = FindFirstObjectByType<InventoryGrid>(FindObjectsInactive.Include);
+        if (backpack)
+            foreach (var item in backpack.Items)
+                if (item.data.passives != null)
+                    foreach (var p in item.data.passives)
+                        if (p.type == PassiveType.RestHealBonusPercent) bonusPercent += p.amount;
+
+        int amount = Mathf.CeilToInt(combatant.MaxHP * restHealPercent * (1f + bonusPercent / 100f));
+        int before = combatant.HP;
+        combatant.Heal(amount);
+        ShowMessage($"You rest and recover {combatant.HP - before} HP. Pick a door to continue.");
     }
 
     // Deeper rooms = stronger enemies. Read by BattleManager when the fight starts.
@@ -492,7 +519,7 @@ public class DungeonManager : MonoBehaviour
         string where = Current.type == NodeType.Start ? "Entrance"
                      : Current.type == NodeType.Boss ? "BOSS"
                      : $"Room {Current.layer + 1} / {layers}";
-        hudText.text = $"Floor 1   {where}   Credits {RunState.credits}   M = map   0 = backpack";
+        hudText.text = $"Floor 1   {where}   Credits {RunState.credits}   M = map   I = backpack";
     }
 
     public void ShowMessage(string msg)

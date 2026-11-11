@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: PortableWorkbench
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
   itemName: Portable Workbench
-  icon: {fileID: 0}
+  icon: {fileID: -1582043324764792125, guid: 03e3752874ace8a4c94ddb6d75d3f66c, type: 3}
+  model: {fileID: 8652302212026039999, guid: f44c1ad1bec9a4f978d20e6de34c542d, type: 3}
   size: {x: 2, y: 2}
   tint: {r: 0.6, g: 0.55, b: 0.35, a: 1}
   price: 110
