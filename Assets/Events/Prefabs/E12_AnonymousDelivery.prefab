@@ -863,7 +863,10 @@ MonoBehaviour:
   sealedPackage: {fileID: 11400000, guid: d9d67d686b72ce941a5c23be2eb5c827, type: 2}
   supportRewards:
   - {fileID: 11400000, guid: 40c83bff605ea97479be643aaba13d6d, type: 2}
-  startingCredits: 30
+  - {fileID: 11400000, guid: cca414862e93ee64f8b3e99b58fa8c9c, type: 2}
+  - {fileID: 11400000, guid: 42bb9d6a2427b2343a80cb8a9412b31e, type: 2}
+  - {fileID: 11400000, guid: eee3a3cb3da3868409b7122f7d99a0a0, type: 2}
+  - {fileID: 11400000, guid: f50a784461771324aadd189e6421ac58, type: 2}
   requiredVictories: 3
   deliveryReward: 80
   onReturnToMap:

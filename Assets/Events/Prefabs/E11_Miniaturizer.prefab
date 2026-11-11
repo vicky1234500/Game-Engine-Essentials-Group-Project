@@ -688,8 +688,16 @@ MonoBehaviour:
   inventory: {fileID: 0}
   inventoryToggle: {fileID: 0}
   attackItems:
-  - {fileID: 11400000, guid: 04839893efea3dc47b6719d20cbbbbca, type: 2}
-  startingCredits: 75
+  - {fileID: 11400000, guid: d87286f2d7692f5418b34da6700185f1, type: 2}
+  - {fileID: 11400000, guid: fb591baf5e068474ab9f5c31f1dea029, type: 2}
+  - {fileID: 11400000, guid: 87185240ccf8d9d4e8ea064d84790d45, type: 2}
+  - {fileID: 11400000, guid: a6ecd14bd2e12c64c8615ce2aab9ea11, type: 2}
+  - {fileID: 11400000, guid: a817ee95da01dbf43865d2403388d301, type: 2}
+  - {fileID: 11400000, guid: 165834f7438ca3848b61a953e6301b26, type: 2}
+  - {fileID: 11400000, guid: e6dcab14104671540b12c6e20c472d11, type: 2}
+  - {fileID: 11400000, guid: 31d027296c7a9554e83542e075843669, type: 2}
+  - {fileID: 11400000, guid: 41612b5ca26f4954da6e4431aede8850, type: 2}
+  - {fileID: 11400000, guid: 5ad244c426d695b44a4339ac4c356c38, type: 2}
   modificationCost: 30
   onReturnToMap:
     m_PersistentCalls:

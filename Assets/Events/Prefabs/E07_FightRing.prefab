@@ -446,11 +446,10 @@ MonoBehaviour:
   fightButton: {fileID: 2056380873938698107}
   betButton: {fileID: 6364664568033535935}
   leaveButton: {fileID: 1149735800866757219}
-  startingCredits: 75
   betCost: 30
   winningPayout: 60
   winChance: 0.5
-  betTestOutcome: 2
+  betTestOutcome: 0
   eliteFightConnected: 0
   eliteVictoryCredits: 100
   onStartEliteFight:

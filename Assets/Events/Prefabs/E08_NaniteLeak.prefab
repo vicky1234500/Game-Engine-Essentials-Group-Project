@@ -271,9 +271,28 @@ MonoBehaviour:
   continueButton: {fileID: 1285199669994243139}
   inventory: {fileID: 0}
   inventoryToggle: {fileID: 0}
+  player: {fileID: 0}
   rewardItems:
-  - {fileID: 11400000, guid: 04839893efea3dc47b6719d20cbbbbca, type: 2}
-  startingHP: 135
+  - {fileID: 11400000, guid: 8dbcba66ae688c14a85e1d5d2037ad77, type: 2}
+  - {fileID: 11400000, guid: 42bb9d6a2427b2343a80cb8a9412b31e, type: 2}
+  - {fileID: 11400000, guid: e6dcab14104671540b12c6e20c472d11, type: 2}
+  - {fileID: 11400000, guid: dc6ead8bf09a2084e8fd5f0541d627c4, type: 2}
+  - {fileID: 11400000, guid: eee3a3cb3da3868409b7122f7d99a0a0, type: 2}
+  - {fileID: 11400000, guid: a6ecd14bd2e12c64c8615ce2aab9ea11, type: 2}
+  - {fileID: 11400000, guid: 0784f4eef922a6d47b0c01e4b6faacce, type: 2}
+  - {fileID: 11400000, guid: c64e29abedf1b5147acd995267ca6947, type: 2}
+  - {fileID: 11400000, guid: 165834f7438ca3848b61a953e6301b26, type: 2}
+  - {fileID: 11400000, guid: adaca78445ef00a4e8ec6d4ba5b5d3c0, type: 2}
+  - {fileID: 11400000, guid: 3ff8ae23d2136644595f9107dae89b09, type: 2}
+  - {fileID: 11400000, guid: eed833148def774488b5d73cbb44261c, type: 2}
+  - {fileID: 11400000, guid: f50a784461771324aadd189e6421ac58, type: 2}
+  - {fileID: 11400000, guid: 10d5fb90ed10e3841a94c5bc983c2a92, type: 2}
+  - {fileID: 11400000, guid: 991bb5b9f435b324f8f98155d7258f76, type: 2}
+  - {fileID: 11400000, guid: f47a25d71c11d2248930772902679c4c, type: 2}
+  - {fileID: 11400000, guid: 31d027296c7a9554e83542e075843669, type: 2}
+  - {fileID: 11400000, guid: d89e80adc1f279e44b9ccc3e0075c643, type: 2}
+  - {fileID: 11400000, guid: 87185240ccf8d9d4e8ea064d84790d45, type: 2}
+  - {fileID: 11400000, guid: 675c1b992ac521444b913f8a76a6671c, type: 2}
   crossingDamage: 15
   onReturnToMap:
     m_PersistentCalls:
