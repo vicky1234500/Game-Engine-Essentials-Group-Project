@@ -104,8 +104,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: feb8a64ba34d222438f24fc7bbdae5c7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EventRoomTrigger
-  eventPoint: {fileID: 0}
-  triggerRange: 3
+  eventPoint: {fileID: 4385105255774355307}
+  triggerRange: 2
   playerTag: Player
 --- !u!114 &8644231774371472733
 MonoBehaviour:
