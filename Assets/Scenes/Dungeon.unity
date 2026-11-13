@@ -356,6 +356,17 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 87676548}
   m_CullTransparentMesh: 1
+--- !u!114 &97530634 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8285926508698337744, guid: bc8e9d2d9ea59cf45aa6239328ed83c0, type: 3}
+  m_PrefabInstance: {fileID: 2053938197}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe3797e2289cfe94bb4ec03b8f62e0a5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InventoryGrid
 --- !u!1 &119464182
 GameObject:
   m_ObjectHideFlags: 0
@@ -3548,6 +3559,17 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 812572321}
   m_CullTransparentMesh: 1
+--- !u!114 &827030601 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3952573266164440966, guid: bc8e9d2d9ea59cf45aa6239328ed83c0, type: 3}
+  m_PrefabInstance: {fileID: 2053938197}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b228a55f89ffa514c8f704b6cd5ee2c8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InventoryToggle
 --- !u!1 &860709413
 GameObject:
   m_ObjectHideFlags: 0
@@ -4030,8 +4052,8 @@ MonoBehaviour:
   - {fileID: 6786479536258674684, guid: 12d76d3eefc7d284e97909e1a6dcb624, type: 3}
   - {fileID: 8848057149854626408, guid: 824296a319dd95f4c82812ad7e50a05f, type: 3}
   - {fileID: 980840982861901767, guid: b3bddc8729e64884ebe081284d93ed7e, type: 3}
-  inventory: {fileID: 0}
-  inventoryToggle: {fileID: 0}
+  inventory: {fileID: 97530634}
+  inventoryToggle: {fileID: 827030601}
   battleManager: {fileID: 676062505}
   enableF8Test: 0
   repeatAfterAllEvents: 1
@@ -4607,8 +4629,8 @@ MonoBehaviour:
   - {fileID: 1797818975}
   - {fileID: 1797818974}
   - {fileID: 1799822116}
-  - {fileID: 0}
-  inventoryToggle: {fileID: 0}
+  - {fileID: 827030601}
+  inventoryToggle: {fileID: 827030601}
   lockCursorWhileExploring: 1
   explorationUI:
   - {fileID: 1870241099}
@@ -8241,15 +8263,6 @@ MonoBehaviour:
   content: {fileID: 1522245303}
   mapSize: {x: 560, y: 640}
   nodeSize: 54
-  windowFrame: {fileID: 321333638551451235, guid: a122d9a04e87f7124ed0ca8281dcd725, type: 3}
-  startIcon: {fileID: 6192944022281365145, guid: 2d631397e1e98bd40aaea5a93db03653, type: 3}
-  enemyIcon: {fileID: 6192944022281365145, guid: 19ff26ab45ab88d4083aa26a0616bf2d, type: 3}
-  eliteIcon: {fileID: 6192944022281365145, guid: 0043ad83f3ce08c40866aa49dc851475, type: 3}
-  bossIcon: {fileID: 6192944022281365145, guid: 2976c2e85e4973b4194611d35c4257ef, type: 3}
-  shopIcon: {fileID: 6192944022281365145, guid: bcd007209880db24ea7a896923cd5b14, type: 3}
-  eventIcon: {fileID: 6192944022281365145, guid: 69cef6ff6d5935642a48034ae4bfb0cc, type: 3}
-  restIcon: {fileID: 6192944022281365145, guid: 2d5004ccf78305f438a3ec04bdb5c6b3, type: 3}
-  nodeBackground: {fileID: 2800000, guid: 53d7cf26f104b3645bd513691464f49d, type: 3}
   startColor: {r: 0.6, g: 0.6, b: 0.65, a: 1}
   enemyColor: {r: 0.75, g: 0.25, b: 0.3, a: 1}
   eliteColor: {r: 1, g: 0.55, b: 0.15, a: 1}
@@ -8266,6 +8279,7 @@ MonoBehaviour:
   shopIcon: {fileID: 6192944022281365145, guid: bcd007209880db24ea7a896923cd5b14, type: 3}
   eventIcon: {fileID: 6192944022281365145, guid: 69cef6ff6d5935642a48034ae4bfb0cc, type: 3}
   restIcon: {fileID: 6192944022281365145, guid: 2d5004ccf78305f438a3ec04bdb5c6b3, type: 3}
+  nodeBackground: {fileID: 2800000, guid: 53d7cf26f104b3645bd513691464f49d, type: 3}
   alwaysShowWholeMap: 0
 --- !u!224 &1866152163
 RectTransform:
