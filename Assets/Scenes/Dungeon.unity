@@ -374,6 +374,17 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 87676548}
   m_CullTransparentMesh: 1
+--- !u!114 &97530634 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8285926508698337744, guid: bc8e9d2d9ea59cf45aa6239328ed83c0, type: 3}
+  m_PrefabInstance: {fileID: 2053938197}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe3797e2289cfe94bb4ec03b8f62e0a5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InventoryGrid
 --- !u!1 &119464182
 GameObject:
   m_ObjectHideFlags: 0
@@ -3566,6 +3577,17 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 812572321}
   m_CullTransparentMesh: 1
+--- !u!114 &827030601 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3952573266164440966, guid: bc8e9d2d9ea59cf45aa6239328ed83c0, type: 3}
+  m_PrefabInstance: {fileID: 2053938197}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b228a55f89ffa514c8f704b6cd5ee2c8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InventoryToggle
 --- !u!1 &860709413
 GameObject:
   m_ObjectHideFlags: 0
@@ -4048,8 +4070,8 @@ MonoBehaviour:
   - {fileID: 6786479536258674684, guid: 12d76d3eefc7d284e97909e1a6dcb624, type: 3}
   - {fileID: 8848057149854626408, guid: 824296a319dd95f4c82812ad7e50a05f, type: 3}
   - {fileID: 980840982861901767, guid: b3bddc8729e64884ebe081284d93ed7e, type: 3}
-  inventory: {fileID: 0}
-  inventoryToggle: {fileID: 0}
+  inventory: {fileID: 97530634}
+  inventoryToggle: {fileID: 827030601}
   battleManager: {fileID: 676062505}
   enableF8Test: 0
   repeatAfterAllEvents: 1
@@ -4625,8 +4647,8 @@ MonoBehaviour:
   - {fileID: 1797818975}
   - {fileID: 1797818974}
   - {fileID: 1799822116}
-  - {fileID: 0}
-  inventoryToggle: {fileID: 0}
+  - {fileID: 827030601}
+  inventoryToggle: {fileID: 827030601}
   lockCursorWhileExploring: 1
   explorationUI:
   - {fileID: 1870241099}
