@@ -19,7 +19,7 @@ public class PlayerCombatant : Combatant
     public int HealAfterBattle { get; private set; }
 
     public override string DisplayName => playerName;
-
+    public event System.Action OnManaSpentFailed;
     bool initialized;
 
     void Awake()
@@ -62,13 +62,13 @@ public class PlayerCombatant : Combatant
             {
                 switch (p.type)
                 {
-                    case PassiveType.BonusDF:            BonusDefense += p.amount; break;
-                    case PassiveType.GunDamage:          GunDamageBonus += p.amount; break;
-                    case PassiveType.BonusManaPerTurn:   BonusManaPerTurn += p.amount; break;
-                    case PassiveType.HealPerTurn:        HealPerTurn += p.amount; break;
+                    case PassiveType.BonusDF: BonusDefense += p.amount; break;
+                    case PassiveType.GunDamage: GunDamageBonus += p.amount; break;
+                    case PassiveType.BonusManaPerTurn: BonusManaPerTurn += p.amount; break;
+                    case PassiveType.HealPerTurn: HealPerTurn += p.amount; break;
                     case PassiveType.ExtraDrawFirstTurn: ExtraDrawFirstTurn += p.amount; break;
                     case PassiveType.CreditBonusPercent: CreditBonusPercent += p.amount; break;
-                    case PassiveType.HealAfterBattle:    HealAfterBattle += p.amount; break;
+                    case PassiveType.HealAfterBattle: HealAfterBattle += p.amount; break;
                 }
             }
         }
@@ -84,7 +84,10 @@ public class PlayerCombatant : Combatant
 
     public void SpendMana(int cost)
     {
+
         Mana = Mathf.Max(0, Mana - cost);
+
+
         NotifyChanged();
     }
 

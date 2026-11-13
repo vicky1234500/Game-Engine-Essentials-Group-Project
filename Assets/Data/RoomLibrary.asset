@@ -20,6 +20,7 @@ MonoBehaviour:
     - {fileID: 5490939388464014946, guid: 31f3648b2ff82e4428f9243c6da6fc09, type: 3}
   - type: 2
     rooms:
+    - {fileID: 4655847126723488780, guid: 7d2872142d2164ef384cd4e96f18ad8b, type: 3}
     - {fileID: 7100000000000000019, guid: 1bf16f1e2e6ef4e589572f5494f5fb6d, type: 3}
   - type: 3
     rooms:

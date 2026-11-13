@@ -141,7 +141,17 @@ public class BattleManager : MonoBehaviour
         if (State != BattleState.PlayerTurn) return false;
         if (!deck.hand.Contains(card)) return false;
         if (!card.Playable) { Log($"{card.data.cardName} can't be played."); return false; }
-        if (!player.CanAfford(card.ManaCost)) { Log("Not enough mana."); return false; }
+        if (!player.CanAfford(card.ManaCost))
+        {
+            Log("Not enough mana.");
+
+            BattleUI.Instance.PlayManaErrorEffect();
+
+
+            MusicManager.Instance.PlayManaErrorSound();
+
+            return false;
+        }
         if (card.data.NeedsTarget && (!target || target.IsDead)) { Log("Pick a target."); return false; }
 
         player.SpendMana(card.ManaCost);

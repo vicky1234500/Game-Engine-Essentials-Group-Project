@@ -13,9 +13,11 @@ public class PlayerMovement : MonoBehaviour
     public float gravityValue = -9.81f;
     public float jumpHeight = 1.0f;
 
+
     private void Start()
     {
         controller = GetComponent<CharacterController>();
+
     }
 
     private void Update()
@@ -41,6 +43,8 @@ public class PlayerMovement : MonoBehaviour
         Vector3 move = transform.right * moveInput.x + transform.forward * moveInput.y;
         controller.Move(move * Time.deltaTime * playerSpeed);
 
+
+
         // Direct reading for Spacebar jump
         if (Keyboard.current != null && Keyboard.current.spaceKey.wasPressedThisFrame && isGrounded)
         {
@@ -49,5 +53,8 @@ public class PlayerMovement : MonoBehaviour
 
         playerVelocity.y += gravityValue * Time.deltaTime;
         controller.Move(playerVelocity * Time.deltaTime);
+
     }
+
+
 }
