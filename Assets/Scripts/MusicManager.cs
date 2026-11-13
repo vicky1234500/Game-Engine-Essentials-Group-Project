@@ -280,15 +280,7 @@ public class MusicManager : MonoBehaviour
         float finalVolume = masterVolume * footstepVolumeMultiplier;
         AudioSource.PlayClipAtPoint(footstepSound, Camera.main ? Camera.main.transform.position : transform.position, finalVolume);
 
-        // // 如果没有单独拖入 sfxSource，就临时在当前物体上找一个或用 PlayClipAtPoint
-        // if (sfxSource == null)
-        // {
-        //     AudioSource.PlayClipAtPoint(footstepSound, transform.position, masterVolume);
-        // }
-        // else
-        // {
-        //     sfxSource.PlayOneShot(footstepSound, masterVolume);
-        // }
+
     }
 
 }
