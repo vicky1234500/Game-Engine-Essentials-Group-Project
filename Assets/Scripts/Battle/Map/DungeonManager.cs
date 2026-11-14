@@ -236,7 +236,7 @@ public class DungeonManager : MonoBehaviour
         : Quaternion.identity;
 
             roomRoot = Instantiate(prefab.gameObject, Vector3.zero, roomRotation).transform;
-            roomRoot = Instantiate(prefab.gameObject, Vector3.zero, Quaternion.identity).transform;
+            //roomRoot = Instantiate(prefab.gameObject, Vector3.zero, Quaternion.identity).transform;
             roomRoot.name = $"Room_{node.type}_{node.layer + 1} ({prefab.name})";
             var room = roomRoot.GetComponent<RoomPrefab>();
             FillPrefabRoom(node, room);
