@@ -6174,10 +6174,10 @@ MonoBehaviour:
   layers: 5
   lanes: 3
   paths: 4
-  eliteChance: 0
-  eliteFromLayer: 0
+  eliteChance: 1
+  eliteFromLayer: 2
   shopChance: 0
-  eventChance: 1
+  eventChance: 0
   restChance: 0
   shopFromLayer: 1
   eventFromLayer: 1
@@ -6222,6 +6222,7 @@ MonoBehaviour:
   floorClearedPanel: {fileID: 173159627}
   mapView: {fileID: 1551347628}
   lobbyScene: Lobby
+  restHealPercent: 0.3
 --- !u!4 &1508394747
 Transform:
   m_ObjectHideFlags: 0
@@ -6309,6 +6310,15 @@ MonoBehaviour:
   lineColor: {r: 1, g: 1, b: 1, a: 0.35}
   currentRing: {r: 1, g: 0.9, b: 0.2, a: 1}
   nextRing: {r: 0.3, g: 1, b: 0.4, a: 1}
+  windowFrame: {fileID: 0}
+  startIcon: {fileID: 0}
+  enemyIcon: {fileID: 0}
+  eliteIcon: {fileID: 0}
+  bossIcon: {fileID: 0}
+  shopIcon: {fileID: 0}
+  eventIcon: {fileID: 0}
+  restIcon: {fileID: 0}
+  nodeBackground: {fileID: 0}
   alwaysShowWholeMap: 0
 --- !u!224 &1551347629
 RectTransform:
@@ -8524,7 +8534,6 @@ MonoBehaviour:
   sensitivityVert: 3
   minimumVert: -45
   maximumVert: 45
-  keepCursorVisible: 1
   lookOnlyWhileRightMouseHeld: 0
 --- !u!114 &2010236141
 MonoBehaviour:
@@ -9026,7 +9035,6 @@ MonoBehaviour:
   sensitivityVert: 2.5
   minimumVert: -45
   maximumVert: 45
-  keepCursorVisible: 1
   lookOnlyWhileRightMouseHeld: 0
 --- !u!114 &2052979176
 MonoBehaviour:
