@@ -53,6 +53,13 @@ public class InventoryToggle : MonoBehaviour
 
     public void SetOpen(bool open)
     {
+        Debug.Log($"[Inventory] open={open}, battleBusy={BattleTransition.Instance?.Busy}");
+        // Prevent opening the inventory during combat and transitions, but allow closing it.
+        if (open && BattleTransition.Instance != null &&
+            BattleTransition.Instance.Busy)
+        {
+            return;
+        }
         IsOpen = open;
         if (!open && inventoryMenu)
         {

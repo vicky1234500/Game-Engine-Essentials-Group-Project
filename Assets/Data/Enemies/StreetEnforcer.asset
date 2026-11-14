@@ -16,8 +16,8 @@ MonoBehaviour:
   rank: 1
   maxHP: 65
   modelPrefab: {fileID: 2785625239073397158, guid: 4d4424b4ea971472e8881e6820a60a97, type: 3}
-  modelHeight: 3.1
-  modelLift: 0
+  modelHeight: 3
+  modelLift: -0.1
   modelYaw: 0
   hasHurtVoice: 0
   moves:

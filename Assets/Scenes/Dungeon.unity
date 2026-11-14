@@ -1627,6 +1627,8 @@ MonoBehaviour:
   - enemies:
     - {fileID: 11400000, guid: 0d511bba147dd914bbea3a40a8cc0d9d, type: 2}
     - {fileID: 11400000, guid: bee2e5a0467e00f498b300297e528665, type: 2}
+  - enemies:
+    - {fileID: 11400000, guid: 9cfdf320b8ebe51459dee7e1f7405524, type: 2}
   eliteEncounters:
   - enemies:
     - {fileID: 11400000, guid: 4da61492b63b9e14688613babfe04f9c, type: 2}

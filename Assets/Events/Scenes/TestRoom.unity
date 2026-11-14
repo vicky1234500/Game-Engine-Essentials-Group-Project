@@ -5096,6 +5096,10 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3952573266164440966, guid: bc8e9d2d9ea59cf45aa6239328ed83c0, type: 3}
+      propertyPath: lockCursorWhenClosed
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3962120706361696493, guid: bc8e9d2d9ea59cf45aa6239328ed83c0, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -5703,7 +5707,7 @@ MonoBehaviour:
   - {fileID: 2052979175}
   - {fileID: 1204450394}
   inventoryToggle: {fileID: 1204450394}
-  lockCursorWhileExploring: 1
+  lockCursorWhileExploring: 0
   explorationUI:
   - {fileID: 1146366236}
   - {fileID: 0}
@@ -6547,12 +6551,14 @@ MonoBehaviour:
   scalingPerRoom: 0.06
   normalEncounters:
   - enemies:
-    - {fileID: 11400000, guid: 0d511bba147dd914bbea3a40a8cc0d9d, type: 2}
+    - {fileID: 11400000, guid: 9cfdf320b8ebe51459dee7e1f7405524, type: 2}
   - enemies:
-    - {fileID: 11400000, guid: bee2e5a0467e00f498b300297e528665, type: 2}
+    - {fileID: 11400000, guid: 9cfdf320b8ebe51459dee7e1f7405524, type: 2}
   - enemies:
-    - {fileID: 11400000, guid: 0d511bba147dd914bbea3a40a8cc0d9d, type: 2}
-    - {fileID: 11400000, guid: bee2e5a0467e00f498b300297e528665, type: 2}
+    - {fileID: 11400000, guid: 9cfdf320b8ebe51459dee7e1f7405524, type: 2}
+    - {fileID: 11400000, guid: 9cfdf320b8ebe51459dee7e1f7405524, type: 2}
+  - enemies:
+    - {fileID: 11400000, guid: 9cfdf320b8ebe51459dee7e1f7405524, type: 2}
   eliteEncounters:
   - enemies:
     - {fileID: 11400000, guid: 4da61492b63b9e14688613babfe04f9c, type: 2}
