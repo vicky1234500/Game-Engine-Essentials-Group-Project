@@ -36,16 +36,21 @@ public class MusicManager : MonoBehaviour
     [SerializeField] AudioClip defaultBattleMusic;
 
     [Header("Volume and fading")]
-    [Range(0f, 1f)] [SerializeField] float masterVolume = 0.6f;
+    [Range(0f, 1f)][SerializeField] float masterVolume = 0.6f;
     [Tooltip("Crossfade time between rooms.")]
     [SerializeField] float fadeTime = 1.2f;
     [Tooltip("Faster crossfade when a fight starts or ends.")]
     [SerializeField] float battleFadeTime = 0.4f;
-
+    [Header("SFX (Short Sounds)")]
+    [SerializeField] AudioClip footstepSound;
+    [SerializeField] float footstepVolumeMultiplier = 2.0f;
     [Header("Debug")]
     [Tooltip("ON: prints to the Console what room / fight it detects every time the music changes.")]
     [SerializeField] bool debugLog = false;
 
+    [Header("UI & Error SFX")]
+    [SerializeField] AudioClip manaErrorSound;
+    [Range(0f, 1f)][SerializeField] float manaErrorVolume = 1f;
     AudioSource sourceA, sourceB;
     AudioSource current;               // the source playing (or fading in) right now
     AudioClip currentClip;
@@ -259,4 +264,23 @@ public class MusicManager : MonoBehaviour
 
     // For a volume slider in a settings menu.
     public void SetMasterVolume(float value) => masterVolume = Mathf.Clamp01(value);
+
+    public void PlayManaErrorSound()
+    {
+
+        if (manaErrorSound == null) return;
+
+        AudioSource.PlayClipAtPoint(manaErrorSound, Camera.main ? Camera.main.transform.position : Vector3.zero, manaErrorVolume * masterVolume);
+    }
+
+
+    public void PlayFootstep()
+    {
+        if (footstepSound == null) return;
+        float finalVolume = masterVolume * footstepVolumeMultiplier;
+        AudioSource.PlayClipAtPoint(footstepSound, Camera.main ? Camera.main.transform.position : transform.position, finalVolume);
+
+
+    }
+
 }

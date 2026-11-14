@@ -21,7 +21,8 @@ public class BattleUI : MonoBehaviour
     [SerializeField] GameObject victoryPanel;
     [SerializeField] Text victoryCreditsText;
     [SerializeField] GameObject defeatPanel;
-
+    [SerializeField] Animation manaAnimation;
+    [SerializeField] string errorClipName = "ManaEffect";
     public CardViewBase SelectedCard { get; private set; }   // 2D CardView or 3D CardView3D
 
     readonly System.Collections.Generic.Queue<string> log = new System.Collections.Generic.Queue<string>();
@@ -42,6 +43,10 @@ public class BattleUI : MonoBehaviour
         if (defeatPanel) defeatPanel.SetActive(false);
         ClearSelection();
         Refresh();
+        if (battle && battle.Player)
+        {
+            battle.Player.OnManaSpentFailed += PlayManaErrorEffect;
+        }
     }
 
     void OnDisable()
@@ -52,6 +57,10 @@ public class BattleUI : MonoBehaviour
         if (battle.Deck) battle.Deck.OnPilesChanged -= Refresh;
         if (battle.Player) battle.Player.OnChanged -= Refresh;
         if (endTurnButton) endTurnButton.onClick.RemoveListener(OnEndTurnClicked);
+        if (battle && battle.Player)
+        {
+            battle.Player.OnManaSpentFailed -= PlayManaErrorEffect;
+        }
     }
 
     void Refresh()
@@ -144,4 +153,14 @@ public class BattleUI : MonoBehaviour
     {
         UnityEngine.SceneManagement.SceneManager.LoadScene(menuScene);
     }
+    public void PlayManaErrorEffect()
+    {
+        if (manaAnimation != null)
+        {
+
+            manaAnimation.Stop();
+            manaAnimation.Play(errorClipName);
+        }
+    }
+
 }

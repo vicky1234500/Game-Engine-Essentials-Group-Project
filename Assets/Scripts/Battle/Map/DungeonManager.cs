@@ -30,13 +30,13 @@ public class DungeonManager : MonoBehaviour
     [SerializeField] int lanes = 3;
     [Tooltip("Lines drawn from start to boss. More = more connections between paths.")]
     [SerializeField] int paths = 4;
-    [Range(0, 1)] [SerializeField] float eliteChance = 0.2f;
+    [Range(0, 1)][SerializeField] float eliteChance = 0.2f;
     [Tooltip("Rows before this (0-based) are always normal enemies.")]
     [SerializeField] int eliteFromLayer = 2;
     [Tooltip("Non-fight rooms (0 = never). Rest rooms are empty walk-through rooms until they're made.")]
-    [Range(0, 1)] [SerializeField] float shopChance = 0.15f;
-    [Range(0, 1)] [SerializeField] float eventChance = 0.25f;
-    [Range(0, 1)] [SerializeField] float restChance = 0f;
+    [Range(0, 1)][SerializeField] float shopChance = 0.15f;
+    [Range(0, 1)][SerializeField] float eventChance = 0.25f;
+    [Range(0, 1)][SerializeField] float restChance = 0f;
     [Tooltip("Rows before this (0-based) never have shops / events.")]
     [SerializeField] int shopFromLayer = 1;
     [SerializeField] int eventFromLayer = 1;
@@ -104,7 +104,7 @@ public class DungeonManager : MonoBehaviour
         font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
     }
 
-    void OnEnable()  { if (battle) battle.OnBattleEnded += OnBattleEnded; }
+    void OnEnable() { if (battle) battle.OnBattleEnded += OnBattleEnded; }
     void OnDisable() { if (battle) battle.OnBattleEnded -= OnBattleEnded; }
 
     void Start()
@@ -230,6 +230,12 @@ public class DungeonManager : MonoBehaviour
 
         if (prefab)
         {
+            //prefeb rotation problem
+            Quaternion roomRotation = node.type == NodeType.Elite
+        ? Quaternion.Euler(-90f, 0f, 0f)
+        : Quaternion.identity;
+
+            roomRoot = Instantiate(prefab.gameObject, Vector3.zero, roomRotation).transform;
             roomRoot = Instantiate(prefab.gameObject, Vector3.zero, Quaternion.identity).transform;
             roomRoot.name = $"Room_{node.type}_{node.layer + 1} ({prefab.name})";
             var room = roomRoot.GetComponent<RoomPrefab>();
@@ -239,6 +245,8 @@ public class DungeonManager : MonoBehaviour
         else
         {
             roomRoot = new GameObject($"Room_{node.type}_{node.layer + 1}").transform;
+            if (node.type == NodeType.Elite)
+                roomRoot.rotation = Quaternion.Euler(-90f, 0f, 0f);
             BuildRoom(node);
         }
 
@@ -271,7 +279,7 @@ public class DungeonManager : MonoBehaviour
     }
 
     [Tooltip("Share of max HP a Rest room restores (0.3 = 30%).")]
-    [Range(0, 1)] [SerializeField] float restHealPercent = 0.3f;
+    [Range(0, 1)][SerializeField] float restHealPercent = 0.3f;
     bool restUsed;
 
     // Rest room: heals on entry. Field Repair Kit (RestHealBonusPercent) makes it heal more.
@@ -486,11 +494,11 @@ public class DungeonManager : MonoBehaviour
         {
             case NodeType.Enemy: return "?  ENEMY";
             case NodeType.Elite: return "!  ELITE";
-            case NodeType.Boss:  return "BOSS";
-            case NodeType.Shop:  return "$  SHOP";
+            case NodeType.Boss: return "BOSS";
+            case NodeType.Shop: return "$  SHOP";
             case NodeType.Event: return "EVENT";
-            case NodeType.Rest:  return "REST";
-            default:             return "";
+            case NodeType.Rest: return "REST";
+            default: return "";
         }
     }
 
