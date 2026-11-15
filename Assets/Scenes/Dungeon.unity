@@ -1643,7 +1643,7 @@ MonoBehaviour:
   - {fileID: 1797818975}
   - {fileID: 1797818974}
   - {fileID: 1799822116}
-  - {fileID: 0}
+  - {fileID: 827030601}
   floorMat: {fileID: 2100000, guid: 8c4217ff0e11b9741bb7593fc2ffd618, type: 2}
   wallMat: {fileID: 2100000, guid: 1510d143896e39547874e2bf40d72fc5, type: 2}
   enemyMat: {fileID: 2100000, guid: 03f6a7bb424185841bf70ec7d6b314be, type: 2}
@@ -3406,7 +3406,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::BattleManager
   player: {fileID: 1797818973}
   deck: {fileID: 676062504}
-  inventory: {fileID: 0}
+  inventory: {fileID: 97530634}
   enemyPrefab: {fileID: 3531430637625981497, guid: 835dbbdc69ff89a45a362e4fd29696f4, type: 3}
   defaultSpawnPoints:
   - {fileID: 1821601340}
@@ -4513,7 +4513,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ShopUI
   shop: {fileID: 860709416}
-  inventoryToggle: {fileID: 0}
+  inventoryToggle: {fileID: 827030601}
   shopPanel: {fileID: 1224263714}
   fullPopup: {fileID: 1427237589}
   sellModeBar: {fileID: 1801365832}
@@ -4552,7 +4552,7 @@ MonoBehaviour:
   - {fileID: 1797818975}
   - {fileID: 1797818974}
   - {fileID: 1799822116}
-  - {fileID: 0}
+  - {fileID: 827030601}
   lockCursorOnClose: 1
 --- !u!114 &860709416
 MonoBehaviour:
@@ -4567,7 +4567,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ShopManager
   shopKey: Lobby
-  inventory: {fileID: 0}
+  inventory: {fileID: 97530634}
   itemPool:
   - {fileID: 11400000, guid: fb591baf5e068474ab9f5c31f1dea029, type: 2}
   - {fileID: 11400000, guid: 514f96a27d4535d4c908b18da7b2f2dd, type: 2}
@@ -10357,7 +10357,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 939ce7d4e11fcd84ba37f8d1fd3d5a10, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ItemRewardPanel
-  inventory: {fileID: 0}
+  inventory: {fileID: 97530634}
   rewardPool:
   - {fileID: 11400000, guid: fb591baf5e068474ab9f5c31f1dea029, type: 2}
   - {fileID: 11400000, guid: 87185240ccf8d9d4e8ea064d84790d45, type: 2}
