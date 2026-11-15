@@ -553,7 +553,7 @@ public class DungeonManager : MonoBehaviour
         string where = Current.type == NodeType.Start ? "Entrance"
                      : Current.type == NodeType.Boss ? "BOSS"
                      : $"Room {Current.layer + 1} / {layers}";
-        hudText.text = $"Floor 1   {where}   Credits {RunState.credits}   M = map   I = backpack";
+        hudText.text = $"Floor 1   {where}   Credits {RunState.credits}   M = map   I = backpack  0=storage";
     }
 
     public void ShowMessage(string msg) => ShowMessage(msg, 2.5f);

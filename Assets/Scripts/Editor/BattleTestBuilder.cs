@@ -143,8 +143,8 @@ public static class BattleTestBuilder
     static List<CardData> BuildCards()
     {
         var swing = AssetDatabase.LoadAssetAtPath<CardData>(CardDir + "/SwingKnife.asset");
-        var thrw  = AssetDatabase.LoadAssetAtPath<CardData>(CardDir + "/ThrowKnife.asset");
-        var stab  = AssetDatabase.LoadAssetAtPath<CardData>(CardDir + "/DeepStab.asset");
+        var thrw = AssetDatabase.LoadAssetAtPath<CardData>(CardDir + "/ThrowKnife.asset");
+        var stab = AssetDatabase.LoadAssetAtPath<CardData>(CardDir + "/DeepStab.asset");
 
         // Deep Stab: 12 damage + BLEED (old card only had `value`, so give it real effects)
         if (stab && stab.effects.Count == 0)
@@ -190,7 +190,7 @@ public static class BattleTestBuilder
     struct Items { public ItemData knife, bandage; public List<ItemData> rewards, inactive; }
 
     static readonly Color WeaponTint = new Color(0.83f, 0.14f, 0.23f);
-    static readonly Color HealTint   = new Color(0.25f, 0.7f, 0.35f);
+    static readonly Color HealTint = new Color(0.25f, 0.7f, 0.35f);
     static readonly Color ShieldTint = new Color(0.45f, 0.3f, 0.8f);
 
     static Items BuildItems()
@@ -668,8 +668,8 @@ public static class BattleTestBuilder
         // Battle arena (moved in front of the player every fight)
         var arena = new GameObject("BattleArena").transform;
         var spawnCenter = Point("SpawnCenter", arena, new Vector3(0, 0, 0));
-        var spawnLeft   = Point("SpawnLeft",   arena, new Vector3(-1.4f, 0, -0.8f));
-        var spawnRight  = Point("SpawnRight",  arena, new Vector3(1.4f, 0, -0.8f));
+        var spawnLeft = Point("SpawnLeft", arena, new Vector3(-1.4f, 0, -0.8f));
+        var spawnRight = Point("SpawnRight", arena, new Vector3(1.4f, 0, -0.8f));
         var spawns = new Object[] { spawnCenter, spawnLeft, spawnRight };
 
         // Battle manager
@@ -726,7 +726,7 @@ public static class BattleTestBuilder
         var canvas = canvasGo.transform;
 
         // Exploration HUD
-        var explore = Txt("ExplorationHUD", canvas, "W = walk forward   Mouse = look   I = backpack   Walk up to an enemy to fight", 28, TextAnchor.MiddleCenter, Color.white);
+        var explore = Txt("ExplorationHUD", canvas, "W = walk forward   Mouse = look   I = backpack  0= storage  Walk up to an enemy to fight", 28, TextAnchor.MiddleCenter, Color.white);
         Place(explore.rectTransform, new Vector2(0.5f, 1), new Vector2(0.5f, 1), new Vector2(0.5f, 1), new Vector2(0, -20), new Vector2(1200, 50));
 
         var battleUIGo = BuildBattleUI(canvas, bm, dm, pc, cardPrefab, items.rewards, dropPrefab, player.transform, grid);

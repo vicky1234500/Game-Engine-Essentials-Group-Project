@@ -90,7 +90,7 @@ public static class RunEffects
 
         var panel = Object.FindFirstObjectByType<ItemRewardPanel>(FindObjectsInactive.Include);
         if (panel && panel.DropNearPlayer(item))
-            return $"Backpack full! {item.itemName} was dropped on the floor. Make space (press 0) and walk over it.";
+            return $"Backpack full! {item.itemName} goes into storage. Make space (press 0) and walk over it.";
         return $"Backpack full. {item.itemName} was lost.";
     }
 

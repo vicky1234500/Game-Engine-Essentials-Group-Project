@@ -23,10 +23,10 @@ public class ItemRewardPanel : MonoBehaviour
     [SerializeField] Button skipButton;
     [SerializeField] Text messageText;
 
-    [Header("Backpack full -> drop on the floor")]
-    [SerializeField] WorldItemPickup dropPrefab;
-    [SerializeField] Transform player;
-    [SerializeField] float dropDistance = 1.5f;
+    // [Header("Backpack full -> drop on the floor")]
+    // [SerializeField] WorldItemPickup dropPrefab;
+    // [SerializeField] Transform player;
+    // [SerializeField] float dropDistance = 1.5f;
 
     [SerializeField] float delayAfterPick = 1.2f;              // show the message, then go back to exploring
 
@@ -111,9 +111,12 @@ public class ItemRewardPanel : MonoBehaviour
         }
         else
         {
-            Drop(item);
-            Say($"Backpack full! {item.itemName} was dropped in front of you.\nPress 0, trash something, then walk over it.");
+            // Drop(item);
+            OverflowStorage.AddItem(item);
+            // Say($"Backpack full! {item.itemName} was dropped in front of you.\nPress 0, trash something, then walk over it.");
+            Say($"{item.itemName} added to Overflow Storage!");
         }
+
 
         foreach (var b in choiceButtons) b.interactable = false;
         if (skipButton) skipButton.interactable = false;
@@ -123,29 +126,32 @@ public class ItemRewardPanel : MonoBehaviour
     // Used by events too (RunEffects.GiveItem) when the backpack is full.
     public bool DropNearPlayer(ItemData item)
     {
-        if (!player)
-        {
-            var p = GameObject.FindGameObjectWithTag("Player");
-            if (p) player = p.transform;
-        }
-        if (!dropPrefab || !player || !item) return false;
-        Drop(item);
+        // if (!player)
+        // {
+        //     var p = GameObject.FindGameObjectWithTag("Player");
+        //     if (p) player = p.transform;
+        // }
+        // if (!dropPrefab || !player || !item) return false;
+        // Drop(item);
+        if (!item) return false;
+
+        OverflowStorage.AddItem(item);
         return true;
     }
 
-    void Drop(ItemData item)
-    {
-        if (!dropPrefab || !player) { Debug.LogWarning("ItemRewardPanel: no drop prefab/player, reward lost."); return; }
+    // void Drop(ItemData item)
+    // {
+    //     if (!dropPrefab || !player) { Debug.LogWarning("ItemRewardPanel: no drop prefab/player, reward lost."); return; }
 
-        Vector3 forward = player.forward; forward.y = 0; forward.Normalize();
-        Vector3 pos = player.position + forward * dropDistance;
-        var pickup = Instantiate(dropPrefab, pos, Quaternion.identity);
-        pickup.name = "Dropped_" + item.itemName;
-        pickup.SetItem(item);
+    //     Vector3 forward = player.forward; forward.y = 0; forward.Normalize();
+    //     Vector3 pos = player.position + forward * dropDistance;
+    //     var pickup = Instantiate(dropPrefab, pos, Quaternion.identity);
+    //     pickup.name = "Dropped_" + item.itemName;
+    //     pickup.SetItem(item);
 
-        var r = pickup.GetComponentInChildren<Renderer>();
-        if (r) r.material.color = item.tint;
-    }
+    //     var r = pickup.GetComponentInChildren<Renderer>();
+    //     if (r) r.material.color = item.tint;
+    // }
 
     void Say(string msg)
     {

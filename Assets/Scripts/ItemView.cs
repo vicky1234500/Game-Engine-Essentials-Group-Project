@@ -29,7 +29,7 @@ public class ItemView : MonoBehaviour,
     Outline outline;
     Color outlineNormalColor;
 
-    bool dragging, discarded;
+    bool dragging, discarded, movedToOverflow;
     Vector2Int startPos;
     bool startRotated;
     Vector2 grabOffset;     // where you grabbed the item, measured from its top-left
@@ -172,6 +172,12 @@ public class ItemView : MonoBehaviour,
     void FinishDrag(bool cancel)
     {
         dragging = false;
+        if (movedToOverflow)
+        {
+            Item.view = null;
+            Destroy(gameObject);
+            return;
+        }
         grid.ClearHighlight();
         group.blocksRaycasts = true;
         group.alpha = 1f;
@@ -208,5 +214,13 @@ public class ItemView : MonoBehaviour,
     public void OnPointerExit(PointerEventData e)
     {
         if (grid.Tooltip) grid.Tooltip.Hide();
+    }
+
+    public void MarkMovedToOverflow()
+    {
+        if (!dragging || movedToOverflow) return;
+
+        movedToOverflow = true;
+        grid.MoveToOverflow(Item);
     }
 }

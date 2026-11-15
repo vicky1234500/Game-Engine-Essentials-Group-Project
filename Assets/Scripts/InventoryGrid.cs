@@ -12,6 +12,7 @@ public class InventoryGrid : MonoBehaviour, IPointerClickHandler
     [SerializeField] RectTransform itemLayer;     // ItemLayer
     [SerializeField] ItemView itemViewPrefab;     // ItemView prefab
     [SerializeField] ItemTooltip tooltip;         // ItemTooltip
+    [SerializeField] RectTransform dropArea;
 
     [Header("Grid size")]
     [SerializeField] int columns = 3;
@@ -43,7 +44,7 @@ public class InventoryGrid : MonoBehaviour, IPointerClickHandler
     bool initialized;
     ItemInstance selected;
     bool restoring;          // stops saving while the saved backpack is being rebuilt
-
+    public RectTransform DropArea => dropArea;
     public RectTransform ItemLayer => itemLayer;
     public ItemTooltip Tooltip => tooltip;
     public IReadOnlyList<ItemInstance> Items => items;
@@ -103,6 +104,49 @@ public class InventoryGrid : MonoBehaviour, IPointerClickHandler
         TryPlace(item, pos);
         return true;
     }
+    public bool TryAddExistingItem(ItemInstance item)
+    {
+        if (item == null || item.data == null) return false;
+
+        EnsureInit();
+
+        Vector2Int size = item.Size;
+        bool found = false;
+        Vector2Int pos = default;
+
+        // Find a free position while keeping the original rotation.
+        for (int y = 0; y < rows && !found; y++)
+        {
+            for (int x = 0; x < columns; x++)
+            {
+                Vector2Int candidate = new Vector2Int(x, y);
+
+                if (CanPlace(candidate, size))
+                {
+                    pos = candidate;
+                    found = true;
+                    break;
+                }
+            }
+        }
+
+        if (!found)
+        {
+            Debug.Log("Inventory is full!");
+            return false;
+        }
+
+        ItemView view = Instantiate(itemViewPrefab, itemLayer);
+        view.Setup(item, this);
+
+        if (!TryPlace(item, pos))
+        {
+            Destroy(view.gameObject);
+            return false;
+        }
+
+        return true;
+    }
 
     // Checks without adding anything (used by world pickups).
     public bool HasSpaceFor(ItemData data) => FindSpace(data, out _, out _);
@@ -118,11 +162,11 @@ public class InventoryGrid : MonoBehaviour, IPointerClickHandler
             Vector2Int size = rotated ? new Vector2Int(data.size.y, data.size.x) : data.size;
 
             for (int y = 0; y < rows; y++)
-            for (int x = 0; x < columns; x++)
-            {
-                pos = new Vector2Int(x, y);
-                if (CanPlace(pos, size)) return true;
-            }
+                for (int x = 0; x < columns; x++)
+                {
+                    pos = new Vector2Int(x, y);
+                    if (CanPlace(pos, size)) return true;
+                }
         }
         pos = default;
         rotated = false;
@@ -137,8 +181,8 @@ public class InventoryGrid : MonoBehaviour, IPointerClickHandler
         Remove(item);
         item.position = pos;
         for (int dx = 0; dx < item.Size.x; dx++)
-        for (int dy = 0; dy < item.Size.y; dy++)
-            cells[pos.x + dx, pos.y + dy] = item;   // every covered slot points to the SAME item
+            for (int dy = 0; dy < item.Size.y; dy++)
+                cells[pos.x + dx, pos.y + dy] = item;   // every covered slot points to the SAME item
 
         items.Add(item);
         if (item.view) item.view.Refresh();
@@ -150,11 +194,36 @@ public class InventoryGrid : MonoBehaviour, IPointerClickHandler
     {
         EnsureInit();
         for (int x = 0; x < columns; x++)
-        for (int y = 0; y < rows; y++)
-            if (cells[x, y] == item) cells[x, y] = null;
+            for (int y = 0; y < rows; y++)
+                if (cells[x, y] == item) cells[x, y] = null;
         items.Remove(item);
         SaveToRunState();
     }
+
+    public void MoveToOverflow(ItemInstance item)
+    {
+        if (item == null) return;
+
+        EnsureInit();
+
+        // The item may already have been removed when dragging started.
+        if (selected == item)
+            Deselect();
+
+        Remove(item);
+
+        // Remove the old Inventory visual.
+        if (item.view)
+        {
+            Destroy(item.view.gameObject);
+            item.view = null;
+        }
+
+        OverflowStorage.AddItem(item);
+
+        Debug.Log(item.data.itemName + " moved to Overflow Storage!");
+    }
+
 
     public void Discard(ItemInstance item)
     {
@@ -171,11 +240,11 @@ public class InventoryGrid : MonoBehaviour, IPointerClickHandler
         EnsureInit();
         if (!IsInside(pos, size)) return false;
         for (int dx = 0; dx < size.x; dx++)
-        for (int dy = 0; dy < size.y; dy++)
-        {
-            var other = cells[pos.x + dx, pos.y + dy];
-            if (other != null && other != ignore) return false;
-        }
+            for (int dy = 0; dy < size.y; dy++)
+            {
+                var other = cells[pos.x + dx, pos.y + dy];
+                if (other != null && other != ignore) return false;
+            }
         return true;
     }
 
@@ -197,8 +266,8 @@ public class InventoryGrid : MonoBehaviour, IPointerClickHandler
         // 1. bigger cells array, old items keep their place
         var newCells = new ItemInstance[columns, rows + 1];
         for (int x = 0; x < columns; x++)
-        for (int y = 0; y < rows; y++)
-            newCells[x, y] = cells[x, y];
+            for (int y = 0; y < rows; y++)
+                newCells[x, y] = cells[x, y];
         cells = newCells;
         rows++;
 
@@ -292,19 +361,19 @@ public class InventoryGrid : MonoBehaviour, IPointerClickHandler
         Vector2Int best = default;
         float bestDistance = float.MaxValue;
         for (int y = 0; y < rows; y++)
-        for (int x = 0; x < columns; x++)
-        {
-            var pos = new Vector2Int(x, y);
-            if (!CanPlace(pos, newSize, item)) continue;   // "item" is ignored, so its own old slots count as free
-
-            float distance = ((Vector2)pos + (Vector2)newSize * 0.5f - oldCenter).sqrMagnitude;
-            if (distance < bestDistance)
+            for (int x = 0; x < columns; x++)
             {
-                bestDistance = distance;
-                best = pos;
-                found = true;
+                var pos = new Vector2Int(x, y);
+                if (!CanPlace(pos, newSize, item)) continue;   // "item" is ignored, so its own old slots count as free
+
+                float distance = ((Vector2)pos + (Vector2)newSize * 0.5f - oldCenter).sqrMagnitude;
+                if (distance < bestDistance)
+                {
+                    bestDistance = distance;
+                    best = pos;
+                    found = true;
+                }
             }
-        }
 
         if (found)
         {
@@ -380,14 +449,14 @@ public class InventoryGrid : MonoBehaviour, IPointerClickHandler
     {
         ClearHighlight();
         for (int dx = 0; dx < size.x; dx++)
-        for (int dy = 0; dy < size.y; dy++)
-        {
-            int x = pos.x + dx, y = pos.y + dy;
-            if (x < 0 || y < 0 || x >= columns || y >= rows) continue;
-            int i = y * columns + x;
-            if (i < slotImages.Length && slotImages[i])
-                slotImages[i].color = valid ? validColor : invalidColor;
-        }
+            for (int dy = 0; dy < size.y; dy++)
+            {
+                int x = pos.x + dx, y = pos.y + dy;
+                if (x < 0 || y < 0 || x >= columns || y >= rows) continue;
+                int i = y * columns + x;
+                if (i < slotImages.Length && slotImages[i])
+                    slotImages[i].color = valid ? validColor : invalidColor;
+            }
     }
 
     public void ClearHighlight()

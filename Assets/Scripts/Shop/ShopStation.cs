@@ -8,9 +8,10 @@ public class ShopStation : MonoBehaviour
     [SerializeField] Text promptText; // "Press E to open the shop"
     [SerializeField] float interactRange = 2.5f;
     [SerializeField] string playerTag = "Player";
-
+    [SerializeField] Animator shopkeeperAnimator;
     Transform player;
 
+    bool hasPlayedWaving = false;
     void Start()
     {
         // In a room prefab the scene's shop can't be dragged in, so find it.
@@ -29,8 +30,24 @@ public class ShopStation : MonoBehaviour
         Vector3 a = player.position, b = transform.position;
         a.y = b.y = 0;
         bool near = Vector3.Distance(a, b) <= interactRange && !shopUI.IsOpen;
+        bool nearwave = Vector3.Distance(a, b) <= interactRange;
         if (promptText) promptText.gameObject.SetActive(near);
+        if (nearwave && !hasPlayedWaving)
+        {
+            Debug.Log("Player entered Shop range!");
 
+            if (shopkeeperAnimator != null)
+            {
+                shopkeeperAnimator.SetTrigger("PlayerEntered");
+                Debug.Log("Waving animation triggered!");
+
+                hasPlayedWaving = true;
+            }
+            else
+            {
+                Debug.LogError("Shopkeeper Animator is not assigned!");
+            }
+        }
         if (near && Keyboard.current != null && !(BattleTransition.Instance && BattleTransition.Instance.Busy) && Keyboard.current.eKey.wasPressedThisFrame)
             shopUI.Open();
     }
@@ -38,6 +55,7 @@ public class ShopStation : MonoBehaviour
     void OnDestroy()
     {
         if (promptText) promptText.gameObject.SetActive(false);
+
     }
 
     void OnDrawGizmosSelected()
