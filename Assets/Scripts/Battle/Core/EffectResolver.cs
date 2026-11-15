@@ -88,6 +88,14 @@ public static class EffectResolver
             case EffectType.Summon:
                 for (int i = 0; i < Mathf.Max(1, e.amount); i++) battle.SpawnEnemy(e.summon);
                 break;
+
+            case EffectType.LoseHP:
+                foreach (var t in targets)
+                {
+                    int lost = t.LoseHP(e.amount);
+                    battle.Log($"{t.DisplayName} loses {lost} HP");
+                }
+                break;
         }
     }
 

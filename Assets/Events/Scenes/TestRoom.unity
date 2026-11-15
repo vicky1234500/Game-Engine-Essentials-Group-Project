@@ -2964,6 +2964,7 @@ MonoBehaviour:
   useItemDatabase: 1
   characters:
   - {fileID: 11400000, guid: 7a2fafaa4a52e2b42a9ed461d3a76e2d, type: 2}
+  - {fileID: 11400000, guid: 66bc9f188ee748b0a0f865d47f5fc32a, type: 2}
   slotCount: 3
   upgradeCost: 50
   sellPercent: 50
@@ -6685,7 +6686,7 @@ MonoBehaviour:
   eventIcon: {fileID: 0}
   restIcon: {fileID: 0}
   nodeBackground: {fileID: 0}
-  alwaysShowWholeMap: 0
+  alwaysShowWholeMap: 1
 --- !u!224 &1551347629
 RectTransform:
   m_ObjectHideFlags: 0

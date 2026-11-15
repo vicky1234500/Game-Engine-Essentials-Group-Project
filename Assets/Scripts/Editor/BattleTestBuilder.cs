@@ -11,14 +11,13 @@ using UnityEngine.UI;
 
 // Menu: Tools > Roguelike > Build Battle Test Scene
 // Makes test cards, items + enemies, the Enemy / Card / dropped-item prefabs, and a hallway scene
-// (Assets/Scenes/BattleTest.unity) with the inventory (copied from InventoryTest), battle UI and item rewards.
+// (Assets/Scenes/BattleTest.unity) with the inventory (the InventoryCanvas prefab), battle UI and item rewards.
 // Safe to run again: it updates the test assets and rebuilds the scene.
 public static class BattleTestBuilder
 {
     const string CardDir = "Assets/Data/Cards";
     const string EnemyDir = "Assets/Data/Enemies";
     const string ItemDir = "Assets/Data/Items";
-    const string InventoryScenePath = "Assets/Scenes/InventoryTest.unity";
     const string PrefabDir = "Assets/Prefab/Battle";
     const string ScenePath = "Assets/Scenes/BattleTest.unity";
 
@@ -685,7 +684,7 @@ public static class BattleTestBuilder
         SetArray(bso.FindProperty("testDeck"), deck.ToArray());     // only used if the backpack is empty
         bso.ApplyModifiedPropertiesWithoutUndo();
 
-        // Inventory (copied from InventoryTest): hook it to this player, add starting items
+        // Inventory (InventoryCanvas prefab): hook it to this player, add starting items
         InventoryGrid grid = null;
         InventoryToggle toggle = null;
         GameObject inGameHud = null;
@@ -930,34 +929,19 @@ public static class BattleTestBuilder
     // Inventory copy + dropped item prefab
     // =====================================================================
 
-    // Copies the whole inventory Canvas (InventoryMenu, InGame HUD, PickupText, InventoryToggle) from InventoryTest,
-    // so it's exactly the team's version. Returns null if that scene isn't there.
+    // Puts the inventory Canvas (InventoryMenu, InGame HUD, PickupText, InventoryToggle) into the test scene
+    // from the InventoryCanvas prefab, so it's exactly the team's version. Returns null if the prefab isn't there.
     static GameObject CopyInventoryCanvas()
     {
-        if (!System.IO.File.Exists(InventoryScenePath))
+        var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(InventoryPrefabPath);
+        if (!prefab)
         {
-            Debug.LogWarning("BattleTestBuilder: " + InventoryScenePath + " not found, no inventory in the test scene.");
+            Debug.LogWarning("BattleTestBuilder: " + InventoryPrefabPath + " not found, no inventory in the test scene.");
             return null;
         }
 
-        var target = SceneManager.GetActiveScene();
-        var invScene = EditorSceneManager.OpenScene(InventoryScenePath, OpenSceneMode.Additive);
-
-        GameObject source = null;
-        foreach (var root in invScene.GetRootGameObjects())
-            if (root.GetComponent<InventoryToggle>()) source = root;
-
-        GameObject copy = null;
-        if (source)
-        {
-            copy = Object.Instantiate(source);
-            SceneManager.MoveGameObjectToScene(copy, target);
-            copy.name = "InventoryCanvas";
-        }
-        else Debug.LogWarning("BattleTestBuilder: no object with InventoryToggle in " + InventoryScenePath);
-
-        EditorSceneManager.CloseScene(invScene, true);
-        SceneManager.SetActiveScene(target);
+        var copy = (GameObject)PrefabUtility.InstantiatePrefab(prefab, SceneManager.GetActiveScene());
+        copy.name = "InventoryCanvas";
         return copy;
     }
 

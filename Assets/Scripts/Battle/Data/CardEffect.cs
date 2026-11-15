@@ -16,7 +16,8 @@ public enum EffectType
     Summon,          // Warden Mech summons drones (enemy only)
     DamagePerStatus, // Dissolve: damage = amount x target's `status` stacks (3 x CORRODE)
     RemoveShield,    // EMP: target loses all SHIELD
-    DamagePerAttackPlayed  // Thousand Cuts: amount x attack cards played this fight
+    DamagePerAttackPlayed, // Thousand Cuts: amount x attack cards played this fight
+    LoseHP           // Overcharge Plating: lose exactly `amount` HP (no SHIELD, DF or damage bonuses). Keep last: assets store the number.
 }
 
 public enum TargetType

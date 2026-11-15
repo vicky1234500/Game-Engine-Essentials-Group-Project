@@ -1,4 +1,4 @@
-%YAML 1.1
+﻿%YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
 --- !u!29 &1
 OcclusionCullingSettings:
@@ -803,7 +803,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &249941488
 RectTransform:
   m_ObjectHideFlags: 0
@@ -4476,7 +4476,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &860709414
 RectTransform:
   m_ObjectHideFlags: 0
@@ -4575,6 +4575,7 @@ MonoBehaviour:
   useItemDatabase: 1
   characters:
   - {fileID: 11400000, guid: 7a2fafaa4a52e2b42a9ed461d3a76e2d, type: 2}
+  - {fileID: 11400000, guid: 66bc9f188ee748b0a0f865d47f5fc32a, type: 2}
   slotCount: 3
   upgradeCost: 50
   sellPercent: 50
@@ -7163,7 +7164,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1425580414
 RectTransform:
   m_ObjectHideFlags: 0
@@ -7934,7 +7935,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1578331590
 RectTransform:
   m_ObjectHideFlags: 0
@@ -9581,7 +9582,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1866152162
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9608,14 +9609,14 @@ MonoBehaviour:
   nextRing: {r: 0.3, g: 1, b: 0.4, a: 1}
   windowFrame: {fileID: 321333638551451235, guid: a122d9a04e87f7124ed0ca8281dcd725, type: 3}
   startIcon: {fileID: 6192944022281365145, guid: 2d631397e1e98bd40aaea5a93db03653, type: 3}
-  enemyIcon: {fileID: 6192944022281365145, guid: 9a4cbad8d8158b841b65db3d7b545d5f, type: 3}
+  enemyIcon: {fileID: 6192944022281365145, guid: 19ff26ab45ab88d4083aa26a0616bf2d, type: 3}
   eliteIcon: {fileID: 6192944022281365145, guid: 0043ad83f3ce08c40866aa49dc851475, type: 3}
   bossIcon: {fileID: 6192944022281365145, guid: 2976c2e85e4973b4194611d35c4257ef, type: 3}
   shopIcon: {fileID: 6192944022281365145, guid: bcd007209880db24ea7a896923cd5b14, type: 3}
   eventIcon: {fileID: 6192944022281365145, guid: 69cef6ff6d5935642a48034ae4bfb0cc, type: 3}
   restIcon: {fileID: 6192944022281365145, guid: 2d5004ccf78305f438a3ec04bdb5c6b3, type: 3}
   nodeBackground: {fileID: 2800000, guid: 53d7cf26f104b3645bd513691464f49d, type: 3}
-  alwaysShowWholeMap: 0
+  alwaysShowWholeMap: 1
 --- !u!224 &1866152163
 RectTransform:
   m_ObjectHideFlags: 0
@@ -9653,7 +9654,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1870241100
 RectTransform:
   m_ObjectHideFlags: 0

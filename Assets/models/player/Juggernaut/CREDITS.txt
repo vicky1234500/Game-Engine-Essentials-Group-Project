@@ -1,0 +1,6 @@
+﻿Juggernaut character model (CC Attribution 4.0 - credit required)
+
+juggernaut_cyborg.glb (also used for Assets/Art/Portraits/Juggernaut.png)
+"Sci-Fi Cyborg Character" by HypJo, licensed under CC BY 4.0
+https://sketchfab.com/3d-models/sci-fi-cyborg-character-91f2c3da0a0648b7b371b4d9ff584e9f
+Textures reduced from 4096 to 1024 to save memory.
