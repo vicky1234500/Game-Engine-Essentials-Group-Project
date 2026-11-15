@@ -310,6 +310,22 @@ public class EventExplorationBridge : MonoBehaviour
         returnEvent.AddListener(() => CloseEventInstance(instance));
         returnField.SetValue(controller, returnEvent);
 
+        FieldInfo eliteField = type.GetField("onStartEliteFight", Fields);
+
+        if (eliteField != null &&
+            eliteField.FieldType == typeof(UnityEvent))
+        {
+            EventRoomTrigger trigger =
+                FindFirstObjectByType<EventRoomTrigger>();
+
+            if (trigger != null)
+            {
+                UnityEvent eliteEvent =
+                    (UnityEvent)eliteField.GetValue(controller);
+
+                eliteEvent.AddListener(trigger.HidePillar);
+            }
+        }
         FieldInfo deathField = type.GetField("onGameOver", Fields);
 
         if (deathField != null

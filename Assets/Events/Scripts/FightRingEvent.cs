@@ -314,4 +314,5 @@ public class FightRingEvent : MonoBehaviour
         if (text)
             text.text = label;
     }
+
 }

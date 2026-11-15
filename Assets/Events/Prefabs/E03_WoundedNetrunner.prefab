@@ -430,7 +430,8 @@ MonoBehaviour:
   helpButton: {fileID: 6729536411308327141}
   robButton: {fileID: 4134421158500682361}
   leaveButton: {fileID: 1359987496937201100}
-  startingCredits: 30
+  helpHPCost: 10
+  inventory: {fileID: 0}
   robberyCredits: 50
   onReturnToMap:
     m_PersistentCalls:

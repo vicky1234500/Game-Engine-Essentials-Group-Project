@@ -1250,7 +1250,6 @@ MonoBehaviour:
   payButton: {fileID: 2316925797817124877}
   freeButton: {fileID: 7655072961711167175}
   leaveButton: {fileID: 4951248876397198541}
-  startingCredits: 59
   startingDF: 25
   implantCost: 60
   defenseBonus: 10

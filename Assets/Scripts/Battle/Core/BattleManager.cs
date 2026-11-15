@@ -84,6 +84,8 @@ public class BattleManager : MonoBehaviour
         else deck.BuildFromList(testDeck);
 
         foreach (var data in enemyList) SpawnEnemy(data);
+
+        SetEnemyBattleIdle(true);
         foreach (var e in enemies) e.PlanNextMove();
         ApplyRunEffectsAtStart();
 
@@ -97,6 +99,10 @@ public class BattleManager : MonoBehaviour
         int index = enemies.Count;
         Transform point = spawnPoints != null && index < spawnPoints.Length ? spawnPoints[index] : transform;
         var enemy = Instantiate(enemyPrefab, point.position, point.rotation);
+        if (data.enemyName != "Street Enforcer")
+        {
+            enemy.transform.rotation = Quaternion.Euler(0, -144, 0);
+        }
         enemy.name = data.enemyName;
         enemy.Setup(data, EnemyHpMultiplier, EnemyDamageMultiplier);
         enemy.OnDied += OnEnemyDied;
@@ -237,12 +243,23 @@ public class BattleManager : MonoBehaviour
                     enemy.PlayAttack();                                       // start the swing
 
                     yield return new WaitForSeconds(enemy.AttackHitDelay);    // wait until the hit lands
+                                                                              // Apply the enemy attack first.
+                    ExecuteEnemyMove(enemy, move);
+
+                    // Check whether the battle has ended.
+                    if (CheckBattleOver()) yield break;
+                    if (enemy.Data != null && enemy.Data.enemyName != "Security Drone")
+                    {
+                        yield return new WaitForSeconds(.5f);
+                    }
                     foreach (var bloodObject in bloodObjects)
                     {
                         if (bloodObject.CompareTag("blood"))
                         {
-                            bloodObject.SetActive(true);  //set blood effect to active when the enemy attacks
-                            VideoPlayer vp = bloodObject.GetComponentInChildren<VideoPlayer>();
+                            bloodObject.SetActive(true);
+
+                            VideoPlayer vp =
+                                bloodObject.GetComponentInChildren<VideoPlayer>();
 
                             if (vp != null)
                             {
@@ -254,7 +271,7 @@ public class BattleManager : MonoBehaviour
                     }
                 }
 
-                ExecuteEnemyMove(enemy, move);                                // apply damage / effects
+                // ExecuteEnemyMove(enemy, move);                                // apply damage / effects
                 if (CheckBattleOver()) yield break;
 
                 if (animate)
@@ -451,5 +468,20 @@ public class BattleManager : MonoBehaviour
     {
         Debug.Log("[Battle] " + msg);
         OnLog?.Invoke(msg);
+    }
+    void SetEnemyBattleIdle(bool inBattle)
+    {
+        foreach (var enemy in enemies)
+        {
+            if (enemy == null) continue;
+
+            Animator animator =
+                enemy.GetComponentInChildren<Animator>();
+
+            if (animator != null)
+            {
+                animator.SetBool("InBattle", inBattle);
+            }
+        }
     }
 }

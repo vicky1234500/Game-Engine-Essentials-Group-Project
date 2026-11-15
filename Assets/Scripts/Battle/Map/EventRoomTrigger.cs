@@ -41,7 +41,23 @@ public class EventRoomTrigger : MonoBehaviour
         // Only counts as used if it really opened (blocked while the backpack is open, during a fade...)
         if (bridge.TryOpenRandomEvent()) used = true;
     }
+    public void HidePillar()
+    {
+        if (eventPoint != null)
+        {
+            eventPoint.gameObject.SetActive(false);
+        }
 
+        foreach (Transform t in GetComponentsInChildren<Transform>(true))
+        {
+            if (t.name == "Label")
+            {
+                t.gameObject.SetActive(false);
+            }
+        }
+
+        Debug.Log("Event Pillar disappeared!");
+    }
     void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.cyan;

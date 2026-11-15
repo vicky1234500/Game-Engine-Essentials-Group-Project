@@ -172,10 +172,11 @@ MonoBehaviour:
   hackButton: {fileID: 6057867971822717777}
   purgeButton: {fileID: 5876601408795455665}
   leaveButton: {fileID: 9082095026123941981}
-  startingCredits: 30
   creditReward: 75
   staticCopiesPerFight: 2
   affectedFights: 3
+  purgeHPCost: 10
+  inventory: {fileID: 0}
   onReturnToMap:
     m_PersistentCalls:
       m_Calls: []
