@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 454e1556bf8c38944af1e43e1bc601ae, type: 3}
+  m_Name: OverchargePlating
+  m_EditorClassIdentifier: Assembly-CSharp::CardData
+  cardName: Overcharge Plating
+  type: 2
+  manaCost: 1
+  value: 15
+  description: Lose 4 HP. Gain 15 SHIELD. Exhaust.
+  effects:
+  - type: 13
+    target: 0
+    amount: 4
+    hits: 1
+    ignoresShield: 0
+    status: 0
+    duration: 1
+    summon: {fileID: 0}
+  - type: 1
+    target: 0
+    amount: 15
+    hits: 1
+    ignoresShield: 0
+    status: 0
+    duration: 1
+    summon: {fileID: 0}
+  exhaust: 1
+  unplayable: 0
+  returnToHandNextTurn: 0
+  isGun: 0
+  attackSound: 0
+  curseTrigger: 0
+  curseAmount: 0

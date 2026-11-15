@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f8797b4a893f67f49b3ddf3ab6b371b1, type: 3}
+  m_Name: ReactorCore
+  m_EditorClassIdentifier: Assembly-CSharp::ItemData
+  itemName: Reactor Core
+  icon: {fileID: 0}
+  model: {fileID: 0}
+  size: {x: 2, y: 2}
+  tint: {r: 0.45, g: 0.3, b: 0.8, a: 1}
+  price: 80
+  description: A chest-mounted reactor. +10 DF while in the backpack.
+  cards:
+  - card: {fileID: 11400000, guid: f92ea9a8240e47e588289db29751c0a5, type: 2}
+    count: 1
+  - card: {fileID: 11400000, guid: 798901c8cb694e76b549293f702c074f, type: 2}
+    count: 1
+  passives:
+  - type: 0
+    amount: 10

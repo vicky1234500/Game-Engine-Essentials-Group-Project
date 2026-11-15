@@ -48,6 +48,8 @@ public static class ItemModelSetup
         { "StimPack",           "Assets/Prefab/Prop_Syringe.prefab" },
         { "StolenCreditChip",   "Assets/Prefab/credit_card 1.prefab" },
         { "TacticalAICore",     "Assets/Prefab/sci_fi_energy_core_1.prefab" },
+        { "ShieldGauntlet",     "Assets/models/items/energy_gauntlet.glb" },        // ENOMIC, CC BY (see CREDITS.txt)
+        { "ReactorCore",        "Assets/models/items/sci-fi_power_reactor.glb" },   // Just-Peeps, CC BY (see CREDITS.txt)
     };
 
     [MenuItem("Tools/Roguelike/Apply Item Models + Make Icons (safe)")]

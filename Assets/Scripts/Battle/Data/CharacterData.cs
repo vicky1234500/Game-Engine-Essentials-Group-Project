@@ -7,7 +7,9 @@ public class CharacterData : ScriptableObject
 {
     public string characterName = "Character 1";
     [TextArea] public string description = "";
-    public Sprite portrait;                       // placeholder until the team has art
+    public Sprite portrait;                       // made by Tools > Roguelike > Make Character Portraits
+    [Tooltip("3D model shown next to the character terminal in the Lobby when this character is picked. Also used for the portrait.")]
+    public GameObject model;
     public Color color = new Color(0.25f, 0.55f, 0.9f);
 
     [Header("Stats")]

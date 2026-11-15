@@ -118,14 +118,7 @@ Assets/TutorialInfo/Icons/URP.png
 .claude/
 CLAUDE.md
 
-# Local sound test (for choosing sounds, not pushed)
-/Assets/Resources/SoundCandidates/
-/Assets/Resources/SoundCandidates.meta
-/Assets/Scenes/SoundTest.unity
-/Assets/Scenes/SoundTest.unity.meta
 /Assets/Scenes/ContentPreview.unity
 /Assets/Scenes/ContentPreview.unity.meta
 /Assets/Scripts/Debug/
 /Assets/Scripts/Debug.meta
-/Assets/Scripts/Editor/SoundTestScene.cs
-/Assets/Scripts/Editor/SoundTestScene.cs.meta

@@ -1,0 +1,9 @@
+Juggernaut starting item models (both CC Attribution 4.0 - credit required)
+
+energy_gauntlet.glb  (Shield Gauntlet)
+"Energy Gauntlet - Low Poly (Free Download)" by ENOMIC, licensed under CC BY 4.0
+https://sketchfab.com/3d-models/energy-gauntlet-low-poly-free-download-708a936c5bdc4537842f976e51cbb1a9
+
+sci-fi_power_reactor.glb  (Reactor Core)
+"Sci-Fi Power Reactor" by Just-Peeps, licensed under CC BY 4.0
+https://sketchfab.com/3d-models/sci-fi-power-reactor-442645aaebe74e648ec1460f429ee1ba

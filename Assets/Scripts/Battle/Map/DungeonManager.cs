@@ -94,6 +94,25 @@ public class DungeonManager : MonoBehaviour
     const float ChamberDepth = 4f, ChamberWidth = 9.4f, DoorSpacing = 3f;
 
     Transform roomRoot;
+    Transform buildRoot;
+
+    // Doors, labels and enemies go under this unscaled child of the room, so a scaled room prefab
+    // (the Rest bar is scaled 9.4x) doesn't blow them up to 9.4x their size.
+    Transform BuildRoot
+    {
+        get
+        {
+            if (!roomRoot) return null;
+            if (!buildRoot || buildRoot.parent != roomRoot)
+            {
+                buildRoot = new GameObject("Built").transform;
+                buildRoot.SetParent(roomRoot, false);
+                Vector3 s = roomRoot.lossyScale;
+                buildRoot.localScale = new Vector3(1f / s.x, 1f / s.y, 1f / s.z);
+            }
+            return buildRoot;
+        }
+    }
     bool moving, floorDone;
     float messageHideAt;
     Font font;
@@ -150,7 +169,7 @@ public class DungeonManager : MonoBehaviour
 
         Vector3 fwd = player.forward; fwd.y = 0; fwd.Normalize();
         var go = new GameObject("EventFight");
-        go.transform.SetParent(roomRoot, true);
+        go.transform.SetParent(BuildRoot, true);
         go.transform.SetPositionAndRotation(new Vector3(player.position.x, 0, player.position.z) + fwd * 2.5f,
                                             Quaternion.LookRotation(-fwd));
         var enc = go.AddComponent<EnemyEncounter>();
@@ -230,13 +249,8 @@ public class DungeonManager : MonoBehaviour
 
         if (prefab)
         {
-            //prefeb rotation problem
-            Quaternion roomRotation = node.type == NodeType.Elite
-        ? Quaternion.Euler(-90f, 0f, 0f)
-        : Quaternion.identity;
-
-            roomRoot = Instantiate(prefab.gameObject, Vector3.zero, roomRotation).transform;
-            //roomRoot = Instantiate(prefab.gameObject, Vector3.zero, Quaternion.identity).transform;
+            // Keep the prefab's own rotation: a model-rooted room (the Elite tunnel) needs its model's -90 X to lie flat.
+            roomRoot = Instantiate(prefab.gameObject, Vector3.zero, prefab.transform.rotation).transform;
             roomRoot.name = $"Room_{node.type}_{node.layer + 1} ({prefab.name})";
             var room = roomRoot.GetComponent<RoomPrefab>();
             FillPrefabRoom(node, room);
@@ -438,7 +452,7 @@ public class DungeonManager : MonoBehaviour
     void SpawnEncounter(List<EnemyData> enemies, Vector3 pos, Quaternion rot)
     {
         var go = new GameObject("Encounter");
-        go.transform.SetParent(roomRoot, true);
+        go.transform.SetParent(BuildRoot, true);
         go.transform.SetPositionAndRotation(pos, rot);
 
         for (int i = 0; i < enemies.Count; i++)
@@ -476,7 +490,7 @@ public class DungeonManager : MonoBehaviour
         Box("Door_" + target.type, pos + up * 1.3f + back * 0.05f, new Vector3(1.6f, 2.6f, 0.1f), mat, rot);
 
         var trigger = new GameObject("DoorTrigger_" + target.id);
-        trigger.transform.SetParent(roomRoot, true);
+        trigger.transform.SetParent(BuildRoot, true);
         trigger.transform.SetPositionAndRotation(pos + up * 1.3f + back * 0.6f, rot);
         var col = trigger.AddComponent<BoxCollider>();
         col.isTrigger = true;
@@ -511,7 +525,7 @@ public class DungeonManager : MonoBehaviour
     {
         var b = GameObject.CreatePrimitive(PrimitiveType.Cube);
         b.name = name;
-        b.transform.SetParent(roomRoot, true);
+        b.transform.SetParent(BuildRoot, true);
         b.transform.SetPositionAndRotation(pos, rot ?? Quaternion.identity);
         b.transform.localScale = scale;
         if (mat) b.GetComponent<Renderer>().sharedMaterial = mat;
@@ -520,7 +534,7 @@ public class DungeonManager : MonoBehaviour
     void Label(Vector3 pos, string text, Color color, float size, Quaternion? rot = null)
     {
         var go = new GameObject("Label");
-        go.transform.SetParent(roomRoot, true);
+        go.transform.SetParent(BuildRoot, true);
         go.transform.SetPositionAndRotation(pos, rot ?? Quaternion.identity);
         var tm = go.AddComponent<TextMesh>();
         tm.font = font;

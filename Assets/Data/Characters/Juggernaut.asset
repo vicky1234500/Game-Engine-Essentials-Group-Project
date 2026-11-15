@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd46d7c4d73163d4dbe71cc4c4600dd4, type: 3}
+  m_Name: Juggernaut
+  m_EditorClassIdentifier: Assembly-CSharp::CharacterData
+  characterName: The Juggernaut
+  description: A heavily armoured cyborg. Builds big shields, shrugs off hits and
+    hits back.
+  portrait: {fileID: 21300000, guid: efb23f8f458f2f34bb02fea1ad4b24f2, type: 3}
+  model: {fileID: 4506147045173030055, guid: 8e23bb7ce61a34b43b61dbfd9852bb56, type: 3}
+  color: {r: 0.55, g: 0.35, b: 0.85, a: 1}
+  maxHP: 155
+  baseDefense: 40
+  maxMana: 3
+  startingCredits: 50
+  startingItems:
+  - {fileID: 11400000, guid: b15b3d65108a427ab69dfb0fef1fed1b, type: 2}
+  - {fileID: 11400000, guid: ef0144e42fb741609fcac08beeee19b2, type: 2}
+  unlocked: 1

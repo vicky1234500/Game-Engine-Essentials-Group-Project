@@ -5,7 +5,8 @@ using UnityEngine.UI;
 // The floor map screen (press M). Built from the FloorMap at runtime:
 // start at the bottom, boss at the top, lines between connected rooms.
 // Yellow ring = where you are, green ring = rooms you can go to next, faded = already visited.
-// Without a Map Uplink (RevealMap passive) you only see visited rooms, the next doors and the boss.
+// The whole floor is shown (alwaysShowWholeMap). If that is unticked, without a Map Uplink (RevealMap passive)
+// you only see visited rooms, the next doors and the boss.
 public class MapView : MonoBehaviour
 {
     [SerializeField] GameObject panel;              // the whole map window (starts hidden)
@@ -39,7 +40,7 @@ public class MapView : MonoBehaviour
 
     readonly Dictionary<int, NodeView> views = new Dictionary<int, NodeView>();
     readonly List<(Image line, int from, int to)> lines = new List<(Image, int, int)>();
-    [SerializeField] bool alwaysShowWholeMap = false;      // tick to test without a Map Uplink
+    [SerializeField] bool alwaysShowWholeMap = true;       // whole floor is always shown; untick to hide unvisited rooms unless you have a Map Uplink
     FloorMap map;
     Font font;
 

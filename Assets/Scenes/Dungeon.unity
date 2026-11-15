@@ -715,7 +715,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &249941488
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1467,7 +1467,7 @@ MonoBehaviour:
   - {fileID: 1797818975}
   - {fileID: 1797818974}
   - {fileID: 1799822116}
-  - {fileID: 0}
+  - {fileID: 827030601}
   floorMat: {fileID: 2100000, guid: 8c4217ff0e11b9741bb7593fc2ffd618, type: 2}
   wallMat: {fileID: 2100000, guid: 1510d143896e39547874e2bf40d72fc5, type: 2}
   enemyMat: {fileID: 2100000, guid: 03f6a7bb424185841bf70ec7d6b314be, type: 2}
@@ -3142,7 +3142,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::BattleManager
   player: {fileID: 1797818973}
   deck: {fileID: 676062504}
-  inventory: {fileID: 0}
+  inventory: {fileID: 97530634}
   enemyPrefab: {fileID: 3531430637625981497, guid: 835dbbdc69ff89a45a362e4fd29696f4, type: 3}
   defaultSpawnPoints:
   - {fileID: 1821601340}
@@ -3607,7 +3607,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &860709414
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3644,7 +3644,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ShopUI
   shop: {fileID: 860709416}
-  inventoryToggle: {fileID: 0}
+  inventoryToggle: {fileID: 827030601}
   shopPanel: {fileID: 1224263714}
   fullPopup: {fileID: 1427237589}
   sellModeBar: {fileID: 1801365832}
@@ -3683,7 +3683,7 @@ MonoBehaviour:
   - {fileID: 1797818975}
   - {fileID: 1797818974}
   - {fileID: 1799822116}
-  - {fileID: 0}
+  - {fileID: 827030601}
   lockCursorOnClose: 1
 --- !u!114 &860709416
 MonoBehaviour:
@@ -3698,7 +3698,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ShopManager
   shopKey: Lobby
-  inventory: {fileID: 0}
+  inventory: {fileID: 97530634}
   itemPool:
   - {fileID: 11400000, guid: fb591baf5e068474ab9f5c31f1dea029, type: 2}
   - {fileID: 11400000, guid: 514f96a27d4535d4c908b18da7b2f2dd, type: 2}
@@ -3706,6 +3706,7 @@ MonoBehaviour:
   useItemDatabase: 1
   characters:
   - {fileID: 11400000, guid: 7a2fafaa4a52e2b42a9ed461d3a76e2d, type: 2}
+  - {fileID: 11400000, guid: 66bc9f188ee748b0a0f865d47f5fc32a, type: 2}
   slotCount: 3
   upgradeCost: 50
   sellPercent: 50
@@ -4654,7 +4655,7 @@ MonoBehaviour:
   lockCursorWhileExploring: 1
   explorationUI:
   - {fileID: 1870241099}
-  - {fileID: 0}
+  - {fileID: 1365277489}
   battleUI: {fileID: 1425580413}
   fadeScreen: {fileID: 559926693}
   fadeTime: 0.25
@@ -5815,6 +5816,11 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1364666796}
   m_CullTransparentMesh: 1
+--- !u!1 &1365277489 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2197218005613516337, guid: bc8e9d2d9ea59cf45aa6239328ed83c0, type: 3}
+  m_PrefabInstance: {fileID: 2053938197}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1387571851
 GameObject:
   m_ObjectHideFlags: 0
@@ -5986,7 +5992,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1425580414
 RectTransform:
   m_ObjectHideFlags: 0
@@ -6691,7 +6697,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1578331590
 RectTransform:
   m_ObjectHideFlags: 0
@@ -8272,7 +8278,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1866152162
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8299,14 +8305,14 @@ MonoBehaviour:
   nextRing: {r: 0.3, g: 1, b: 0.4, a: 1}
   windowFrame: {fileID: 321333638551451235, guid: a122d9a04e87f7124ed0ca8281dcd725, type: 3}
   startIcon: {fileID: 6192944022281365145, guid: 2d631397e1e98bd40aaea5a93db03653, type: 3}
-  enemyIcon: {fileID: 6192944022281365145, guid: 9a4cbad8d8158b841b65db3d7b545d5f, type: 3}
+  enemyIcon: {fileID: 6192944022281365145, guid: 19ff26ab45ab88d4083aa26a0616bf2d, type: 3}
   eliteIcon: {fileID: 6192944022281365145, guid: 0043ad83f3ce08c40866aa49dc851475, type: 3}
   bossIcon: {fileID: 6192944022281365145, guid: 2976c2e85e4973b4194611d35c4257ef, type: 3}
   shopIcon: {fileID: 6192944022281365145, guid: bcd007209880db24ea7a896923cd5b14, type: 3}
   eventIcon: {fileID: 6192944022281365145, guid: 69cef6ff6d5935642a48034ae4bfb0cc, type: 3}
   restIcon: {fileID: 6192944022281365145, guid: 2d5004ccf78305f438a3ec04bdb5c6b3, type: 3}
   nodeBackground: {fileID: 2800000, guid: 53d7cf26f104b3645bd513691464f49d, type: 3}
-  alwaysShowWholeMap: 0
+  alwaysShowWholeMap: 1
 --- !u!224 &1866152163
 RectTransform:
   m_ObjectHideFlags: 0
@@ -8344,7 +8350,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1870241100
 RectTransform:
   m_ObjectHideFlags: 0
@@ -8981,7 +8987,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 939ce7d4e11fcd84ba37f8d1fd3d5a10, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ItemRewardPanel
-  inventory: {fileID: 0}
+  inventory: {fileID: 97530634}
   rewardPool:
   - {fileID: 11400000, guid: fb591baf5e068474ab9f5c31f1dea029, type: 2}
   - {fileID: 11400000, guid: 87185240ccf8d9d4e8ea064d84790d45, type: 2}
