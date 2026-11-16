@@ -103,6 +103,11 @@ public class BattleManager : MonoBehaviour
         {
             enemy.transform.rotation = Quaternion.Euler(0, -144, 0);
         }
+        else if (data.enemyName == "Security Drone")
+        {
+            enemy.transform.rotation = Quaternion.Euler(0, 0, 0);
+            Debug.Log("Security Drone Check Position");
+        }
         enemy.name = data.enemyName;
         enemy.Setup(data, EnemyHpMultiplier, EnemyDamageMultiplier);
         enemy.OnDied += OnEnemyDied;
@@ -223,74 +228,57 @@ public class BattleManager : MonoBehaviour
             if (CheckBattleOver()) yield break;
             if (enemy.IsDead) continue;
 
-            yield return new WaitForSeconds(enemyActionDelay);
-            GameObject[] bloodObjects = FindObjectsByType<GameObject>(
-                                   FindObjectsInactive.Include,
-                                   FindObjectsSortMode.None
-                               );
-            if (enemy.ConsumeSkip())
-            {
-                Log($"{enemy.DisplayName} can't act!");
-            }
-            else
-            {
-                EnemyMove move = enemy.NextMove;
-                bool animate = move != null && (!animateOnlyAttackMoves || move.intent == IntentType.Attack);
+                yield return new WaitForSeconds(enemyActionDelay);
 
-                if (animate)
+                if (enemy.ConsumeSkip())
                 {
+                    Log($"{enemy.DisplayName} can't act!");
+                }
+                else
+                {
+                    EnemyMove move = enemy.NextMove;
+                    bool animate = move != null && (!animateOnlyAttackMoves || move.intent == IntentType.Attack);
 
-                    enemy.PlayAttack();                                       // start the swing
+                    // Attack moves: swing first, show blood when the hit lands
+                    if (animate)
+                    {
+                        enemy.PlayAttack();
+                        yield return new WaitForSeconds(enemy.AttackHitDelay);
+                        SetBlood(true);
+                    }
 
-                    yield return new WaitForSeconds(enemy.AttackHitDelay);    // wait until the hit lands
-                                                                              // Apply the enemy attack first.
+                    // EVERY move runs here (attack, heal, defend, buff), outside the "if (animate)"
                     ExecuteEnemyMove(enemy, move);
+                    if (CheckBattleOver()) { SetBlood(false); yield break; }
 
-                    // Check whether the battle has ended.
-                    if (CheckBattleOver()) yield break;
-                    if (enemy.Data != null && enemy.Data.enemyName != "Security Drone")
+                    if (animate)
                     {
-                        yield return new WaitForSeconds(.5f);
-                    }
-                    foreach (var bloodObject in bloodObjects)
-                    {
-                        if (bloodObject.CompareTag("blood"))
-                        {
-                            bloodObject.SetActive(true);
-
-                            VideoPlayer vp =
-                                bloodObject.GetComponentInChildren<VideoPlayer>();
-
-                            if (vp != null)
-                            {
-                                vp.Stop();
-                                vp.time = 0;
-                                vp.Play();
-                            }
-                        }
+                        yield return new WaitForSeconds(enemy.AttackRecoverTime);
+                        SetBlood(false);
                     }
                 }
 
-                // ExecuteEnemyMove(enemy, move);                                // apply damage / effects
-                if (CheckBattleOver()) yield break;
-
-                if (animate)
-                    yield return new WaitForSeconds(enemy.AttackRecoverTime); // let the animation finish
-            }
-            foreach (var bloodObject in bloodObjects)
-            {
-                if (bloodObject.CompareTag("blood"))
-                {
-                    bloodObject.SetActive(false);
-                }
-            }
-            enemy.OnTurnEnd();
+                enemy.OnTurnEnd();
 
             if (CheckBattleOver()) yield break;
         }
 
         foreach (var enemy in enemies) if (!enemy.IsDead) enemy.PlanNextMove();
         StartPlayerTurn();
+    }
+
+    // Turns the blood screen effect on or off (objects tagged "blood").
+    void SetBlood(bool on)
+    {
+        foreach (var go in FindObjectsByType<GameObject>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+        {
+            if (!go.CompareTag("blood")) continue;
+            go.SetActive(on);
+            if (!on) continue;
+
+            VideoPlayer vp = go.GetComponentInChildren<VideoPlayer>();
+            if (vp != null) { vp.Stop(); vp.time = 0; vp.Play(); }
+        }
     }
 
     void ExecuteEnemyMove(EnemyCombatant enemy, EnemyMove move)
