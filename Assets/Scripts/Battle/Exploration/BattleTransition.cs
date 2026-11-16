@@ -115,8 +115,9 @@ public class BattleTransition : MonoBehaviour
 
         Vector3 pos = player.position + forward * distance;
         pos.y = groundY;
+        pos.x = 0f;
         battleArena.position = pos;
-        battleArena.rotation = Quaternion.LookRotation(-forward);    // enemies face the player
+        battleArena.rotation = Quaternion.Euler(0, 180, 0);
     }
 
     // ---------------- End ----------------
