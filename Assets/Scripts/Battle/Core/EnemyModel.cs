@@ -30,7 +30,8 @@ public static class EnemyModel
 
         Bounds box = Measure(model);
         Vector3 feet = parent.TransformPoint(localFeet) + Vector3.up * data.modelLift;
-        model.transform.position += new Vector3(feet.x - box.center.x, feet.y - box.min.y, feet.z - box.center.z);
+        model.transform.localPosition = localFeet;
+        model.transform.position += new Vector3(0, feet.y - box.min.y, 0);
         return model;
     }
 

@@ -161,19 +161,26 @@ public class DungeonManager : MonoBehaviour
 
     IEnumerator EventEliteFight(int winCredits)
     {
-        yield return null;                                         // let the event popup close first
+        yield return null;                                       
         while (InBattle) yield return null;
 
         var enemies = PickEnemies(NodeType.Elite);
         if (enemies.Count == 0 || !player) yield break;
 
-        Vector3 fwd = player.forward; fwd.y = 0; fwd.Normalize();
+        Vector3 centeredPlayerPos = new Vector3(0, player.position.y, player.position.z);
+        TeleportPlayer(centeredPlayerPos, Quaternion.Euler(0, 0, 0));
+
         var go = new GameObject("EventFight");
         go.transform.SetParent(BuildRoot, true);
-        go.transform.SetPositionAndRotation(new Vector3(player.position.x, 0, player.position.z) + fwd * 2.5f,
-                                            Quaternion.LookRotation(-fwd));
+
+        // 2. Spawn the enemy in the middle of the hall, 2.5 units ahead, facing back (180)
+        go.transform.SetPositionAndRotation(
+            new Vector3(0, 0, centeredPlayerPos.z + 2.5f),
+            Quaternion.Euler(0, 180, 0)
+        );
+
         var enc = go.AddComponent<EnemyEncounter>();
-        enc.Setup(enemies, 0f);                                   // range 0 = never starts by itself
+        enc.Setup(enemies, 0f);                                   
 
         eventFightCredits = winCredits;
         RunState.noRewardsNextFight = true;
@@ -290,6 +297,17 @@ public class DungeonManager : MonoBehaviour
             ShowMessage("Rest room - press E to rest and recover HP. Pick a door when you're ready.", 6f);
         }
         // Event rooms: the room's EventRoomTrigger opens a random event popup.
+    }
+
+    public void CenterPlayerForBattle(Vector3 enemyPosition)
+    {
+        if (!player) return;
+
+        Vector3 centeredPos = new Vector3(0, player.position.y, player.position.z);
+
+        Vector3 lookTarget = new Vector3(0, player.position.y, enemyPosition.z);
+
+        TeleportPlayer(centeredPos, Quaternion.LookRotation(lookTarget - centeredPos));
     }
 
     [Tooltip("Share of max HP a Rest room restores (0.3 = 30%).")]
@@ -479,7 +497,6 @@ public class DungeonManager : MonoBehaviour
         enc.Setup(enemies, engageRange);
     }
 
-    // pos = bottom-centre of the doorway (world). rot forward = out of the room.
     void BuildDoor(MapNode target, Vector3 pos, Quaternion rot)
     {
         Material mat = target.type == NodeType.Boss ? doorBossMat

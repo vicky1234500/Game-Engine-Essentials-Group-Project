@@ -84,6 +84,7 @@ public class BattleManager : MonoBehaviour
         else deck.BuildFromList(testDeck);
 
         foreach (var data in enemyList) SpawnEnemy(data);
+        DungeonManager.Instance.CenterPlayerForBattle(enemies[0].transform.position);
 
         SetEnemyBattleIdle(true);
         foreach (var e in enemies) e.PlanNextMove();
@@ -99,15 +100,7 @@ public class BattleManager : MonoBehaviour
         int index = enemies.Count;
         Transform point = spawnPoints != null && index < spawnPoints.Length ? spawnPoints[index] : transform;
         var enemy = Instantiate(enemyPrefab, point.position, point.rotation);
-        if (data.enemyName != "Street Enforcer")
-        {
-            enemy.transform.rotation = Quaternion.Euler(0, -144, 0);
-        }
-        else if (data.enemyName == "Security Drone")
-        {
-            enemy.transform.rotation = Quaternion.Euler(0, 0, 0);
-            Debug.Log("Security Drone Check Position");
-        }
+
         enemy.name = data.enemyName;
         enemy.Setup(data, EnemyHpMultiplier, EnemyDamageMultiplier);
         enemy.OnDied += OnEnemyDied;
