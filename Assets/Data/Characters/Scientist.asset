@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: dd46d7c4d73163d4dbe71cc4c4600dd4, type: 3}
-  m_Name: Character1
+  m_Name: Scientist
   m_EditorClassIdentifier: Assembly-CSharp::CharacterData
-  characterName: Character 1
-  description: Placeholder character.
+  characterName: Scientist
+  description: A deadly scientist. Corrodes enemy with damage over time.
   portrait: {fileID: 21300000, guid: 18c534a68325a7646bc4508419b470b9, type: 3}
   model: {fileID: 6522152785622392846, guid: 612c93b5086874d418ec7b3e383620d2, type: 3}
   color: {r: 0.25, g: 0.55, b: 0.9, a: 1}

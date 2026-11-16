@@ -101,6 +101,25 @@ public class BattleManager : MonoBehaviour
         Transform point = spawnPoints != null && index < spawnPoints.Length ? spawnPoints[index] : transform;
         var enemy = Instantiate(enemyPrefab, point.position, point.rotation);
 
+        if (data.enemyName == "Street Enforcer")
+        {
+            enemy.transform.rotation = Quaternion.Euler(0, 30, 0);
+        }
+        else if (data.enemyName == "Rogue")
+        {
+            enemy.transform.rotation = Quaternion.Euler(0, 210, 0);
+        }
+        else if (data.enemyName == "SciFi Trooper")
+        {
+            enemy.transform.rotation = Quaternion.Euler(0, -150, 0);
+        }
+        else if (data.enemyName == "Biomech Warlord")
+        {
+            enemy.transform.rotation = Quaternion.Euler(0, -150, 0);
+        }
+
+
+
         enemy.name = data.enemyName;
         enemy.Setup(data, EnemyHpMultiplier, EnemyDamageMultiplier);
         enemy.OnDied += OnEnemyDied;
