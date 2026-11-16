@@ -10,8 +10,8 @@ public class PlayerMovement : MonoBehaviour
 
     [Header("Movement Settings")]
     public float playerSpeed = 5.0f;
-    public float gravityValue = -9.81f;
-    public float jumpHeight = 1.0f;
+    //public float gravityValue = -9.81f;
+    //public float jumpHeight = 1.0f;
 
 
     private void Start()
@@ -46,12 +46,12 @@ public class PlayerMovement : MonoBehaviour
 
 
         // Direct reading for Spacebar jump
-        if (Keyboard.current != null && Keyboard.current.spaceKey.wasPressedThisFrame && isGrounded)
-        {
-            playerVelocity.y += Mathf.Sqrt(jumpHeight * -3.0f * gravityValue);
-        }
+        //if (Keyboard.current != null && Keyboard.current.spaceKey.wasPressedThisFrame && isGrounded)
+        //{
+        //    playerVelocity.y += Mathf.Sqrt(jumpHeight * -3.0f * gravityValue);
+        //}
 
-        playerVelocity.y += gravityValue * Time.deltaTime;
+        //playerVelocity.y += gravityValue * Time.deltaTime;
         controller.Move(playerVelocity * Time.deltaTime);
 
     }
